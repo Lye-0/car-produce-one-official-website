@@ -1,10 +1,10 @@
 # CAR PRODUCE ONE — 制作準備
 
-最新はv15のモデル・都市更新版です。暗い青のプレリュード、黒いヴェゼル、シックな店内、都市に合わせた外装、変化のある街区と交差点、カメラの急回転修正を反映しました。詳細は docs/v15-refinement.md。OPEN_PREVIEW.cmd は旧v13の確認サイトです。公式サイト本体はまだ実装していません。
+最新はv16の8項目修正版です。歩道の統一、店舗の後退配置、停止中の揺れ、1323フレーム付近の移動方向、会社を含まない都市ループ、店内の追加減光、広告16種類、雑誌8種類を反映しました。詳細は docs/v16-refinement.md。OPEN_PREVIEW.cmd は旧v13の確認サイトです。公式サイト本体はまだ実装していません。
 
 ## 開くもの
 
-- `OPEN_BLENDER.cmd`：Blender 5.2で `assets/blender/CPO_v15_refined.blend` を開く。
+- `OPEN_BLENDER.cmd`：Blender 5.2で `assets/blender/CPO_v16_refined.blend` を開く。
 - `OPEN_PREVIEW.cmd`：引き継いだ動線確認サイトをローカルで起動する。これは公式サイト本体ではありません。
 - `docs/design-brief.md`：現在の希望、参考動画、検討を残した事項。
 - `docs/preparation.md`：保存・検証結果と今後の扱い。
@@ -25,6 +25,6 @@ work/                 確認レンダー・ログなどの一時データ（Git�
 
 `assets/source/v13` は相対パスを含めて保持しています。原本を編集する代わりに、Blenderでの制作は `assets/blender` で続けます。Downloads側の元ファイルは残しています。
 
-Blenderのメインシーンは `CPO_V15_MAIN`、カメラは `CPO_CINEMATIC_CAMERA`、主アニメーションは `CPO_MASTER_90s`。30fps、0〜2700フレームです。停止区間や場面の区切りはタイムラインのマーカーから確認できます。
+Blenderのメインシーンは `CPO_V16_MAIN`、カメラは `CPO_CINEMATIC_CAMERA`、主アニメーションは `CPO_MASTER_90s`。30fps、0〜2700フレームです。停止区間や場面の区切りはタイムラインのマーカーから確認できます。
 
 変更はローカルGitで管理しています。push・公開は行っていません。大型の3Dデータと参考メディアも現時点ではローカルファイルです。Git LFSや配信用素材の管理方式は未設定です。
