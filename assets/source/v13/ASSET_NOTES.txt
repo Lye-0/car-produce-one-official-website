@@ -1,0 +1,8 @@
+Asset notes / provenance
+-----------------------
+The store asset is the user-approved CAR PRODUCE ONE v12 reconstruction from this conversation.
+The vehicles and city geometry added in v13 are original procedurally built approximations. No downloaded vehicle CAD/mesh is used. Prelude/Vezel are reference identifiers, not claims of manufacturer approval or exactness. The blue coupe paint is a custom artistic colour.
+The presentation screen texture and Web sample typography are newly authored. System fonts were used only to rasterise image textures. No font files are included.
+The original store logo and interior reference imagery remain as in the v12 source provided in this conversation.
+The MP4 and PNG files are rendered from the delivered GLB with VTK; not image-model illustrations.
+The current package contains no third-party remote JavaScript dependencies and performs no external network request in normal local preview use.

@@ -1,0 +1,425 @@
+{
+  "version": "13",
+  "base_sha256": "cf2ec8d6d2b2c283737e9aafda8cda67703502d79a043ae780a51e750d7c0235",
+  "source_frame": "X right; +Y shop interior; +Z up. GLB retains root Y-up conversion.",
+  "duration": 90,
+  "fps": 30,
+  "frames": 2701,
+  "camera": "CPO_CINEMATIC_CAMERA",
+  "main_clip": "CPO_MASTER_90s",
+  "idle_clip": "CPO_IDLE_CITY_LOOP",
+  "idle_period": 3.807365439093484,
+  "fov_degrees": 46,
+  "near": 0.012,
+  "vehicles": [
+    {
+      "name": "PRELUDE_SHOWROOM",
+      "center": [
+        1.5,
+        1.31,
+        0
+      ],
+      "dimensions": [
+        1.88,
+        4.52,
+        1.355
+      ],
+      "paint": "custom dark blue",
+      "quality": "original photo-guided approximate mesh, not Honda CAD"
+    },
+    {
+      "name": "VEZEL_SHOWROOM",
+      "center": [
+        8.9,
+        1.22,
+        0
+      ],
+      "dimensions": [
+        1.79,
+        4.34,
+        1.59
+      ],
+      "paint": "black",
+      "quality": "original photo-guided approximate mesh, not Honda CAD"
+    }
+  ],
+  "furniture_moves": {
+    "F05.RollingStool.0": [
+      -0.605,
+      0,
+      0
+    ],
+    "F05.RollingStool.1": [
+      -0.605,
+      0,
+      0
+    ],
+    "05f_Rear_Side_Unit_And_Basket": [
+      -0.15,
+      0,
+      0
+    ],
+    "07d_End_Utility_Cabinet": [
+      1.254,
+      -1.692,
+      0
+    ]
+  },
+  "screen": {
+    "node": "COUNTER.TargetPC.Screen",
+    "center": [
+      2.381034374,
+      6.655703545,
+      1.361953139
+    ],
+    "normal": [
+      0.965925826,
+      -0.258819045,
+      0.0
+    ],
+    "final_eye": [
+      2.64666397615,
+      6.584528307625,
+      1.361953139
+    ],
+    "handoff_start": 0.965
+  },
+  "segments": [
+    {
+      "id": "ARRIVAL",
+      "range": [
+        0,
+        0.14
+      ],
+      "title": "夜の都市から到着"
+    },
+    {
+      "id": "EXIT",
+      "range": [
+        0.14,
+        0.24
+      ],
+      "title": "降車して店舗へ"
+    },
+    {
+      "id": "ENTER",
+      "range": [
+        0.24,
+        0.38
+      ],
+      "title": "入店・工具台へ"
+    },
+    {
+      "id": "TOOLS",
+      "range": [
+        0.38,
+        0.48
+      ],
+      "title": "工具台・固定"
+    },
+    {
+      "id": "CROSS",
+      "range": [
+        0.48,
+        0.63
+      ],
+      "title": "ガラス机へ移動"
+    },
+    {
+      "id": "MAGAZINES",
+      "range": [
+        0.63,
+        0.75
+      ],
+      "title": "雑誌・固定"
+    },
+    {
+      "id": "LOOP",
+      "range": [
+        0.75,
+        0.9
+      ],
+      "title": "デスク奥を回り込む"
+    },
+    {
+      "id": "PC",
+      "range": [
+        0.9,
+        0.97
+      ],
+      "title": "PCへ接近"
+    },
+    {
+      "id": "HANDOFF",
+      "range": [
+        0.97,
+        1
+      ],
+      "title": "静かなサイトへ"
+    }
+  ],
+  "route_keys": [
+    [
+      0.14,
+      [
+        5,
+        -5.23,
+        0.99
+      ]
+    ],
+    [
+      0.157,
+      [
+        5,
+        -5.23,
+        0.99
+      ]
+    ],
+    [
+      0.17,
+      [
+        5,
+        -4.9,
+        1.0
+      ]
+    ],
+    [
+      0.188,
+      [
+        5,
+        -4.1,
+        1.06
+      ]
+    ],
+    [
+      0.203,
+      [
+        5,
+        -3.45,
+        1.55
+      ]
+    ],
+    [
+      0.22,
+      [
+        5.4,
+        -2.55,
+        1.585
+      ]
+    ],
+    [
+      0.24,
+      [
+        6.1,
+        -2.25,
+        1.585
+      ]
+    ],
+    [
+      0.26,
+      [
+        6.1,
+        -0.8,
+        1.6
+      ]
+    ],
+    [
+      0.295,
+      [
+        6.3,
+        1.2,
+        1.6
+      ]
+    ],
+    [
+      0.34,
+      [
+        7.0,
+        2.7,
+        1.6
+      ]
+    ],
+    [
+      0.38,
+      [
+        7.1,
+        3.4,
+        1.6
+      ]
+    ],
+    [
+      0.48,
+      [
+        7.1,
+        3.4,
+        1.6
+      ]
+    ],
+    [
+      0.504,
+      [
+        6.8,
+        3.74,
+        1.6
+      ]
+    ],
+    [
+      0.527,
+      [
+        6.3,
+        3.95,
+        1.6
+      ]
+    ],
+    [
+      0.552,
+      [
+        4.35,
+        4.1,
+        1.6
+      ]
+    ],
+    [
+      0.577,
+      [
+        2.5,
+        4.15,
+        1.6
+      ]
+    ],
+    [
+      0.591,
+      [
+        1.84,
+        4.18,
+        1.6
+      ]
+    ],
+    [
+      0.607,
+      [
+        1.84,
+        4.85,
+        1.57
+      ]
+    ],
+    [
+      0.63,
+      [
+        1.84,
+        5.7,
+        1.48
+      ]
+    ],
+    [
+      0.75,
+      [
+        1.84,
+        5.7,
+        1.48
+      ]
+    ],
+    [
+      0.777,
+      [
+        1.84,
+        6.6,
+        1.6
+      ]
+    ],
+    [
+      0.794,
+      [
+        1.84,
+        7.16,
+        1.6
+      ]
+    ],
+    [
+      0.81,
+      [
+        1.91,
+        7.4,
+        1.6
+      ]
+    ],
+    [
+      0.825,
+      [
+        2.18,
+        7.53,
+        1.6
+      ]
+    ],
+    [
+      0.84,
+      [
+        2.4,
+        7.53,
+        1.6
+      ]
+    ],
+    [
+      0.864,
+      [
+        2.9,
+        7.5,
+        1.6
+      ]
+    ],
+    [
+      0.88,
+      [
+        3.13,
+        7.28,
+        1.6
+      ]
+    ],
+    [
+      0.9,
+      [
+        3.11,
+        6.6,
+        1.58
+      ]
+    ],
+    [
+      0.9,
+      [
+        3.11,
+        6.6,
+        1.58
+      ]
+    ],
+    [
+      0.93,
+      [
+        2.97990838612,
+        6.4952357371,
+        1.4269531389999999
+      ]
+    ],
+    [
+      0.97,
+      [
+        2.72876767136,
+        6.5625286888,
+        1.361953139
+      ]
+    ],
+    [
+      1.0,
+      [
+        2.64666397615,
+        6.584528307625,
+        1.361953139
+      ]
+    ]
+  ],
+  "limitations": [
+    "Cars are procedural visual approximations, not exact manufacturer surfaces.",
+    "Screen/HTML handoff and idle-to-main phase retention are player logic outside glTF core.",
+    "Materials and lighting in dependency-free WebGL review renderer are simplified.",
+    "Full Blender application execution is not available in authoring container."
+  ]
+}
