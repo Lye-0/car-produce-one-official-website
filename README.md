@@ -1,10 +1,10 @@
 # CAR PRODUCE ONE — 制作準備
 
-2026-09-08時点。3D制作データの移管とBlender作業ファイルの準備まで完了。公式サイト本体はまだ実装していません。
+2026-09-08時点。最新はv14の統合ブラッシュアップ版です。車・雑誌・都市・材質・照明・カメラを更新しました。詳細は docs/v14-refinement.md。OPEN_PREVIEW.cmd は旧v13の確認サイトです。公式サイト本体はまだ実装していません。
 
 ## 開くもの
 
-- `OPEN_BLENDER.cmd`：Blender 5.2で `assets/blender/CPO_v13_working.blend` を開く。
+- `OPEN_BLENDER.cmd`：Blender 5.2で `assets/blender/CPO_v14_refined.blend` を開く。
 - `OPEN_PREVIEW.cmd`：引き継いだ動線確認サイトをローカルで起動する。これは公式サイト本体ではありません。
 - `docs/design-brief.md`：現在の希望、参考動画、検討を残した事項。
 - `docs/preparation.md`：保存・検証結果と今後の扱い。
@@ -27,4 +27,4 @@ work/                 確認レンダー・ログなどの一時データ（Git�
 
 Blenderのシーンは `CPO_v13_ANIMATED`、カメラは `CPO_CINEMATIC_CAMERA`、主アニメーションは `CPO_MASTER_90s`。30fps、0〜2700フレームです。停止区間や場面の区切りはタイムラインのマーカーから確認できます。
 
-Gitのコミット・push・公開は行っていません。大型の3Dデータと参考メディアも現時点ではローカルファイルです。Git LFSや配信用素材の管理方式は未設定です。
+変更はローカルGitで管理しています。push・公開は行っていません。大型の3Dデータと参考メディアも現時点ではローカルファイルです。Git LFSや配信用素材の管理方式は未設定です。
