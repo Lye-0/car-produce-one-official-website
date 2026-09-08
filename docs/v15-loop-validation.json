@@ -1,0 +1,19 @@
+{
+  "period_m": 256,
+  "seconds": 48,
+  "initial_arrival_speed_m_s": 8.404761904762488,
+  "loop_start_end_speed_m_s": 8.404761904762488,
+  "minimum_loop_speed_m_s": 2.2619047619041788,
+  "camera_translation_per_cycle_m": 256,
+  "same_lane_minimum_centre_separation_m": 15.536014104161833,
+  "image_comparison": {
+    "loop_mean_absolute_rgb_error": 0.004023851670297748,
+    "arrival_mean_absolute_rgb_error": 0.0020653651506899054,
+    "dimensions": [
+      640,
+      360
+    ],
+    "samples": 48,
+    "scope": "Final frontage-fixed scene. Normalized sRGB image differences, including Monte Carlo/denoising variation."
+  }
+}
