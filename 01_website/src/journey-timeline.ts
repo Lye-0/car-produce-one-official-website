@@ -1,3 +1,4 @@
+import { CORNER_END, cornerProgress } from './corner-transition.ts';
 /** Camera position is a pure function of document scroll, never elapsed time. */
 export type Hold = 'tools' | 'magazines' | 'monitor';
 export const CHAPTER_PROGRESS = [0, 0.4, 0.7, 0.89, 1] as const;
@@ -13,8 +14,8 @@ export function sampleJourney(value: number) {
   const p = clamp(Number.isFinite(value) ? value : 0);
   let time = 0,
     hold: Hold | null = null;
-  if (p < 0.03) time = 0;
-  else if (p < 0.35) time = interpolate(p, 0.03, 0.35, 0, 34.2);
+  if (p < CORNER_END) time = 0;
+  else if (p < 0.35) time = interpolate(p, CORNER_END, 0.35, 0, 34.2);
   else if (p < 0.46) {
     time = 34.2;
     hold = 'tools';
@@ -35,11 +36,12 @@ export function sampleJourney(value: number) {
   }
   return {
     progress: p,
+    corner: cornerProgress(p),
     time,
     hold,
     cardOpacity,
-    chapter: p < 0.03 ? 0 : p < 0.46 ? 1 : p < 0.76 ? 2 : 3,
-    cityOpacity: 1 - clamp(p / 0.03),
+    chapter: p < CORNER_END ? 0 : p < 0.46 ? 1 : p < 0.76 ? 2 : 3,
+    introOpacity: 1 - clamp(p / 0.03),
     portal: clamp((p - 0.9) / 0.1),
     complete: p >= 1,
   };

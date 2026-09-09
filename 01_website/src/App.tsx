@@ -7,6 +7,8 @@ import {
 } from 'react';
 import { content as c } from './content';
 import { WebsiteBody } from './WebsiteBody';
+import { CornerTransition } from './CornerTransition';
+import { CORNER_END, CORNER_DURATION } from './corner-transition';
 import {
   CHAPTER_PROGRESS,
   sampleJourney,
@@ -64,6 +66,12 @@ export default function Home() {
     magazines = useRef<HTMLVideoElement>(null),
     monitor = useRef<HTMLVideoElement>(null);
   const [scene, setScene] = useState(() => sampleJourney(0));
+  const [cornerCovered, setCornerCovered] = useState(false);
+  const cityDriver = useRef<ReturnType<typeof createVideoScrubber> | null>(
+    null,
+  );
+  const entryPhase = useRef<number | null>(null);
+  const lastProgress = useRef(0);
   const [ready, setReady] = useState(false),
     [portalReady, setPortalReady] = useState(false),
     [portalRequested, setPortalRequested] = useState(false),
@@ -179,6 +187,16 @@ export default function Home() {
       frame = 0;
       const height = spacer.current?.offsetHeight ?? window.innerHeight * 12;
       const next = sampleJourney(window.scrollY / height);
+      if (next.progress > 0 && lastProgress.current === 0) {
+        entryPhase.current = city.current?.currentTime ?? 0;
+      }
+      if (entryPhase.current !== null && next.corner < 1) {
+        cityDriver.current?.seek(
+          (entryPhase.current + next.corner * CORNER_DURATION) % 48,
+        );
+      }
+      if (next.progress === 0) entryPhase.current = null;
+      lastProgress.current = next.progress;
       setScene(next);
       scrubber.current?.seek(next.time);
       portalScrubber.current?.seek(Math.max(0, next.time - 81));
@@ -209,6 +227,10 @@ export default function Home() {
     const v = film.current,
       p = portalFilm.current;
     if (!v || !p) return;
+    const streetDriver = city.current
+      ? createVideoScrubber(city.current, 8)
+      : null;
+    cityDriver.current = streetDriver;
     const driver = createVideoScrubber(v),
       portalDriver = createVideoScrubber(p, 24);
     scrubber.current = driver;
@@ -234,6 +256,8 @@ export default function Home() {
       callback = p.requestVideoFrameCallback(receive);
     return () => {
       driver.dispose();
+      streetDriver?.dispose();
+      cityDriver.current = null;
       portalDriver.dispose();
       scrubber.current = null;
       portalScrubber.current = null;
@@ -335,8 +359,7 @@ export default function Home() {
     '--screen-giant':
       mix(371.2, Math.min(450, Math.max(170, view.width * 0.29))) + 'px',
   } as CSSProperties;
-  const windowBlur =
-    scene.progress < 0.03 ? Math.sin((scene.progress / 0.03) * Math.PI) * 2 : 0;
+
   const poster =
     chapter === 0
       ? 'city'
@@ -475,8 +498,12 @@ export default function Home() {
             aria-hidden="true"
             ref={city}
             style={{
-              opacity: scene.cityOpacity,
-              filter: `blur(${windowBlur}px)`,
+              opacity:
+                scene.progress < CORNER_END &&
+                (scene.progress === 0 || !cornerCovered) &&
+                !reduced
+                  ? 1
+                  : 0,
             }}
             className="film city"
             autoPlay={false}
@@ -487,10 +514,16 @@ export default function Home() {
             src={asset('city.mp4')}
             onError={() => setFailed(true)}
           />
+          <CornerTransition
+            profile={variant}
+            progress={scene.corner}
+            view={view}
+            disabled={reduced || failed}
+            onCovered={setCornerCovered}
+          />
           <video
             aria-hidden="true"
             ref={film}
-            style={{ filter: `blur(${windowBlur}px)` }}
             className={
               'film interior ' +
               (ready && scene.time < 81 && !reduced && !failed
@@ -550,10 +583,15 @@ export default function Home() {
               alt=""
             />
           )}
-          {scene.progress < 0.03 && (
+          {scene.progress < CORNER_END + 0.008 && (
             <picture
               className="film car-foreground"
-              style={{ opacity: Math.min(1, (0.03 - scene.progress) / 0.008) }}
+              style={{
+                opacity: Math.min(
+                  1,
+                  (CORNER_END + 0.008 - scene.progress) / 0.008,
+                ),
+              }}
             >
               <source
                 media="(max-width:700px)"
@@ -564,7 +602,7 @@ export default function Home() {
           )}
           <div className="film-shade" />
           {scene.progress < 0.03 && (
-            <div className="welcome" style={{ opacity: scene.cityOpacity }}>
+            <div className="welcome" style={{ opacity: scene.introOpacity }}>
               <p className="eyebrow">TOYONAKA, OSAKA / AUTOMOTIVE CARE</p>
               <h1>
                 {c.headline[0]}

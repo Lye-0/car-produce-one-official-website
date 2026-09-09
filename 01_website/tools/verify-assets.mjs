@@ -58,3 +58,46 @@ for (const profile of ['desktop', 'mobile']) {
 console.log(
   `Verified ${checked} media files and both screen-tracking profiles.`,
 );
+
+const corner = JSON.parse(
+  readFileSync(resolve(root, 'src/corner-tracking.json'), 'utf8'),
+);
+for (const profile of ['desktop', 'mobile']) {
+  const video = resolve(root, 'public/media/corner', profile, 'corner.mp4');
+  const stat = statSync(video);
+  if (!stat.isFile() || stat.size < 1000 || stat.size > 25 * 1024 * 1024)
+    throw new Error(`Invalid corner video: ${profile}`);
+  const rows = corner.profiles[profile];
+  if (
+    rows.length !== 97 ||
+    rows.some(
+      (r, i) =>
+        r.f !== i ||
+        r.polygon.length < 4 ||
+        r.polygon.some(
+          (p) => p.length !== 2 || p.some((v) => !Number.isFinite(v)),
+        ),
+    )
+  )
+    throw new Error(`Invalid corner tracking: ${profile}`);
+  for (const f of [46, 47, 48, 49, 50]) {
+    const polygon = rows[f].polygon;
+    for (const [x, y] of [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+    ]) {
+      if (
+        !polygon.every((a, i) => {
+          const b = polygon[(i + 1) % polygon.length];
+          return (
+            (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]) >= -1e-7
+          );
+        })
+      )
+        throw new Error(`Exposed street at corner cut: ${profile}, ${f}`);
+    }
+  }
+}
+console.log('Verified both corner videos and the fully occluded cut interval.');

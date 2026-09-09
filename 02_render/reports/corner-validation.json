@@ -1,0 +1,51 @@
+{
+  "desktop": {
+    "decoded_frames": 97,
+    "fps": 30,
+    "size": [
+      1280,
+      720
+    ],
+    "city_phases": [
+      0,
+      0.25,
+      0.5,
+      0.75
+    ],
+    "cut_frames_checked": [
+      46,
+      47,
+      48,
+      49,
+      50
+    ],
+    "cut_background_max_difference": 0,
+    "opaque_cabin_max_difference": 0,
+    "encoded_endpoint_blurred_rgb_mae": 1.0185734953703705
+  },
+  "mobile": {
+    "decoded_frames": 97,
+    "fps": 30,
+    "size": [
+      720,
+      1280
+    ],
+    "city_phases": [
+      0,
+      0.25,
+      0.5,
+      0.75
+    ],
+    "cut_frames_checked": [
+      46,
+      47,
+      48,
+      49,
+      50
+    ],
+    "cut_background_max_difference": 0,
+    "opaque_cabin_max_difference": 0,
+    "encoded_endpoint_blurred_rgb_mae": 0.8305862991898149
+  },
+  "passed": true
+}

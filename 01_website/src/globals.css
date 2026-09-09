@@ -297,9 +297,6 @@ button:disabled {
   letter-spacing: 0.08em;
   color: #a1adb1;
 }
-.bridge .city {
-  filter: blur(3px);
-}
 .portal-page {
   position: absolute;
   inset: 0;
@@ -990,4 +987,9 @@ html {
 /* Keep the normal document out of the camera view until the portal completes. */
 .main-site[inert] {
   visibility: hidden;
+}
+
+.scroll-journey .corner-film {
+  z-index: -1;
+  pointer-events: none;
 }

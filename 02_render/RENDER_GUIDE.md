@@ -11,7 +11,7 @@ MASTERには画像を内包してあり、過去のフォルダを参照せず�
 2. `settings.json` で画質を設定します。初期値は横1920×1080／縦1080×1920、30fps、Cycles 128 samples、デノイズ有効です。`width` と `height` は横向きの寸法を指定します。縦向きは自動で入れ替わります。`fps` は30のまま使用してください。
 3. ルートの `RENDER.cmd` をダブルクリックします。
 4. `1` でファイル確認、`2` で横・縦各2枚の小さなテストを実行します。テストは `output/test` に保存されます。
-5. `3` が横のみ、`4` が縦のみ、`5` が両方の最終レンダリングです。出力は `output/final-01`（設定の `run_name`）です。
+5. `3` が横のみ、`4` が縦のみ、`5` が両方の最終レンダリングです。出力は `output/final-corner-01`（設定の `run_name`）です。
 
 Blender 5.2を使用します。別のインストール場所なら `scripts/render.ps1` 内の `blenderPath` を直してください。OPTIX対応GPUを優先し、利用できない場合はCPUを使います。
 
@@ -21,6 +21,7 @@ Blender 5.2を使用します。別のインストール場所なら `scripts/re
 
 | フォルダ | 内容 | 連番の枚数 |
 |---|---|---:|
+| corner | 曲がり角の建物による接続、3.2秒＋終端 | 97 |
 | route | 入店からモニター前まで、81秒 | 2430 |
 | portal | モニター接近、終端を含む | 271 |
 | city | 窓の外の街、48秒ループ | 1440 |
@@ -51,3 +52,18 @@ PNG連番は高画質の原本です。十分なディスク空き容量を用�
 組み込み時は `01_website/src/App.tsx` のフレーム量子化設定、`src/journey-timeline.ts` と画面追従データを確認します。従来の変換処理は `90_archive/sites_project/tools/stage4/encode_assets.py` に資料として保管されています（旧パス・旧fpsのためそのまま実行しません）。
 
 PNGの検品用に `output/test` の4枚を残しています。本番素材として使用しないでください。
+
+## 曲がり角の接続素材
+
+MASTER内の `CPO_CORNER_CONNECTOR` が新しい接続シーンです。通常の最終レンダリングメニュー（3・4・5）に `corner` の出力を追加してあります。
+以前の出力と混ざらないよう、現在の `run_name` は `final-corner-01` です。
+
+接続だけの小さな確認は、02_render内で以下を実行します。横・縦それぞれ0・48・96フレームの3枚を出します。
+
+```powershell
+./scripts/render.ps1 -Action test -Profile both -Job corner
+```
+
+店舗や街の配置を変更したときは、接続シーンも更新してください。`scripts/build_corner.py` はMASTERの本編0フレームをもとに接続候補と輪郭データを `output/corner-work` に生成します。候補を確認してからMASTERへ反映します。
+今回のサイト用動画は `scripts/render_corner.py` と `scripts/encode_corner.py` で作成しました。変換・画像検証用Pythonライブラリは `scripts/requirements-media.txt` に記載しています。
+最終画質のPNG連番を描画する通常メニューには、これらの追加Pythonライブラリは不要です。
