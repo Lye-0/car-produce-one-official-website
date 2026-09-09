@@ -1,7 +1,7 @@
 """Make a 3-cycle + turn review from the exact deployed frames, without retiming."""
 from pathlib import Path
 import av,sys
-R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v3';WEB=R.parent/'01_website/public/media/junction'
+R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v4';WEB=R.parent/'01_website/public/media/junction'
 if '--staged' in sys.argv:WEB=O/'media'
 for profile in ([p for p in sys.argv[1:] if p!='--staged'] or ['desktop','mobile']):
     assert profile in ('desktop','mobile'),profile

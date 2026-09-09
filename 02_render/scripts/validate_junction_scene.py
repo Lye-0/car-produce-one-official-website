@@ -1,7 +1,7 @@
 import bpy,json,math,sys,hashlib,bmesh
 from pathlib import Path
 from mathutils import Matrix,Vector
-R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v3'
+R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v4'
 candidate='--candidate' in sys.argv
 source=O/'CPO_JUNCTION_CANDIDATE.blend' if candidate else R/'scene/CPO_MASTER.blend'
 bpy.ops.wm.open_mainfile(filepath=str(source))
@@ -24,7 +24,7 @@ max_step=max(abs(b-a) for a,b in zip(headings,headings[1:]));assert max_step<mat
 s.frame_set(0);bpy.context.view_layer.update();rects=[]
 for inst in bpy.context.evaluated_depsgraph_get().object_instances:
  ob=inst.object
- if ob.hide_render or ob.type!='MESH' or not any(k in ob.name.lower() for k in ['tower','podium','building','jt.frontage.','jt.ground.']):continue
+ if ob.hide_render or ob.type!='MESH' or not any(k in ob.name.lower() for k in ['tower','podium','building','jt.frontage.','jt.ground.','jt.streetlife.']):continue
  pts=[inst.matrix_world@Vector(v) for v in ob.bound_box];lo=[min(p[i] for p in pts) for i in range(3)];hi=[max(p[i] for p in pts) for i in range(3)]
  if lo[2]>2 or hi[2]<2 or hi[0]<-130 or lo[0]>-20 or hi[1]<-240 or lo[1]>40:continue
  rects.append((ob.name,lo,hi))
@@ -57,6 +57,12 @@ accepted=O.parent/'junction-work-v2/junction-path.json'
 if accepted.exists():
  old=json.loads(accepted.read_text())['poses'];assert len(old)==len(poses)
  delta=max(math.dist(a['position'],b['position']) for a,b in zip(old,poses));angle=max(abs(a['heading']-b['heading']) for a,b in zip(old,poses))
- assert delta<1e-6 and angle<1e-7;report['accepted_motion_position_delta_m']=delta;report['accepted_motion_heading_delta_radians']=angle
+ assert math.dist(old[-1]['position'],poses[-1]['position'])<1e-6
+ report['previous_motion_position_delta_m']=delta;report['previous_motion_heading_delta_radians']=angle
+lane=path['laneCenterX'];assert abs(lane-(path['roadCenterX']-2.6))<1e-5
+assert all(abs(p['position'][0]-lane)<1e-5 for p in poses[:601])
+report['left_lane_offset_m']=2.6
+district=next(c for c in s.collection.children if 'JT_street_level_uses' in c)
+report['street_level_uses']=district['JT_street_level_uses'];report['street_trees']=district['JT_added_street_trees'];report['parked_cars']=district['JT_added_parked_cars'];report['new_campaigns']=district['JT_new_campaigns']
 target=O/'junction-scene-validation.json' if candidate else R/'reports/junction-scene-validation.json'
 target.write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

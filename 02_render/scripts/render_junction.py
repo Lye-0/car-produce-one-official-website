@@ -1,16 +1,16 @@
 import bpy,sys,json,time,hashlib
 from pathlib import Path
-R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v3'
+R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v4'
 args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else ['stills'];mode=args[0];profiles=args[1:] or ['desktop','mobile']
-assert mode in ('stills','review','seam','preview'),mode
+assert mode in ('stills','review','seam','short','preview'),mode
 source=O/'CPO_JUNCTION_CANDIDATE.blend'
 width,height=(960,540) if mode in ('stills','review') else (640,360)
 signature={'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'mode':mode,'samples':64 if mode in ('stills','review') else 16,'seed':18,'desktop':[width,height],'mobile':[height,width],'drive_fps':30,'turn_fps':30}
 provenance=O/(mode+'-provenance.json')
 if provenance.exists():
- assert json.loads(provenance.read_text())==signature,'Candidate or render settings changed. Archive junction-work-v3 and rebuild before rendering.'
+ assert json.loads(provenance.read_text())==signature,'Candidate or render settings changed. Archive junction-work-v4 and rebuild before rendering.'
 else:
- existing=list((O/mode if mode in ('stills','review','seam') else O/'drive').glob('*/*.png'))
+ existing=list((O/mode if mode in ('stills','review','seam','short') else O/'drive').glob('*/*.png'))
  assert not existing,'Existing frames have no provenance. Archive the previous output before rendering.'
  provenance.write_text(json.dumps(signature,indent=2))
 bpy.ops.wm.open_mainfile(filepath=str(source))
@@ -22,7 +22,7 @@ status={'mode':mode,'started':time.time(),'completed':0}
 for profile,w,h in [('desktop',width,height),('mobile',height,width)]:
  if profile not in profiles:continue
  s.camera=bpy.data.objects[s['JT_camera_'+profile]];s.render.resolution_x=w;s.render.resolution_y=h
- jobs={'stills':[0,150,300,450,600,720,810,900,990,1080]} if mode=='stills' else {'review':[150,300,450,1080]} if mode=='review' else {'seam':[0,1,598,599,600,601]} if mode=='seam' else {'drive':list(range(600)),'turn':list(range(600,1081))}
+ jobs={'stills':[0,150,300,450,600,720,810,900,990,1080]} if mode=='stills' else {'review':[150,300,450,1080]} if mode=='review' else {'seam':[0,1,598,599,600,601]} if mode=='seam' else {'short':list(range(240,330))+list(range(570,600))+list(range(0,30))} if mode=='short' else {'drive':list(range(600)),'turn':list(range(600,1081))}
  for job,frames in jobs.items():
   folder=O/job/profile;folder.mkdir(parents=True,exist_ok=True)
   for i,f in enumerate(frames):

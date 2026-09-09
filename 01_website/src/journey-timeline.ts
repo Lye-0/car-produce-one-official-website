@@ -68,9 +68,10 @@ export interface SeekableVideo {
 }
 export function createVideoScrubber(video: SeekableVideo, fps = 8) {
   let desired = 0,
-    disposed = false;
+    disposed = false,
+    released = false;
   const flush = () => {
-    if (disposed || video.readyState < 1 || video.seeking) return;
+    if (disposed || released || video.readyState < 1 || video.seeking) return;
     const max = Number.isFinite(video.duration)
       ? Math.max(0, video.duration - 1 / fps)
       : 89.875;
@@ -83,9 +84,13 @@ export function createVideoScrubber(video: SeekableVideo, fps = 8) {
   video.addEventListener('loadeddata', flush);
   return {
     seek(time: number) {
+      released = false;
       desired = time;
       video.pause();
       flush();
+    },
+    release() {
+      released = true;
     },
     dispose() {
       disposed = true;

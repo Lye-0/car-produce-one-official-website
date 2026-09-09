@@ -194,12 +194,14 @@ export default function Home() {
         entryPhase.current = city.current?.currentTime ?? 0;
       }
       const next = sampleJourney(progress, entryPhase.current ?? 0);
-      if (entryPhase.current !== null) {
+      if (next.progress === 0) {
+        cityDriver.current?.release();
+        entryPhase.current = null;
+      } else if (entryPhase.current !== null) {
         cityDriver.current?.seek(
           sampleJunction(next.junction, entryPhase.current).driveTime,
         );
       }
-      if (next.progress === 0) entryPhase.current = null;
       lastProgress.current = next.progress;
       setScene(next);
       scrubber.current?.seek(next.time);
@@ -288,6 +290,7 @@ export default function Home() {
     }
     const v = city.current;
     if (v) {
+      if (scene.progress === 0) cityDriver.current?.release();
       if (scene.progress === 0 && !paused && !reduced && !entered)
         v.play().catch((error) => {
           if (error?.name === 'NotAllowedError') setPaused(true);

@@ -3,7 +3,7 @@ from pathlib import Path
 import sys,json,hashlib,shutil
 import av
 from PIL import Image
-R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v3';WEB=O/'media'
+R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v4';WEB=O/'media'
 provenance=json.loads((O/'preview-provenance.json').read_text());assert provenance['source_sha256']==hashlib.sha256((O/'CPO_JUNCTION_CANDIDATE.blend').read_bytes()).hexdigest(),'Render the current candidate before encoding.'
 profiles=sys.argv[1:] or ['desktop','mobile'];reportfile=O/'media-manifest.json';report=json.loads(reportfile.read_text()) if reportfile.exists() else {}
 for profile in profiles:

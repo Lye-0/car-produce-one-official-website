@@ -1,15 +1,15 @@
 {
   "stage": "rendered_probe_frames",
-  "source_sha256": "441ff95f267e104d913c1d6e78ace5861388714e6a31c360f2c8545f3b830382",
+  "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e",
   "desktop": {
-    "same_pose_rgb_mae": 0.6692259837962963,
-    "max_boundary_to_normal_ratio": 1.4391918984218373,
-    "max_local_same_pose_error": 1.408998435054773
+    "same_pose_rgb_mae": 0.6677517361111112,
+    "max_boundary_to_normal_ratio": 1.39612074190811,
+    "max_local_same_pose_error": 1.4988317757009346
   },
   "mobile": {
-    "same_pose_rgb_mae": 0.37235387731481484,
-    "max_boundary_to_normal_ratio": 1.4213777997191293,
-    "max_local_same_pose_error": 1.0018909754825247
+    "same_pose_rgb_mae": 0.38408130787037037,
+    "max_boundary_to_normal_ratio": 1.2571937110649658,
+    "max_local_same_pose_error": 1.0174621804903494
   },
   "passed": true
 }

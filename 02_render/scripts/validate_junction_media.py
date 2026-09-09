@@ -4,7 +4,7 @@ import json,sys
 import av
 import numpy as np
 from PIL import Image,ImageFilter
-R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v3';WEB=R.parent/'01_website/public/media'
+R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v4';WEB=R.parent/'01_website/public/media'
 DRIVE=O/'media' if '--staged' in sys.argv else WEB/'junction'
 def rgb(im):return np.asarray(im.convert('RGB').filter(ImageFilter.GaussianBlur(2))).astype(float)
 report={}
