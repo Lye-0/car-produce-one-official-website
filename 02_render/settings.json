@@ -12,7 +12,7 @@
   "device": "OPTIX",
   "require_gpu": true,
   "reserve_gib": 20,
-  "run_name": "final-optimized-02",
+  "run_name": "final-glass-fixed-01",
   "denoising_use_gpu": true,
   "max_bounces": 6,
   "caustics_reflective": false,

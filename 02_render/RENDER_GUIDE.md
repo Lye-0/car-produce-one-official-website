@@ -8,7 +8,7 @@
 - Cycles最大48・最小8サンプル、ノイズ閾値0.05。
 - 最大反射回数6、反射・屈折コースティクス無効。
 - OptiX GPU描画、OpenImageDenoise GPU・High。連続フレームのデータ再利用が有効。
-- 現在の `run_name`: `final-optimized-02`。
+- 現在の `run_name`: `final-glass-fixed-01`。
 
 `CPO_JUNCTION_DRIVE` が走行・右折、`CPO_V18_SITE_MAIN` が到着から店内・モニターまでです。旧 `CPO_V18_CITY_LOOP` は現行サイトで使用しません。
 
@@ -29,6 +29,8 @@
 
 最初に1で確認し、全編作成は4を選びます。4はサイトへの反映までは実行しません。まず完成した映像を確認してください。
 
+ドアガラスを窓枠に沿う形へ修正し、厚みの重複を解消済みです。旧 `output/final-optimized-02` の181枚は保持していますが、原本が変わったため新しい連番へ流用しません。修正版は上記の出力先で最初から描画します。
+
 ## GPUでの動画生成
 
 `encoding.json` の `backend` は **nvenc**。H.265は `hevc_nvenc` のMain10・10bit、H.264は `h264_nvenc` のHigh・8bitです。両方とも1080p・30fps、SDR BT.709で色を合わせます。
@@ -43,11 +45,11 @@
 
 ## 出力先と枚数
 
-PNG原本: `output/final-optimized-02/{desktop,mobile}/{job}/`
+PNG原本: `output/final-glass-fixed-01/{desktop,mobile}/{job}/`
 
-動画・WebP・検証記録: `output/final-optimized-02/exports/delivery-nvenc-01/`
+動画・WebP・検証記録: `output/final-glass-fixed-01/exports/delivery-nvenc-01/`
 
-部分サンプルは `output/quality-final-optimized-02/`、1枚比較は `output/sample-final-optimized-02/` に分離されます。
+部分サンプルは `output/quality-final-glass-fixed-01/`、1枚比較は `output/sample-final-glass-fixed-01/` に分離されます。
 
 | job | 内容 | 各向きの動画用PNG枚数 |
 |---|---|---:|
