@@ -1,0 +1,24 @@
+{
+  "scope": "Signed world camera direction sampled every eighth frame between 2300 and 2350; all route positions and rotations outside 2025..2430 compared to v16.",
+  "before": {
+    "yaw_reversal_steps": 40,
+    "max_up_down_step_deg": 0.13913877082063633,
+    "signed_yaw_step_range_deg": [
+      -0.10962439327214632,
+      0.08923409093228087
+    ]
+  },
+  "after": {
+    "yaw_reversal_steps": 0,
+    "max_up_down_step_deg": 0.00013322877120538584,
+    "signed_yaw_step_range_deg": [
+      -0.07617144578921041,
+      -0.03586169317366761
+    ]
+  },
+  "max_route_position_difference_m": 1.6689300537109375e-06,
+  "minimum_unchanged_orientation_absolute_dot": 0.9999998967499115,
+  "advertisements": 18,
+  "unique_campaigns": 16,
+  "additive_gaze_action": false
+}

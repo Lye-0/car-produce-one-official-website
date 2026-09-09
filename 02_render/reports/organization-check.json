@@ -1,0 +1,13 @@
+{
+  "original_v18_preserved": true,
+  "canonical_root": "C:/Users/kawau/dev/car-produce-one-official-website",
+  "original_v16_preserved": true,
+  "master_sha256": "EDBC92FEB8F22501DABF693C8623813C64F051467E0C49379F65F9F0968335F0",
+  "npm_audit": 0,
+  "website_build": "passed",
+  "smoke_png_count": 4,
+  "sites_dependencies_removed_from_active_website": true,
+  "website_tests": 15,
+  "browser": "desktop initial view, chapter navigation, service navigation passed; no warnings/errors observed",
+  "production_render_executed": false
+}

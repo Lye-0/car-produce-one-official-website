@@ -1,0 +1,32 @@
+{
+  "source": "C:\\Users\\kawau\\dev\\car-produce-one-official-website\\assets\\blender\\CPO_v17_refined.blend",
+  "profiles": {
+    "desktop": {
+      "width": 1280,
+      "height": 720
+    },
+    "mobile": {
+      "width": 720,
+      "height": 1280
+    }
+  },
+  "holds": {
+    "tools": 1026,
+    "magazines": 1701,
+    "monitor": 2430
+  },
+  "cameras": [
+    "V18_desktop_City",
+    "V18_desktop_Idle_magazines",
+    "V18_desktop_Idle_monitor",
+    "V18_desktop_Idle_tools",
+    "V18_desktop_Route",
+    "V18_mobile_City",
+    "V18_mobile_Idle_magazines",
+    "V18_mobile_Idle_monitor",
+    "V18_mobile_Idle_tools",
+    "V18_mobile_Route"
+  ],
+  "tracking_frames_per_profile": 271,
+  "source_scene_preserved": true
+}

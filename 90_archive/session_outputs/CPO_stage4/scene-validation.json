@@ -1,0 +1,51 @@
+{
+  "holds": [
+    {
+      "profile": "desktop",
+      "name": "tools",
+      "max_camera_matrix_error": 0.0
+    },
+    {
+      "profile": "desktop",
+      "name": "magazines",
+      "max_camera_matrix_error": 1.4901161193847656e-07
+    },
+    {
+      "profile": "mobile",
+      "name": "tools",
+      "max_camera_matrix_error": 0.0
+    },
+    {
+      "profile": "mobile",
+      "name": "magazines",
+      "max_camera_matrix_error": 1.4901161193847656e-07
+    }
+  ],
+  "city_alignment": [
+    {
+      "profile": "desktop",
+      "arrival_camera_error": 5.960464477539063e-08,
+      "period_translation": [
+        256.0,
+        0.0,
+        0.0
+      ],
+      "rotation_error": 0.0
+    },
+    {
+      "profile": "mobile",
+      "arrival_camera_error": 5.960464477539063e-08,
+      "period_translation": [
+        256.0,
+        0.0,
+        0.0
+      ],
+      "rotation_error": 0.0
+    }
+  ],
+  "monitor_holds_at_frame": 2430,
+  "monitor_approach_range": [
+    2430,
+    2700
+  ]
+}

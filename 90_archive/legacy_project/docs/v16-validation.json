@@ -1,0 +1,56 @@
+{
+  "camera_max_rotation_deg_frame": 1.8999505773070688,
+  "camera_max_subframe_rotation_deg": 0.23738813362255598,
+  "camera_1323": {
+    "frame": 1323,
+    "metres": 8.584393293130943e-05,
+    "degrees": 1.3128155508919874
+  },
+  "camera_1323_world_position": [
+    7.101689338684082,
+    7.050866603851318,
+    1.601094126701355
+  ],
+  "camera_hold_departure_displacement_m": 0.0025728265980548945,
+  "loop_company_objects": [],
+  "loop_reachable_objects": 9312,
+  "campaign_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "missing_images": [],
+  "setback_m": 3.65,
+  "idle_gain": 1.8,
+  "scope": "Camera poses and subframes, shared resource dependency graph, image packing, advertisement identity; not exhaustive scene collision proof.",
+  "magazine_materials": [
+    "V14 Editorial cover 0",
+    "V14 Editorial cover 1",
+    "V14 Editorial cover 2",
+    "V14 Editorial cover 3",
+    "V16 magazine issue 5",
+    "V16 magazine issue 6",
+    "V16 magazine issue 7",
+    "V16 magazine issue 8"
+  ],
+  "shared_pavement_material": "V15 granite pedestrian paving",
+  "ambient_light_ratio": {
+    "V14 Shop ceiling bounce": 0.8700000217982701,
+    "V14 Front window blue bounce": 0.8699999722567472,
+    "V14 Office ambient": 0.8700000322782077
+  },
+  "invalid_camera_drivers": []
+}

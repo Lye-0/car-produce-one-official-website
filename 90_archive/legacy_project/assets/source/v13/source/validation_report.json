@@ -1,0 +1,280 @@
+{
+  "file": "CAR_PRODUCE_ONE_ANIMATED_v13.glb",
+  "sha256": "59eb0a639ba38d75193340730a81f80582b40a72a7440d2ead0cbdbf96670a60",
+  "base_sha256": "cf2ec8d6d2b2c283737e9aafda8cda67703502d79a043ae780a51e750d7c0235",
+  "tests": [
+    {
+      "name": "Has actual perspective camera",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Master and idle clips present",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 0 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 0 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 1 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 1 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 1 unit quaternions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 2 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 2 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 3 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 3 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 3 unit quaternions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 4 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 4 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 4 unit quaternions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 5 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 5 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 5 unit quaternions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 6 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 6 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 6 unit quaternions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 7 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 7 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 7 unit quaternions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 8 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 8 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 8 unit quaternions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 9 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 9 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 9 unit quaternions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 10 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 0 track 10 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 1 track 0 time/values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Clip 1 track 0 TRS target",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Explicit valid texture samplers",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "All embedded images decode",
+      "passed": true,
+      "detail": 65
+    },
+    {
+      "name": "All original mesh vertex/normal/UV/index data preserved",
+      "passed": true,
+      "detail": {
+        "preserved_meshes": 2951,
+        "changed": []
+      }
+    },
+    {
+      "name": "tools hold translation constant",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "tools hold rotation constant",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "magazines hold translation constant",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "magazines hold rotation constant",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No position jump per frame",
+      "passed": true,
+      "detail": {
+        "max_m_per_s": 8.393669128417969,
+        "at_s": 0.0
+      }
+    },
+    {
+      "name": "Indoor walking max speed under 2.0 m/s",
+      "passed": true,
+      "detail": {
+        "maximum": 1.032799482345581
+      }
+    },
+    {
+      "name": "Walking swept cylinder static-clearance (0.275m radius)",
+      "passed": true,
+      "detail": {
+        "minimum": [
+          0.3049999475479126,
+          54.766666412353516,
+          "F07.LongFace.TopShadowReveal"
+        ],
+        "violations": [],
+        "count": 0,
+        "method": "Actual mesh vertex-height-band convex footprints, sampled camera every 1/30 sec. Conservative; does not replace continuous analytic collision proof."
+      }
+    },
+    {
+      "name": "Moving geometry eye/sphere clearance",
+      "passed": true,
+      "detail": {
+        "minimum": [
+          0.1671514240303175,
+          15.100000381469727,
+          "ARRIVAL_CAR.RoofRail1"
+        ],
+        "violations": [],
+        "count": 0,
+        "sample_step_seconds": 0.1,
+        "radius_exit": 0.08,
+        "radius_upright": 0.25
+      }
+    },
+    {
+      "name": "Entry opening wider than 0.9m",
+      "passed": true,
+      "detail": 1.5122058348083725
+    },
+    {
+      "name": "Independent trimesh GLB load",
+      "passed": true,
+      "detail": {
+        "mesh_nodes": 4134,
+        "geometries": 4291
+      }
+    }
+  ],
+  "passed": 47,
+  "failed": 0,
+  "limitations": [
+    "Blender application import/render not executed.",
+    "Proxy scan covers authored walk and eye clearance; does not certify real-world accessibility.",
+    "Vehicle surfacing is a visual approximation."
+  ]
+}

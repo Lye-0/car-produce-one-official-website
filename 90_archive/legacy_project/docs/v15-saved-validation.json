@@ -1,0 +1,17 @@
+{
+  "file": "C:\\Users\\kawau\\dev\\car-produce-one-official-website\\assets\\blender\\CPO_v15_refined.blend",
+  "blender": "5.2.0 LTS",
+  "main_scene": "CPO_V15_MAIN",
+  "loop_scene": "CPO_V15_DRIVE_LOOP",
+  "packed_image_count": 64,
+  "missing_images": [],
+  "invalid_drivers": [],
+  "city_pavement_overlaps_shop": [],
+  "near_traffic_y": {
+    "0": -5.900000095367432,
+    "1": -5.900000095367432,
+    "2": -5.900000095367432
+  },
+  "camera_max_step_deg": 1.8066133094288046,
+  "scope": "Resource checks, camera samples, conservative vehicle boxes and targeted frontage checks; not an exhaustive continuous collision audit."
+}

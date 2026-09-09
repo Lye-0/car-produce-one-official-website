@@ -12,3 +12,9 @@ __pycache__/
 .env
 .env.*
 !.env.example
+/01_website/node_modules/
+/01_website/dist/
+/02_render/output/
+/90_archive/sites_project/
+/90_archive/session_work/
+/90_archive/legacy_project/work/

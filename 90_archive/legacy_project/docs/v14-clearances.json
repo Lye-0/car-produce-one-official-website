@@ -1,0 +1,34 @@
+{
+  "PRELUDE_SHOWROOM": {
+    "min": [
+      0.42100000381469727,
+      -1.0260032415390015,
+      -5.174470629754069e-07
+    ],
+    "max": [
+      2.5789999961853027,
+      3.6150004863739014,
+      1.3400001525878906
+    ],
+    "minimum_walk_distance_to_conservative_xy_box_m": 0.5320910074286582,
+    "at_frame": 1553
+  },
+  "VEZEL_SHOWROOM": {
+    "min": [
+      7.865999698638916,
+      -1.0260028839111328,
+      -5.103913167658902e-07
+    ],
+    "max": [
+      9.934000015258789,
+      3.43500018119812,
+      1.575000286102295
+    ],
+    "minimum_walk_distance_to_conservative_xy_box_m": 0.7659996986389164,
+    "at_frame": 1026
+  },
+  "magazine_glass_clearance_m": 0.01767909526824951,
+  "model_file": "C:\\Users\\kawau\\dev\\car-produce-one-official-website\\assets\\blender\\CPO_v14_refined.blend",
+  "camera_drivers": 6,
+  "scope": "Conservative new-car XY boxes against v13 walk samples at 30fps, with 5mm camera offset allowance. Not a complete scene collision proof."
+}

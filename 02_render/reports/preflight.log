@@ -1,0 +1,26 @@
+00:00.047  reports          | WARNING Unable to open 'C:\Users\kawau\AppData\Roaming\Blender Foundation\Blender\5.2\config\userpref.blend': Permission denied
+Blender 5.2.0 LTS (hash fbe6228777e7 built 2026-07-14 01:35:40)
+{
+  "profiles": [
+    "desktop",
+    "mobile"
+  ],
+  "jobs": {
+    "route": 2430,
+    "portal": 271,
+    "city": 1440,
+    "tools-idle": 180,
+    "magazines-idle": 180,
+    "monitor-idle": 180
+  },
+  "settings": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "samples": 128,
+    "device": "OPTIX",
+    "run_name": "final-01"
+  }
+}
+00:01.922  blend            | Read blend: "C:\Users\kawau\dev\car-produce-one-official-website\02_render\scene\CPO_MASTER.blend"
+PREFLIGHT PASSED: self-contained master, cameras and settings verified.

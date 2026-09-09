@@ -1,0 +1,12 @@
+[
+  {
+    "shader": "vs",
+    "compiled_ES300_in_Mesa_OpenGL": true,
+    "log": ""
+  },
+  {
+    "shader": "fs",
+    "compiled_ES300_in_Mesa_OpenGL": true,
+    "log": ""
+  }
+]

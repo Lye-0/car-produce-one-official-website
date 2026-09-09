@@ -1,0 +1,56 @@
+{
+  "CPO_v15_camera_2323_30fps.mp4": {
+    "name": "CPO_v15_camera_2323_30fps.mp4",
+    "frames": 151,
+    "fps": 30,
+    "duration_s": 5.033333333333333,
+    "width": 768,
+    "height": 432,
+    "bytes": 1051324
+  },
+  "CPO_v15_Prelude_360.mp4": {
+    "name": "CPO_v15_Prelude_360.mp4",
+    "frames": 192,
+    "fps": 24,
+    "duration_s": 8.0,
+    "width": 960,
+    "height": 600,
+    "bytes": 1872940
+  },
+  "CPO_v15_Vezel_360.mp4": {
+    "name": "CPO_v15_Vezel_360.mp4",
+    "frames": 192,
+    "fps": 24,
+    "duration_s": 8.0,
+    "width": 960,
+    "height": 600,
+    "bytes": 1950713
+  },
+  "CPO_v15_city_loop.mp4": {
+    "name": "CPO_v15_city_loop.mp4",
+    "frames": 384,
+    "fps": 8,
+    "duration_s": 48.0,
+    "width": 640,
+    "height": 360,
+    "bytes": 7370872
+  },
+  "CPO_v15_two_loops_then_arrival.mp4": {
+    "name": "CPO_v15_two_loops_then_arrival.mp4",
+    "frames": 869,
+    "fps": 8,
+    "duration_s": 108.625,
+    "width": 640,
+    "height": 360,
+    "bytes": 16549446
+  },
+  "CPO_v15_full_journey.mp4": {
+    "name": "CPO_v15_full_journey.mp4",
+    "frames": 720,
+    "fps": 8,
+    "duration_s": 90.0,
+    "width": 640,
+    "height": 360,
+    "bytes": 6799816
+  }
+}

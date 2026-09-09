@@ -1,0 +1,148 @@
+{
+  "kind": "UI / GLB animation mathematical test with mocked GPU; not a WebGL visual test",
+  "checks": [
+    {
+      "name": "actual GLB JS vs source camera at 0s",
+      "passed": true,
+      "error_m": 7.632374153123379e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 12.6s",
+      "passed": true,
+      "error_m": 2.1324805621455154e-08
+    },
+    {
+      "name": "actual GLB JS vs source camera at 14.7s",
+      "passed": true,
+      "error_m": 8.658460246054636e-08
+    },
+    {
+      "name": "actual GLB JS vs source camera at 19.8s",
+      "passed": true,
+      "error_m": 6.408804933957228e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 22.5s",
+      "passed": true,
+      "error_m": 1.1035484706276088e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 24s",
+      "passed": true,
+      "error_m": 2.2612084120332774e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 34.2s",
+      "passed": true,
+      "error_m": 1.3696104617375522e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 36s",
+      "passed": true,
+      "error_m": 1.3696104617375522e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 43.2s",
+      "passed": true,
+      "error_m": 1.3696104617375522e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 52.5s",
+      "passed": true,
+      "error_m": 6.63396959862018e-08
+    },
+    {
+      "name": "actual GLB JS vs source camera at 56.7s",
+      "passed": true,
+      "error_m": 1.9457059650523275e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 60s",
+      "passed": true,
+      "error_m": 1.9457059650523275e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 67.5s",
+      "passed": true,
+      "error_m": 1.9457059650523275e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 72s",
+      "passed": true,
+      "error_m": 7.365515146826817e-08
+    },
+    {
+      "name": "actual GLB JS vs source camera at 77.5s",
+      "passed": true,
+      "error_m": 1.3898917309790663e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 81s",
+      "passed": true,
+      "error_m": 1.4812683612472793e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 84s",
+      "passed": true,
+      "error_m": 1.0594123018383231e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 87.3s",
+      "passed": true,
+      "error_m": 2.153423790689725e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 89s",
+      "passed": true,
+      "error_m": 1.6281571590187083e-07
+    },
+    {
+      "name": "actual GLB JS vs source camera at 90s",
+      "passed": true,
+      "error_m": 1.5614309489880624e-07
+    },
+    {
+      "name": "HTML handoff visible at end",
+      "passed": true
+    },
+    {
+      "name": "matched screen image covers desktop viewport",
+      "passed": true,
+      "rect": {
+        "x": -193.84375,
+        "y": -62.59375,
+        "width": 1827.703125,
+        "height": 1025.203125
+      }
+    },
+    {
+      "name": "portrait handoff projects actual LCD",
+      "passed": true,
+      "rect": {
+        "x": -813.28125,
+        "y": -143.5625,
+        "width": 2016.578125,
+        "height": 1131.140625
+      }
+    },
+    {
+      "name": "Reset enters idle",
+      "passed": true
+    },
+    {
+      "name": "Playback advances master",
+      "passed": true
+    },
+    {
+      "name": "Pause retains time",
+      "passed": true
+    },
+    {
+      "name": "No JavaScript errors",
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "passed": 27,
+  "failed": 0
+}

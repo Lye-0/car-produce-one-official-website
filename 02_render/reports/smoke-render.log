@@ -1,0 +1,35 @@
+00:00.047  reports          | WARNING Unable to open 'C:\Users\kawau\AppData\Roaming\Blender Foundation\Blender\5.2\config\userpref.blend': Permission denied
+Blender 5.2.0 LTS (hash fbe6228777e7 built 2026-07-14 01:35:40)
+{
+  "profiles": [
+    "desktop",
+    "mobile"
+  ],
+  "jobs": {
+    "route": 2430,
+    "portal": 271,
+    "city": 1440,
+    "tools-idle": 180,
+    "magazines-idle": 180,
+    "monitor-idle": 180
+  },
+  "settings": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "samples": 128,
+    "device": "OPTIX",
+    "run_name": "final-01"
+  }
+}
+00:01.890  blend            | Read blend: "C:\Users\kawau\dev\car-produce-one-official-website\02_render\scene\CPO_MASTER.blend"
+00:04.047  cycles           | WARNING HIPEW initialization failed: Error opening HIP dynamic library
+00:07.297  cycles           | WARNING Could not open database file: C:\Users\kawau\AppData\Local/NVIDIA/OptixCache/optix7cache.db
+                            | Unable to initialize the OptiX cache database at path C:\Users\kawau\AppData\Local/NVIDIA/OptixCache/optix7cache.db. Delete or rename the file if this problem persists.
+00:12.812  render           | Saved: 'C:\Users\kawau\dev\car-produce-one-official-website\02_render\output\test\desktop\route\00000.png'
+00:13.875  render           | Saved: 'C:\Users\kawau\dev\car-produce-one-official-website\02_render\output\test\desktop\route\00001.png'
+00:17.703  render           | Saved: 'C:\Users\kawau\dev\car-produce-one-official-website\02_render\output\test\mobile\route\00000.png'
+00:18.812  render           | Saved: 'C:\Users\kawau\dev\car-produce-one-official-website\02_render\output\test\mobile\route\00001.png'
+RENDER COMPLETE: C:\Users\kawau\dev\car-produce-one-official-website\02_render\output\test
+
+Blender quit

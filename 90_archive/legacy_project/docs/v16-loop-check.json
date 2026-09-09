@@ -1,0 +1,11 @@
+{
+  "loop_start_end_mean_absolute_rgb_difference": 0.003871351897240378,
+  "arrival_loop_mean_absolute_rgb_difference": 0.010637039306463326,
+  "dimensions": [
+    640,
+    360
+  ],
+  "samples": 48,
+  "arrival_transition_seconds": 0.5,
+  "scope": "Final v16 ground and advertising. Loop endpoints compare matching periodic views; arrival contains a different destination plot and uses a video cross-dissolve, not identical geometry."
+}

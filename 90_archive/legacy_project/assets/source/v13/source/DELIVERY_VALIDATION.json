@@ -1,0 +1,470 @@
+{
+  "version": "v13",
+  "model_bytes": 82163732,
+  "model_sha256": "59eb0a639ba38d75193340730a81f80582b40a72a7440d2ead0cbdbf96670a60",
+  "model_and_route": {
+    "file": "CAR_PRODUCE_ONE_ANIMATED_v13.glb",
+    "sha256": "59eb0a639ba38d75193340730a81f80582b40a72a7440d2ead0cbdbf96670a60",
+    "base_sha256": "cf2ec8d6d2b2c283737e9aafda8cda67703502d79a043ae780a51e750d7c0235",
+    "tests": [
+      {
+        "name": "Has actual perspective camera",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Master and idle clips present",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 0 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 0 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 1 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 1 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 1 unit quaternions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 2 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 2 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 3 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 3 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 3 unit quaternions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 4 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 4 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 4 unit quaternions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 5 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 5 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 5 unit quaternions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 6 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 6 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 6 unit quaternions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 7 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 7 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 7 unit quaternions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 8 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 8 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 8 unit quaternions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 9 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 9 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 9 unit quaternions",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 10 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 0 track 10 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 1 track 0 time/values",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Clip 1 track 0 TRS target",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "Explicit valid texture samplers",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "All embedded images decode",
+        "passed": true,
+        "detail": 65
+      },
+      {
+        "name": "All original mesh vertex/normal/UV/index data preserved",
+        "passed": true,
+        "detail": {
+          "preserved_meshes": 2951,
+          "changed": []
+        }
+      },
+      {
+        "name": "tools hold translation constant",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "tools hold rotation constant",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "magazines hold translation constant",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "magazines hold rotation constant",
+        "passed": true,
+        "detail": null
+      },
+      {
+        "name": "No position jump per frame",
+        "passed": true,
+        "detail": {
+          "max_m_per_s": 8.393669128417969,
+          "at_s": 0.0
+        }
+      },
+      {
+        "name": "Indoor walking max speed under 2.0 m/s",
+        "passed": true,
+        "detail": {
+          "maximum": 1.032799482345581
+        }
+      },
+      {
+        "name": "Walking swept cylinder static-clearance (0.275m radius)",
+        "passed": true,
+        "detail": {
+          "minimum": [
+            0.3049999475479126,
+            54.766666412353516,
+            "F07.LongFace.TopShadowReveal"
+          ],
+          "violations": [],
+          "count": 0,
+          "method": "Actual mesh vertex-height-band convex footprints, sampled camera every 1/30 sec. Conservative; does not replace continuous analytic collision proof."
+        }
+      },
+      {
+        "name": "Moving geometry eye/sphere clearance",
+        "passed": true,
+        "detail": {
+          "minimum": [
+            0.1671514240303175,
+            15.100000381469727,
+            "ARRIVAL_CAR.RoofRail1"
+          ],
+          "violations": [],
+          "count": 0,
+          "sample_step_seconds": 0.1,
+          "radius_exit": 0.08,
+          "radius_upright": 0.25
+        }
+      },
+      {
+        "name": "Entry opening wider than 0.9m",
+        "passed": true,
+        "detail": 1.5122058348083725
+      },
+      {
+        "name": "Independent trimesh GLB load",
+        "passed": true,
+        "detail": {
+          "mesh_nodes": 4134,
+          "geometries": 4291
+        }
+      }
+    ],
+    "passed": 47,
+    "failed": 0,
+    "limitations": [
+      "Blender application import/render not executed.",
+      "Proxy scan covers authored walk and eye clearance; does not certify real-world accessibility.",
+      "Vehicle surfacing is a visual approximation."
+    ]
+  },
+  "preservation": {
+    "unchanged_rest_positions": 2873,
+    "authorised_moved_meshes": 78,
+    "unexpected_transform_changes": [],
+    "unexpected_material_changes_except_screen": [],
+    "all_original_binary_bytes_retained": true,
+    "all_passed": true
+  },
+  "web_logic_mock_gpu": {
+    "kind": "UI / GLB animation mathematical test with mocked GPU; not a WebGL visual test",
+    "checks": [
+      {
+        "name": "actual GLB JS vs source camera at 0s",
+        "passed": true,
+        "error_m": 7.632374153123379e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 12.6s",
+        "passed": true,
+        "error_m": 2.1324805621455154e-08
+      },
+      {
+        "name": "actual GLB JS vs source camera at 14.7s",
+        "passed": true,
+        "error_m": 8.658460246054636e-08
+      },
+      {
+        "name": "actual GLB JS vs source camera at 19.8s",
+        "passed": true,
+        "error_m": 6.408804933957228e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 22.5s",
+        "passed": true,
+        "error_m": 1.1035484706276088e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 24s",
+        "passed": true,
+        "error_m": 2.2612084120332774e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 34.2s",
+        "passed": true,
+        "error_m": 1.3696104617375522e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 36s",
+        "passed": true,
+        "error_m": 1.3696104617375522e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 43.2s",
+        "passed": true,
+        "error_m": 1.3696104617375522e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 52.5s",
+        "passed": true,
+        "error_m": 6.63396959862018e-08
+      },
+      {
+        "name": "actual GLB JS vs source camera at 56.7s",
+        "passed": true,
+        "error_m": 1.9457059650523275e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 60s",
+        "passed": true,
+        "error_m": 1.9457059650523275e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 67.5s",
+        "passed": true,
+        "error_m": 1.9457059650523275e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 72s",
+        "passed": true,
+        "error_m": 7.365515146826817e-08
+      },
+      {
+        "name": "actual GLB JS vs source camera at 77.5s",
+        "passed": true,
+        "error_m": 1.3898917309790663e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 81s",
+        "passed": true,
+        "error_m": 1.4812683612472793e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 84s",
+        "passed": true,
+        "error_m": 1.0594123018383231e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 87.3s",
+        "passed": true,
+        "error_m": 2.153423790689725e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 89s",
+        "passed": true,
+        "error_m": 1.6281571590187083e-07
+      },
+      {
+        "name": "actual GLB JS vs source camera at 90s",
+        "passed": true,
+        "error_m": 1.5614309489880624e-07
+      },
+      {
+        "name": "HTML handoff visible at end",
+        "passed": true
+      },
+      {
+        "name": "matched screen image covers desktop viewport",
+        "passed": true,
+        "rect": {
+          "x": -193.84375,
+          "y": -62.59375,
+          "width": 1827.703125,
+          "height": 1025.203125
+        }
+      },
+      {
+        "name": "portrait handoff projects actual LCD",
+        "passed": true,
+        "rect": {
+          "x": -813.28125,
+          "y": -143.5625,
+          "width": 2016.578125,
+          "height": 1131.140625
+        }
+      },
+      {
+        "name": "Reset enters idle",
+        "passed": true
+      },
+      {
+        "name": "Playback advances master",
+        "passed": true
+      },
+      {
+        "name": "Pause retains time",
+        "passed": true
+      },
+      {
+        "name": "No JavaScript errors",
+        "passed": true
+      }
+    ],
+    "page_errors": [],
+    "passed": 27,
+    "failed": 0
+  },
+  "native_shader_compile": [
+    {
+      "shader": "vs",
+      "compiled_ES300_in_Mesa_OpenGL": true,
+      "log": ""
+    },
+    {
+      "shader": "fs",
+      "compiled_ES300_in_Mesa_OpenGL": true,
+      "log": ""
+    }
+  ],
+  "blender_application_executed": false,
+  "browser_webgl_render_executed": false,
+  "actual_glb_vtk_movie_rendered": true,
+  "movie": "previews/CPO_full_journey_review.mp4",
+  "movie_spec": {
+    "duration_seconds": 90.125,
+    "fps": 8,
+    "width": 800,
+    "height": 500
+  },
+  "glb_animation_spec": {
+    "duration_seconds": 90,
+    "fps_samples": 30,
+    "camera": "CPO_CINEMATIC_CAMERA",
+    "main_clip": "CPO_MASTER_90s",
+    "idle_clip": "CPO_IDLE_CITY_LOOP"
+  }
+}
