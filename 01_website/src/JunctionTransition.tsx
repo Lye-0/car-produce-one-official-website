@@ -1,3 +1,5 @@
+import { MediaVideo } from './MediaVideo';
+import { getProductionClip } from './production-media';
 import { useEffect, useRef, useState } from 'react';
 import { createVideoScrubber } from './journey-timeline';
 import { TURN_FPS, JUNCTION_MEDIA_VERSION } from './junction-transition';
@@ -28,8 +30,9 @@ export function JunctionTransition({ profile, time, active, onReady }: Props) {
     driver.current?.seek(time);
   }, [time, profile]);
   return (
-    <video
-      ref={video}
+    <MediaVideo
+      videoRef={video}
+      media={getProductionClip(profile, 'junction')}
       aria-hidden="true"
       className="film junction-film"
       style={{ opacity: active && ready ? 1 : 0 }}
@@ -52,3 +55,4 @@ export function JunctionTransition({ profile, time, active, onReady }: Props) {
     />
   );
 }
+

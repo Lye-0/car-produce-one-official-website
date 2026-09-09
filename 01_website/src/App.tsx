@@ -1,3 +1,5 @@
+import { MediaVideo } from './MediaVideo';
+import { getProductionClip } from './production-media';
 import {
   useEffect,
   useMemo,
@@ -90,6 +92,8 @@ export default function Home() {
     [presentedFrame, setPresentedFrame] = useState(2430),
     [idleReady, setIdleReady] = useState<Record<string, boolean>>({});
   const profile = variant ?? 'desktop';
+  const routeFps = getProductionClip(variant, 'route')?.fps ?? 8;
+  const portalFps = getProductionClip(variant, 'portal')?.fps ?? 24;
   const scrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(null),
     portalScrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(
       null,
@@ -244,8 +248,8 @@ export default function Home() {
       ? createVideoScrubber(city.current, DRIVE_FPS)
       : null;
     cityDriver.current = streetDriver;
-    const driver = createVideoScrubber(v),
-      portalDriver = createVideoScrubber(p, 24);
+    const driver = createVideoScrubber(v, routeFps),
+      portalDriver = createVideoScrubber(p, portalFps);
     scrubber.current = driver;
     portalScrubber.current = portalDriver;
     const time = sampleJourney(
@@ -263,7 +267,7 @@ export default function Home() {
     };
     const fallback = () =>
       setPresentedFrame(
-        Math.min(2700, 2430 + (Math.floor(p.currentTime * 24) / 24) * 30),
+        Math.min(2700, 2430 + (Math.floor(p.currentTime * portalFps) / portalFps) * 30),
       );
     p.addEventListener('seeked', fallback);
     if (typeof p.requestVideoFrameCallback === 'function')
@@ -278,7 +282,7 @@ export default function Home() {
       if (callback) p.cancelVideoFrameCallback(callback);
       p.removeEventListener('seeked', fallback);
     };
-  }, []);
+  }, [routeFps, portalFps]);
   useEffect(() => {
     if (scene.progress > 0.65 && !entered) setPortalRequested(true);
   }, [scene.progress, entered]);
@@ -520,9 +524,9 @@ export default function Home() {
               alt=""
             />
           </picture>
-          <video
+          <MediaVideo
             aria-hidden="true"
-            ref={city}
+            videoRef={city}
             style={{
               opacity:
                 scene.progress < JUNCTION_END &&
@@ -538,6 +542,9 @@ export default function Home() {
             playsInline
             poster={streetAsset('drive.jpg')}
             src={streetAsset('drive.mp4')}
+            media={getProductionClip(variant, 'drive')}
+            playing={scene.progress === 0 && !paused && !reduced && !entered}
+            onPlayBlocked={() => setPaused(true)}
             onError={() => setFailed(true)}
           />
           <JunctionTransition
@@ -551,9 +558,9 @@ export default function Home() {
             }
             onReady={setTurnReady}
           />
-          <video
+          <MediaVideo
             aria-hidden="true"
-            ref={film}
+            videoRef={film}
             className={
               'film interior ' +
               (ready && scene.time < 81 && !reduced && !failed
@@ -564,12 +571,13 @@ export default function Home() {
             playsInline
             preload="auto"
             src={asset('route.mp4')}
+            media={getProductionClip(variant, 'route')}
             onLoadedData={() => setReady(true)}
             onError={() => setFailed(true)}
           />
-          <video
+          <MediaVideo
             aria-hidden="true"
-            ref={portalFilm}
+            videoRef={portalFilm}
             className={
               'film portal-film ' +
               (scene.time >= 81 && portalReady && !reduced ? 'visible' : '')
@@ -578,6 +586,7 @@ export default function Home() {
             playsInline
             preload="auto"
             src={portalRequested ? asset('portal.mp4') : undefined}
+            media={portalRequested ? getProductionClip(variant, 'portal') : undefined}
             onLoadedData={() => setPortalReady(true)}
           />
           {(
@@ -587,10 +596,10 @@ export default function Home() {
               ['monitor', monitor],
             ] as const
           ).map(([name, ref]) => (
-            <video
+            <MediaVideo
               aria-hidden="true"
               key={name}
-              ref={ref}
+              videoRef={ref}
               className="film ambient"
               style={{
                 opacity:
@@ -603,6 +612,8 @@ export default function Home() {
               playsInline
               preload="auto"
               src={asset(name + '-idle.mp4')}
+              media={getProductionClip(variant, name + '-idle')}
+              playing={!entered && !paused && !reduced && scene.hold === name}
               onLoadedData={() => setIdleReady((v) => ({ ...v, [name]: true }))}
             />
           ))}
@@ -731,3 +742,4 @@ export default function Home() {
     </>
   );
 }
+

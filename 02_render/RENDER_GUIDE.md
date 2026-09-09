@@ -1,65 +1,91 @@
 # 最終レンダリングの手順
 
-## 使うファイル
+## 使用するファイルと現在の設定
 
-最新版は **scene/CPO_MASTER.blend** です。ルートの **OPEN_BLENDER.cmd** で開けます。画像を内包しており、過去フォルダの素材を探す必要はありません。
+原本は `scene/CPO_MASTER.blend`。ルートの `OPEN_BLENDER.cmd` で開けます。レンダリング時の画質は `settings.json` から上書きするため、MASTERの画質表示と異なる場合があります。
 
-- `CPO_JUNCTION_DRIVE`: 最初の走行と交差点の右折。固定した街区の中を、車と車載カメラが走行します。
-- `CPO_V18_SITE_MAIN`: 会社への到着から店内、モニターまで。
-- `CPO_V18_CITY_LOOP`: 以前の都市ループの記録。現在のサイトでは使用しません。
+- 横1920×1080／縦1080×1920、30fps、16bit RGB PNG。
+- Cycles最大48・最小8サンプル、ノイズ閾値0.05。
+- 最大反射回数6、反射・屈折コースティクス無効。
+- OptiX GPU描画、OpenImageDenoise GPU・High。連続フレームのデータ再利用が有効。
+- 現在の `run_name`: `final-optimized-02`。
 
-## 実行方法
+`CPO_JUNCTION_DRIVE` が走行・右折、`CPO_V18_SITE_MAIN` が到着から店内・モニターまでです。旧 `CPO_V18_CITY_LOOP` は現行サイトで使用しません。
 
-1. 必要な編集をMASTERへ保存します。
-2. `settings.json` で画質を設定します。初期値は横1920×1080／縦1080×1920、30fps、Cycles 128 samples、デノイズ有効です。width・heightは横向きの寸法で、縦向きは自動で入れ替えます。fpsは30のまま使用してください。
-3. ルートの **RENDER.cmd** を開きます。
-4. `1` でファイルと設定を確認、`2` で横・縦各5枚の小さなテスト描画を実行します。
-5. `3` が横のみ、`4` が縦のみ、`5` が両方の最終描画です。
+## RENDER.cmd のメニュー
 
-現在の出力先は **output/final-junction-03** です。以前の出力と混ざらない名前にしています。
-テストは `output/test-final-junction-03/{desktop,mobile}/drive` と `junction` に保存します。
+既に開いているメニューは閉じ、ルートの **RENDER.cmdを開き直してください**。以前のメニューと番号が異なります。
 
-Blender 5.2を使用します。インストール場所が違う場合は `scripts/render.ps1` のblenderPathを変更してください。OPTIX対応GPUを優先し、利用できなければCPUを使用します。
+| 番号 | 処理 |
+|---|---|
+| 1 | GPU・原本・空き容量・実エンコーダーの事前確認。シーン描画なし |
+| 2 | 低解像度の技術確認用PNGテスト |
+| 3 | 本番画質の部分サンプル・静止画と二形式動画生成 |
+| **4** | **横・縦の全シーンをPNG描画し、H.265／H.264を生成** |
+| **5** | **完成済みの本番PNGから動画生成だけを実行** |
+| 6 | 品質サンプルからの時間・容量見積もり |
+| 7 | 全14クリップの二形式が完成・検証済みの場合にローカルサイトへ反映 |
+| 8 | 出力フォルダーを開く |
 
-## 出力するPNG連番
+最初に1で確認し、全編作成は4を選びます。4はサイトへの反映までは実行しません。まず完成した映像を確認してください。
 
-| フォルダ | 内容 | 枚数 |
+## GPUでの動画生成
+
+`encoding.json` の `backend` は **nvenc**。H.265は `hevc_nvenc` のMain10・10bit、H.264は `h264_nvenc` のHigh・8bitです。両方とも1080p・30fps、SDR BT.709で色を合わせます。
+
+現在は品質重視のP7/HQ、H.265 CQ18／H.264 CQ17。CQはCPUエンコーダーのCRFと異なる尺度で、数値をそのまま交換しません。スクロール映像はGOP6、走行・待機ループはGOP30。Bフレームなし、fast-start MP4です。
+
+両形式を新規生成する際は、PNG読み込みと色変換を一度だけ行って2つのGPUエンコーダーで共有します。PNGの読み込みや色変換・検証にはCPUも使用します。GPU化するのは主に動画圧縮であり、PNGを描画する時間とは別です。
+
+長い描画の前に、横・縦それぞれでH.265／H.264を実エンコードし、10bit/8bit・色・フレーム数・GOPをデコード検証します。**GPUが使用できない場合は停止し、自動的にCPU方式へ切り替えません。** 意図してCPU方式を使う場合のみ `backend` を `software` に変更し、新しい `name` にしてください。
+
+現在の動画出力設定名は `delivery-nvenc-01`。変更する場合は新しい名前にして、旧エンコードと混在させません。
+
+## 出力先と枚数
+
+PNG原本: `output/final-optimized-02/{desktop,mobile}/{job}/`
+
+動画・WebP・検証記録: `output/final-optimized-02/exports/delivery-nvenc-01/`
+
+部分サンプルは `output/quality-final-optimized-02/`、1枚比較は `output/sample-final-optimized-02/` に分離されます。
+
+| job | 内容 | 各向きの動画用PNG枚数 |
 |---|---|---:|
-| drive | 交差点へ続く20秒・160mの走行ループ | 600 |
-| junction | 減速・90度右折・直進、16秒＋終端 | 481 |
+| drive | 20秒の走行ループ | 600 |
+| junction | 減速・右折・直進、終端を含む | 481 |
 | route | 会社への到着からモニター前まで | 2430 |
 | portal | モニターへの接近、終端を含む | 271 |
-| tools-idle | 工具の前、6秒ループ | 180 |
-| magazines-idle | 雑誌の前、6秒ループ | 180 |
-| monitor-idle | モニターの前、6秒ループ | 180 |
+| tools-idle | 工具前の6秒ループ | 180 |
+| magazines-idle | 雑誌前の6秒ループ | 180 |
+| monitor-idle | モニター前の6秒ループ | 180 |
 
-走行ループは元シーンの0〜599フレーム、右折は600〜1080フレームです。driveの`endpoint.png`は600フレームで、junctionの最初と同じ位置です。endpoint.pngは動画に含めません。
-各ループの専用処理があるため、すべてのサイト素材を出す場合はBlenderのCtrl+F12ではなく、RENDER.cmdを使ってください。
+横・縦とループの検証用endpointを含め、全体で8,652枚。endpoint.pngは動画に含みません。独自のフレーム対応と照明処理があるため、全素材の作成にはBlenderのCtrl+F12ではなくRENDER.cmdを使ってください。
 
 ## 中断・再開
 
-Ctrl+Cで中断できます。同じMASTER・設定・スクリプトで再実行すると、完了したPNGをスキップします。
-MASTERや画質設定を変更したら、run_nameを`final-junction-04`など新しい名前にしてください。異なる条件が混ざる場合は停止します。
-`complete.json`はクリップの完了記録、`progress.json`は最新の進捗、`render-settings.json`は使用条件の記録です。
+同じ原本・設定・スクリプトで再実行すると、PNGの寸法・bit深度・CRC・終端を確認し、正常な画像を再利用します。動画も元PNGのハッシュとデコード結果を確認して再利用します。一方だけ失敗した場合は、その形式だけ再生成します。
 
-個別に描画する場合（02_render内のPowerShell）:
+原本や描画設定を変えたら `settings.json` の `run_name` を変更します。エンコードだけを変更する場合は `encoding.json` の `name` を変更します。原本・描画スクリプト・設定の不一致では、既存の連番への追加を停止します。
+
+残りのPNGに必要な容量と20GiBの予備容量を確認します。実行中だけWindowsの自動スリープを抑え、終了時に元へ戻します。
+
+## 実行環境
+
+Blender 5.2とOptiX対応GPUを使用します。Blenderの場所は `scripts/render.ps1` で指定しています。Pythonは `CPO_PYTHON` 環境変数、既存のCodex同梱Python、PATH上のPythonの順に探します。必要なライブラリは `scripts/requirements-media.txt`。このPCでは既存のライブラリを利用し、追加インストールせず確認済みです。
+
+個別に描画と動画生成を行う例（02_render内のPowerShell）:
 
 ```powershell
 ./scripts/render.ps1 -Action final -Profile desktop -Job junction
 ```
 
-## サイトへの組み込み
-
-通常の描画メニューは高画質のPNG原本を生成します。サイトの動画は自動で置き換えません。
-最新MASTERの走行は20秒・160m、右折は16秒、いずれも30fpsです。新しい街並みの走行・右折を、横640×360／縦360×640、Cycles 16 samplesのテスト品質でサイトへ反映済みです。到着後のrouteは既存の8fps、portalと待機ループは24fpsです。
-
-最終画質の全編描画は、今回の変更では実行していません。
+CPU・NVENC比較や過去の1枚比較は `output/` 内の各比較フォルダーに保持しています。静止画比較と短いエンコード検証は実施済みですが、全編の描画・動画の見た目確認は別途必要です。
 
 ## 接続シーンを作り直す場合
 
 `scripts/build_junction.py`は本編の0フレームを基に、固定した交差点と車の経路の候補を `output/junction-work-v4/CPO_JUNCTION_CANDIDATE.blend` に作ります。候補を確認してからMASTERへ反映してください。
 `scripts/render_junction.py`、`encode_junction.py`、`validate_junction_media.py`は確認用動画の作成・照合用です。動画変換に必要なPythonライブラリは `scripts/requirements-media.txt` に記載しています。
-通常のRENDER.cmdによるPNG描画には、これらの追加ライブラリは不要です。
+現在のRENDER.cmdは動画エンコーダーを事前確認するため、Pythonの追加ライブラリも必要です。
 
 確認用の候補や画質を変更して作り直すときは、以前の `output/junction-work-v4` を保管してから候補を生成してください。プレビュー描画・変換は元ファイルの照合情報を確認し、異なる条件のフレームが混ざる場合は停止します。
 
