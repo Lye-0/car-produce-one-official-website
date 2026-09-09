@@ -3,11 +3,11 @@ from pathlib import Path
 import sys,json,hashlib,shutil
 import av
 from PIL import Image
-R=Path(__file__).resolve().parents[1];O=R/'output/junction-work';WEB=R.parent/'01_website/public/media/junction'
+R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v3';WEB=O/'media'
 provenance=json.loads((O/'preview-provenance.json').read_text());assert provenance['source_sha256']==hashlib.sha256((O/'CPO_JUNCTION_CANDIDATE.blend').read_bytes()).hexdigest(),'Render the current candidate before encoding.'
 profiles=sys.argv[1:] or ['desktop','mobile'];reportfile=O/'media-manifest.json';report=json.loads(reportfile.read_text()) if reportfile.exists() else {}
 for profile in profiles:
- for job,count,fps in [('drive',80,8),('turn',193,12)]:
+ for job,count,fps in [('drive',600,30),('turn',481,30)]:
   files=sorted((O/job/profile).glob('[0-9][0-9][0-9][0-9].png'))
   if len(files)!=count:print('PENDING',profile,job,len(files),flush=True);continue
   target=WEB/profile/(job+'.mp4');target.parent.mkdir(parents=True,exist_ok=True);temporary=target.with_suffix('.build.mp4')
@@ -34,5 +34,5 @@ for profile in profiles:
   if job=='drive':
    with Image.open(files[0]) as im:im.convert('RGB').save(WEB/profile/'drive.jpg',quality=93)
   report[profile+'/'+job]={'frames':count,'fps':fps,'width':w,'height':h,'all_keyframes':True,'bytes':target.stat().st_size,'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'endpoint_anchor':job=='turn','source_sha256':provenance['source_sha256']}
-  reportfile.write_text(json.dumps(report,indent=2));(R/'reports/junction-media-manifest.json').write_text(json.dumps(report,indent=2));print('ENCODED',profile,job,report[profile+'/'+job],flush=True)
+  reportfile.write_text(json.dumps(report,indent=2));print('ENCODED',profile,job,report[profile+'/'+job],flush=True)
   if profile=='desktop' and job=='turn':shutil.copyfile(target,O/'right-turn-review.mp4')

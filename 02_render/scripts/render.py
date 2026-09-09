@@ -13,7 +13,7 @@ fingerprint={'master_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'se
 profiles=['desktop','mobile'] if profile=='both' else [profile]
 assert all(p in ('desktop','mobile') for p in profiles)
 holds={'tools-idle':1026,'magazines-idle':1701,'monitor-idle':2430}
-counts={'drive':300,'junction':481,'route':2430,'portal':271,**{k:180 for k in holds}}
+counts={'drive':600,'junction':481,'route':2430,'portal':271,**{k:180 for k in holds}}
 jobs=list(counts) if selection=='all' else [selection]
 assert all(j in counts for j in jobs)
 print(json.dumps({'profiles':profiles,'jobs':{j:counts[j] for j in jobs},'settings':cfg},indent=2),flush=True)
@@ -28,7 +28,7 @@ if action=='check':
   assert bpy.data.scenes['CPO_JUNCTION_DRIVE']['JT_camera_'+p] in bpy.data.objects
   for suffix in ['Route','City','Idle_tools','Idle_magazines','Idle_monitor']:assert 'V18_'+p+'_'+suffix in bpy.data.objects
  sys.exit(0)
-out=ROOT/'output'/('test' if action=='test' else cfg['run_name'])
+out=ROOT/'output'/('test-'+cfg['run_name'] if action=='test' else cfg['run_name'])
 out.mkdir(parents=True,exist_ok=True)
 manifest=out/'render-settings.json'
 if manifest.exists() and action!='test':assert json.loads(manifest.read_text())==fingerprint,'Master/settings changed: use a NEW run_name to avoid mixing renders.'
@@ -59,13 +59,13 @@ for p in profiles:
   suffix='Idle_'+job.replace('-idle','') if job in holds else 'Route'
   s.camera=bpy.data.objects[junction['JT_camera_'+p] if job in ('drive','junction') else 'V18_'+p+'_'+suffix]
   folder=out/p/job;folder.mkdir(parents=True,exist_ok=True)
-  indices=([0,240,480] if job=='junction' else [0,299] if job=='drive' else range(2)) if action=='test' else range(counts[job])
+  indices=([0,240,480] if job=='junction' else [0,599] if job=='drive' else range(2)) if action=='test' else range(counts[job])
   sequence=[(i,f'{i:05d}.png') for i in indices]
   if action!='test' and (job in holds or job=='drive'):sequence.append((counts[job],'endpoint.png'))
   for i,name in sequence:
    path=folder/name
    if action!='test' and valid(path,w,h):continue
-   frame=holds[job] if job in holds else 300+i if job=='junction' else 2430+i if job=='portal' else 2430 if job=='route' and i==2429 else i
+   frame=holds[job] if job in holds else 600+i if job=='junction' else 2430+i if job=='portal' else 2430 if job=='route' and i==2429 else i
    s.frame_set(frame);light.location=origin.copy();light.data.energy=0
    if job in holds:
     phase=i/counts[job];light.location.x+=4*(phase-.5);light.data.energy=0 if i in (0,counts[job]) else 16*math.sin(math.pi*phase)**4

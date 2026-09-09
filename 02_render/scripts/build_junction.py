@@ -2,10 +2,10 @@
 import bpy, math, json
 from pathlib import Path
 from mathutils import Matrix, Vector
-R=Path(__file__).resolve().parents[1];O=R/'output/junction-work';O.mkdir(parents=True,exist_ok=True)
+R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v3';O.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.open_mainfile(filepath=str(R/'scene/CPO_MASTER.blend'))
-for ob in list(bpy.data.objects):
- if ob.name.startswith('JT.'):bpy.data.objects.remove(ob,do_unlink=True)
+bpy.data.batch_remove([ob for ob in bpy.data.objects if ob.name.startswith('JT.')])
+print('JUNCTION_PREVIOUS_OBJECTS_CLEARED',flush=True)
 if bpy.data.scenes.get('CPO_JUNCTION_DRIVE'):bpy.data.scenes.remove(bpy.data.scenes['CPO_JUNCTION_DRIVE'])
 main=bpy.data.scenes['CPO_V18_SITE_MAIN'];bpy.context.window.scene=main;main.frame_set(0);bpy.context.view_layer.update()
 scene=main.copy();scene.name='CPO_JUNCTION_DRIVE';scene.use_fake_user=True
@@ -31,7 +31,7 @@ def chain(ob):
  while a:names.append(a.name);a=a.parent
  return names
 # Car approaches northbound at x=-86 and turns right onto the existing eastbound lane.
-X=-86.;HALF=6.;PERIOD=80.;removed=[];copies={};static=[]
+X=-86.;HALF=6.;PERIOD=160.;removed=[];copies={};static=[]
 def box(name,lo,hi,mat,collection=road):
  verts=[(x,y,z) for x in (lo[0],hi[0]) for y in (lo[1],hi[1]) for z in (lo[2],hi[2])]
  faces=[(0,1,3,2),(4,6,7,5),(0,4,5,1),(2,3,7,6),(0,2,6,4),(1,5,7,3)]
@@ -57,6 +57,7 @@ if source_module:
  print('OPENED_DETAILED_BLOCKS',sorted(blocked_groups),sorted(blocked_objects),flush=True)
 for index,ob in enumerate(main.objects):
  if ob not in allowed:continue
+ if ob.instance_type=='COLLECTION' and ob.instance_collection==source_module and abs(ob.matrix_world.translation.x)>128:continue
  names=chain(ob)
  if any(n.startswith('CITY.Block06_') for n in names):removed.append(ob.name);continue
  is_city=any(n.startswith(('CITY','V15 ','V15.','V14 Avenue')) for n in names)
@@ -80,10 +81,15 @@ for index,ob in enumerate(main.objects):
  else:static.append(n)
  copies[ob.name]=n
  if index%3000==0:print('JUNCTION_COPY',index,flush=True)
-asphalt=bpy.data.materials['CITY.Asphalt'];pavement=bpy.data.materials['EXT_Concrete_Pavers']
+asphalt=bpy.data.materials['V15 rain-dark asphalt'].copy();asphalt.name='JT.Periodic northbound asphalt'
+# The original material wraps along X. This street travels along Y.
+nt=asphalt.node_tree;sep=next(n for n in nt.nodes if n.type=='SEPXYZ');phase=next(n for n in nt.nodes if n.type=='MATH' and n.operation=='MULTIPLY' and abs(n.inputs[1].default_value-2*math.pi/256)<.001)
+nt.links.new(sep.outputs['Y'],phase.inputs[0]);phase.inputs[1].default_value=2*math.pi/PERIOD
+coord=nt.nodes['256m periodic world coordinates'];nt.links.new(sep.outputs['X'],coord.inputs['Z']);coord.name='160m periodic northbound coordinates'
+pavement=bpy.data.materials['V15 granite pedestrian paving']
 paint=bpy.data.materials.new('JT.Road paint');paint.diffuse_color=(.55,.57,.49,1);paint.use_nodes=True;paint.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value=(.55,.57,.49,1)
-# Each fixed module occupies 80 metres of the north/south road; the horizontal road already exists.
-for a,b in [(-40,-15),(-2,40)]:
+# A complete 160 m district contains varied frontage and one cross street.
+for a,b in [(-140,-15),(-2,20)]:
  box('JT.Incoming asphalt '+str(a),(X-HALF,a,-.21),(X+HALF,b,-.1095),asphalt,city)
  for side in [-1,1]:
   x=X+side*(HALF+1)
@@ -94,21 +100,26 @@ box('JT.Stop line',(X-5,-23.5,-.105),(X+1.8,-23.15,-.101),paint,city)
 for x in range(-91,-80,2):box('JT.Crosswalk '+str(x),(x,-20.4,-.104),(x+.7,-17.1,-.101),paint,city)
 # Street furniture remains outside the carriageway and is stationary.
 metal=bpy.data.materials['CITY.GraphiteMetal']
-for y in [-32,28]:
+for y in [-128,-96,-64,-32]:
  for side in [-1,1]:
   x=X+side*7.5
   box('JT.Lamp post '+str(x)+' '+str(y),(x-.07,y-.07,-.02),(x+.07,y+.07,6.2),metal,city)
   data=bpy.data.lights.new('JT.Downlight '+str(x)+' '+str(y),'AREA');data.energy=380;data.color=(1,.79,.58);data.shape='DISK';data.size=4
   lamp=bpy.data.objects.new(data.name,data);city.objects.link(lamp);lamp.location=(x-side*1.5,y,6);lamp.visible_camera=False;lamp.visible_transmission=False;lamp.visible_glossy=False;static.append(lamp)
   box('JT.Lamp housing '+str(x)+' '+str(y),(x-side*1.5-.35,y-.16,6.05),(x-side*1.5+.35,y+.16,6.16),metal,city)
-# Repeat only the city module. The real destination remains unique.
-for k in [-3,-2,-1,1,2,3]:
+# Reuse the arrival district's complete buildings, facing this street.
+import importlib.util
+spec=importlib.util.spec_from_file_location('frontage',Path(__file__).with_name('junction_frontage.py'));frontage=importlib.util.module_from_spec(spec);spec.loader.exec_module(frontage)
+frontage.build(source_module,city,X,box,asphalt)
+# Repeat the entire mixed district, including its ground-level lighting.
+for k in range(-3,4):
+ if k==0:continue
  inst=bpy.data.objects.new('JT.Fixed block '+str(k),None);inst.instance_type='COLLECTION';inst.instance_collection=city;inst.location=(0,PERIOD*k,0);road.objects.link(inst);static.append(inst)
 # One uniform volume avoids overlapping fog at module boundaries.
 source_fog=bpy.data.objects.get('V15 avenue atmosphere')
 if source_fog:
- lo,hi=bounds(source_fog);box('JT.Avenue atmosphere',(lo[0],-320,lo[2]),(hi[0],320,hi[2]),source_fog.data.materials[0],road)
-FPS=30;LOOP_SECONDS=10;TURN_SECONDS=16;LOOP_LAST=300;LAST=780
+ lo,hi=bounds(source_fog);box('JT.Avenue atmosphere',(lo[0],-1200,lo[2]),(hi[0],1200,hi[2]),source_fog.data.materials[0],road)
+FPS=30;LOOP_SECONDS=20;TURN_SECONDS=16;LOOP_LAST=600;LAST=1080
 start=Vector((X,-45.65,origin.z));p0=Vector((X,-17.65));p5=Vector((X+12,-5.65))
 controls=[p0,p0+Vector((0,4)),p0+Vector((0,8)),p5-Vector((8,0)),p5-Vector((4,0)),p5]
 def bez(u):return sum((controls[i]*(math.comb(5,i)*(1-u)**(5-i)*u**i) for i in range(6)),Vector((0,0)))

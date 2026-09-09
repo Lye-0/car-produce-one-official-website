@@ -74,6 +74,7 @@ for (const profile of ['desktop', 'mobile']) {
     if (
       !record ||
       data.length !== record.bytes ||
+      data.length > 25 * 1024 * 1024 ||
       data.toString('ascii', 4, 8) !== 'ftyp'
     )
       throw new Error(`Missing or invalid junction video: ${profile}/${name}`);

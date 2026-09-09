@@ -1,0 +1,16 @@
+{
+  "stage": "stills_review",
+  "source_sha256": "441ff95f267e104d913c1d6e78ace5861388714e6a31c360f2c8545f3b830382",
+  "site_media_updated": false,
+  "video_render_paused": true,
+  "loop_seconds": 20,
+  "fps": 30,
+  "additional_advertisements_per_district": 9,
+  "background_buildings_per_district": 11,
+  "accepted_motion_position_delta_m": 0.0,
+  "images": [
+    "streetscape-frontage.png",
+    "streetscape-depth.png",
+    "streetscape-overview.png"
+  ]
+}

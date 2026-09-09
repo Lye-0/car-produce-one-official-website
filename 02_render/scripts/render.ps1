@@ -6,7 +6,7 @@ if(-not (Test-Path -LiteralPath $blenderPath)){throw 'Blender 5.2 was not found.
 if($Action -eq 'menu'){
  Write-Host 'CPO FINAL RENDER / 30fps PNG sequences'
  Write-Host '1: Check files and settings (no rendering)'
- Write-Host '2: Small test: 2 frames for each orientation'
+ Write-Host '2: Small test: 5 frames for each orientation'
  Write-Host '3: Final render: desktop, all clips'
  Write-Host '4: Final render: mobile, all clips'
  Write-Host '5: Final render: both orientations, all clips'

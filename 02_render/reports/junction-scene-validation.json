@@ -1,22 +1,38 @@
 {
   "passed": true,
-  "fixed_scene_objects": 14072,
+  "fixed_scene_objects": 15060,
   "fixed_world_transform_max_delta": 0,
-  "camera_relative_to_vehicle_max_delta": 3.814697265625e-06,
+  "camera_relative_to_vehicle_max_delta": 7.62939453125e-06,
   "arrival_pose_max_error": 4.76837158203125e-07,
   "turn_degrees": 90,
   "max_heading_step_degrees": 0.6588070950258329,
-  "minimum_building_clearance_conservative_m": 5.0000001907348635,
+  "minimum_building_clearance_conservative_m": 7.595004272460938,
   "closest_building": {
-    "object": "JT.Module.V15 block 2.N retail podium",
-    "frame": 705,
+    "object": "JT.Frontage.retail-east.V15 block 1.N shop jamb.002",
+    "frame": 438,
     "position": [
-      -66.06583404541016,
-      -5.650000095367432,
+      -86.0,
+      -88.85000610351562,
       -0.09999925643205643
     ]
   },
-  "loop_seconds": 10,
+  "loop_seconds": 20,
   "turn_seconds": 16,
-  "curve_speed_mps": 3.074375151316495
+  "curve_speed_mps": 3.074375151316495,
+  "street_frontage_groups": [
+    "blade-east",
+    "brick-east",
+    "brick-west",
+    "office-west",
+    "oval-west",
+    "retail-east"
+  ],
+  "cycle_length_m": 160,
+  "source_sha256": "441ff95f267e104d913c1d6e78ace5861388714e6a31c360f2c8545f3b830382",
+  "closed_ground_meshes": 85,
+  "grounded_foundations": 7,
+  "additional_advertisements_per_district": 9,
+  "background_buildings_per_district": 11,
+  "accepted_motion_position_delta_m": 0.0,
+  "accepted_motion_heading_delta_radians": 0.0
 }
