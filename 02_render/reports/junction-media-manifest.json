@@ -1,46 +1,46 @@
 {
   "desktop/drive": {
-    "frames": 80,
-    "fps": 8,
-    "width": 960,
-    "height": 540,
+    "frames": 600,
+    "fps": 30,
+    "width": 640,
+    "height": 360,
     "all_keyframes": true,
-    "bytes": 3914454,
-    "sha256": "dc319405434c517a3c0ba49210d32df4b3ccd55b865a634594f938d6b1b341f2",
+    "bytes": 9103981,
+    "sha256": "8e05709a50a7819ecbd8a12d0265dde63202c09c78387cbb7229496735af3677",
     "endpoint_anchor": false,
-    "source_sha256": "137bd75f58b1829e84e88bd581d686f0d378c51c7410a282e1db5acab15d8ba3"
+    "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e"
   },
   "desktop/turn": {
-    "frames": 193,
-    "fps": 12,
-    "width": 960,
-    "height": 540,
+    "frames": 481,
+    "fps": 30,
+    "width": 640,
+    "height": 360,
     "all_keyframes": true,
-    "bytes": 9428850,
-    "sha256": "4c64a3329c0eaa43234ff3f031bf179525885e1798757fcb0a1db2636d88d2fc",
+    "bytes": 7690558,
+    "sha256": "15134300ced9f673128afa7e8e078099028a337f15abef6bcabf08886311e7aa",
     "endpoint_anchor": true,
-    "source_sha256": "137bd75f58b1829e84e88bd581d686f0d378c51c7410a282e1db5acab15d8ba3"
+    "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e"
   },
   "mobile/drive": {
-    "frames": 80,
-    "fps": 8,
-    "width": 540,
-    "height": 960,
+    "frames": 600,
+    "fps": 30,
+    "width": 360,
+    "height": 640,
     "all_keyframes": true,
-    "bytes": 3100671,
-    "sha256": "d76c338c43fc889d5de93af6ce0a3b6b279b3c6c4ed63b03ebaaf3530580bc59",
+    "bytes": 8044099,
+    "sha256": "9187d6b6e6f35439eafcb327d3d11ee374acef7d382f58ff0b9c5f7e224a90c0",
     "endpoint_anchor": false,
-    "source_sha256": "137bd75f58b1829e84e88bd581d686f0d378c51c7410a282e1db5acab15d8ba3"
+    "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e"
   },
   "mobile/turn": {
-    "frames": 193,
-    "fps": 12,
-    "width": 540,
-    "height": 960,
+    "frames": 481,
+    "fps": 30,
+    "width": 360,
+    "height": 640,
     "all_keyframes": true,
-    "bytes": 7379909,
-    "sha256": "96944e47f55c27aa57d0e8f4eb8ae0d655e7fb2c099451e2e9d4244e1b4691d2",
+    "bytes": 6837131,
+    "sha256": "7313c7ed6d9754e78ecd5eb94da7488138bb5e1ed7c0b5d920d586a0f618541f",
     "endpoint_anchor": true,
-    "source_sha256": "137bd75f58b1829e84e88bd581d686f0d378c51c7410a282e1db5acab15d8ba3"
+    "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e"
   }
 }

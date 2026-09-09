@@ -1,7 +1,7 @@
 {
-  "stage": "stills_and_short_review",
+  "stage": "website_test_preview",
   "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e",
-  "site_media_updated": false,
+  "site_media_updated": true,
   "loop_seconds": 20,
   "fps": 30,
   "additional_advertisements_per_district": 24,
@@ -19,15 +19,18 @@
   "site_autoplay_return_fixed": true,
   "tests_passed": 23,
   "arrival_pose_max_error": 4.76837158203125e-07,
-  "long_video_render_paused": true,
+  "long_video_render_paused": false,
   "short_clips": [
     "streetlife-short.mp4",
     "streetlife-loop-boundary.mp4"
   ],
   "browser_return_verification": {
-    "mobile_width": 319,
+    "mobile_width": 390,
     "desktop_width": 1280,
-    "after_turn_return": "native autoplay continued past loop boundaries",
+    "after_turn_return": "verified on the installed 20-second website videos",
     "viewport_restored": true
-  }
+  },
+  "final_quality_render_executed": false,
+  "drive_seconds": 20,
+  "turn_seconds": 16
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createVideoScrubber } from './journey-timeline';
-import { TURN_FPS } from './junction-transition';
+import { TURN_FPS, JUNCTION_MEDIA_VERSION } from './junction-transition';
 type Props = {
   profile: 'desktop' | 'mobile' | null;
   time: number;
@@ -33,7 +33,11 @@ export function JunctionTransition({ profile, time, active, onReady }: Props) {
       aria-hidden="true"
       className="film junction-film"
       style={{ opacity: active && ready ? 1 : 0 }}
-      src={profile ? `/media/junction/${profile}/turn.mp4` : undefined}
+      src={
+        profile
+          ? `/media/junction/${profile}/turn.mp4?v=${JUNCTION_MEDIA_VERSION}`
+          : undefined
+      }
       muted
       playsInline
       preload="auto"

@@ -1,45 +1,146 @@
 {
   "desktop": {
-    "loop_endpoint_blurred_rgb_mae": 0.8956462191358024,
-    "shared_entry_raw_rgb_mae": 0.011194540895061729,
-    "native_handoff_blurred_rgb_mae": 0.8886284722222222,
+    "loop_endpoint_blurred_rgb_mae": 0.6674320023148148,
+    "shared_entry_raw_rgb_mae": 0.009551866319444444,
+    "native_handoff_blurred_rgb_mae": 1.1918373842592593,
+    "boundary_regions": {
+      "0,0": {
+        "boundary_step": 2.6446139801773603,
+        "adjacent_step": 2.833046426708399,
+        "same_pose_error": 0.45685967657798643
+      },
+      "0,1": {
+        "boundary_step": 2.8818596765779865,
+        "adjacent_step": 2.7978286384976525,
+        "same_pose_error": 0.37732133541992696
+      },
+      "0,2": {
+        "boundary_step": 4.410539979231568,
+        "adjacent_step": 4.361364226375908,
+        "same_pose_error": 0.43869418483904465
+      },
+      "1,0": {
+        "boundary_step": 2.940505998956703,
+        "adjacent_step": 2.724784820031299,
+        "same_pose_error": 0.6956442357850808
+      },
+      "1,1": {
+        "boundary_step": 2.4965962441314553,
+        "adjacent_step": 2.010302556077204,
+        "same_pose_error": 1.269300991131977
+      },
+      "1,2": {
+        "boundary_step": 3.6305166147455865,
+        "adjacent_step": 3.0523883696780896,
+        "same_pose_error": 1.4978842159916925
+      },
+      "2,0": {
+        "boundary_step": 0.8690401669274909,
+        "adjacent_step": 0.8000260824204486,
+        "same_pose_error": 0.4334637454355764
+      },
+      "2,1": {
+        "boundary_step": 0.7969353155972875,
+        "adjacent_step": 0.6881064162754303,
+        "same_pose_error": 0.3515779864371414
+      },
+      "2,2": {
+        "boundary_step": 1.0851116303219106,
+        "adjacent_step": 0.9354620976116303,
+        "same_pose_error": 0.48417705088265833
+      }
+    },
     "streams": {
       "drive": {
-        "frames": 80,
-        "fps": 8,
-        "width": 960,
-        "height": 540,
+        "frames": 600,
+        "fps": 30,
+        "width": 640,
+        "height": 360,
         "all_keyframes": true
       },
       "turn": {
-        "frames": 193,
-        "fps": 12,
-        "width": 960,
-        "height": 540,
+        "frames": 481,
+        "fps": 30,
+        "width": 640,
+        "height": 360,
         "all_keyframes": true
       }
     }
   },
   "mobile": {
-    "loop_endpoint_blurred_rgb_mae": 0.5245061728395062,
-    "shared_entry_raw_rgb_mae": 0.006739486882716049,
-    "native_handoff_blurred_rgb_mae": 0.7241094393004115,
+    "loop_endpoint_blurred_rgb_mae": 0.3843012152777778,
+    "shared_entry_raw_rgb_mae": 0.0067230902777777775,
+    "native_handoff_blurred_rgb_mae": 0.9538078703703704,
+    "boundary_regions": {
+      "0,0": {
+        "boundary_step": 2.9694574856546687,
+        "adjacent_step": 2.9031168492436095,
+        "same_pose_error": 0.23630672926447574
+      },
+      "0,1": {
+        "boundary_step": 1.105738132498696,
+        "adjacent_step": 1.0744783515910277,
+        "same_pose_error": 0.17184402712571728
+      },
+      "0,2": {
+        "boundary_step": 0.9575378195096504,
+        "adjacent_step": 0.9010041731872718,
+        "same_pose_error": 0.21931403234220134
+      },
+      "1,0": {
+        "boundary_step": 2.397300469483568,
+        "adjacent_step": 2.176049817423057,
+        "same_pose_error": 0.7701095461658842
+      },
+      "1,1": {
+        "boundary_step": 1.6381585811163275,
+        "adjacent_step": 1.4234220135628586,
+        "same_pose_error": 0.7700704225352113
+      },
+      "1,2": {
+        "boundary_step": 1.732772561293688,
+        "adjacent_step": 1.4942357850808554,
+        "same_pose_error": 1.0189749608763694
+      },
+      "2,0": {
+        "boundary_step": 0.22964693665628244,
+        "adjacent_step": 0.19236111111111112,
+        "same_pose_error": 0.09543094496365524
+      },
+      "2,1": {
+        "boundary_step": 0.3578011422637591,
+        "adjacent_step": 0.33249610591900314,
+        "same_pose_error": 0.11336967808930426
+      },
+      "2,2": {
+        "boundary_step": 0.2533618899273105,
+        "adjacent_step": 0.21257788161993768,
+        "same_pose_error": 0.06740654205607477
+      }
+    },
     "streams": {
       "drive": {
-        "frames": 80,
-        "fps": 8,
-        "width": 540,
-        "height": 960,
+        "frames": 600,
+        "fps": 30,
+        "width": 360,
+        "height": 640,
         "all_keyframes": true
       },
       "turn": {
-        "frames": 193,
-        "fps": 12,
-        "width": 540,
-        "height": 960,
+        "frames": 481,
+        "fps": 30,
+        "width": 360,
+        "height": 640,
         "all_keyframes": true
       }
     }
+  },
+  "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e",
+  "media_sha256": {
+    "desktop/drive": "8e05709a50a7819ecbd8a12d0265dde63202c09c78387cbb7229496735af3677",
+    "desktop/turn": "15134300ced9f673128afa7e8e078099028a337f15abef6bcabf08886311e7aa",
+    "mobile/drive": "9187d6b6e6f35439eafcb327d3d11ee374acef7d382f58ff0b9c5f7e224a90c0",
+    "mobile/turn": "7313c7ed6d9754e78ecd5eb94da7488138bb5e1ed7c0b5d920d586a0f618541f"
   },
   "passed": true
 }

@@ -1,14 +1,15 @@
 """Verify the loop, shared junction entry, and native arrival endpoint."""
 from pathlib import Path
-import json,sys
+import json,sys,hashlib
 import av
 import numpy as np
 from PIL import Image,ImageFilter
 R=Path(__file__).resolve().parents[1];O=R/'output/junction-work-v4';WEB=R.parent/'01_website/public/media'
 DRIVE=O/'media' if '--staged' in sys.argv else WEB/'junction'
 def rgb(im):return np.asarray(im.convert('RGB').filter(ImageFilter.GaussianBlur(2))).astype(float)
+profiles=[a for a in sys.argv[1:] if a in ('desktop','mobile')] or ['desktop','mobile']
 report={}
-for profile in ['desktop','mobile']:
+for profile in profiles:
  first=Image.open(O/'drive'/profile/'0000.png');loop_end=Image.open(O/'drive'/profile/'endpoint.png');turn_first=Image.open(O/'turn'/profile/'0000.png')
  loop_error=float(abs(rgb(first)-rgb(loop_end)).mean());entry_error=float(abs(np.asarray(loop_end).astype(float)-np.asarray(turn_first).astype(float)).mean())
  assert loop_error<1,(profile,'same-pose loop seam',loop_error)
@@ -36,5 +37,8 @@ for profile in ['desktop','mobile']:
  with av.open(str(WEB/'stage4'/profile/'route.mp4')) as old:arrival=next(old.decode(video=0)).to_image().resize((width,height),Image.Resampling.BILINEAR)
  end_error=float(abs(rgb(decoded['turn'][-1].to_image())-rgb(arrival)).mean());assert end_error<1.5,(profile,'native handoff',end_error)
  report[profile]={'loop_endpoint_blurred_rgb_mae':loop_error,'shared_entry_raw_rgb_mae':entry_error,'native_handoff_blurred_rgb_mae':end_error,'boundary_regions':regions,'streams':streams}
+report['source_sha256']=hashlib.sha256((O/'CPO_JUNCTION_CANDIDATE.blend').read_bytes()).hexdigest()
+report['media_sha256']={profile+'/'+name:hashlib.sha256((DRIVE/profile/(name+'.mp4')).read_bytes()).hexdigest() for profile in profiles for name in ['drive','turn']}
 report['passed']=True
-(R/'reports/junction-media-validation.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
+target=R/'reports/junction-media-validation.json' if len(profiles)==2 else O/('media-validation-'+profiles[0]+'.json')
+target.write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

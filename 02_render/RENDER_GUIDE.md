@@ -39,7 +39,7 @@ Blender 5.2を使用します。インストール場所が違う場合は `scri
 ## 中断・再開
 
 Ctrl+Cで中断できます。同じMASTER・設定・スクリプトで再実行すると、完了したPNGをスキップします。
-MASTERや画質設定を変更したら、run_nameを`final-junction-03`など新しい名前にしてください。異なる条件が混ざる場合は停止します。
+MASTERや画質設定を変更したら、run_nameを`final-junction-04`など新しい名前にしてください。異なる条件が混ざる場合は停止します。
 `complete.json`はクリップの完了記録、`progress.json`は最新の進捗、`render-settings.json`は使用条件の記録です。
 
 個別に描画する場合（02_render内のPowerShell）:
@@ -51,7 +51,7 @@ MASTERや画質設定を変更したら、run_nameを`final-junction-03`など�
 ## サイトへの組み込み
 
 通常の描画メニューは高画質のPNG原本を生成します。サイトの動画は自動で置き換えません。
-最新MASTERの走行は20秒・160m、右折は16秒、いずれも30fpsです。下層部の壁・柱・基礎、大小の広告、背後の建物を追加し、現在は静止画の確認段階です。動画の長い描画は停止しています。現行サイトの動画はまだ差し替えておらず、従来の10秒・8fpsの走行、12fpsの右折を使用しています。到着後のrouteは8fps、portalと待機ループは24fpsです。
+最新MASTERの走行は20秒・160m、右折は16秒、いずれも30fpsです。新しい街並みの走行・右折を、横640×360／縦360×640、Cycles 16 samplesのテスト品質でサイトへ反映済みです。到着後のrouteは既存の8fps、portalと待機ループは24fpsです。
 
 最終画質の全編描画は、今回の変更では実行していません。
 
@@ -68,11 +68,13 @@ scripts/junction_frontage.pyで配置し、入口や窓の寸法を保つため�
 確認動画は横640×360・縦360×640、Cycles 16 samplesです。encode_junction.pyはoutput/junction-work-v4/mediaへ仮出力します。validate_junction_media.py --stagedで確認してからサイトへ反映します。
 review_junction.pyはサイトに組み込んだ動画から「3周＋右折」を作成します。
 
-静止画の確認: render_junction.py -- review（横・縦各4枚、960×540／540×960、64 samples）。境界の確認: -- seam（境界前後の6枚ずつ）。動画は -- preview で描画しますが、現在は再開していません。
+静止画の確認: render_junction.py -- review（横・縦各4枚、960×540／540×960、64 samples）。境界の確認: -- seam（境界前後の6枚ずつ）。サイト用のテスト品質動画は -- preview で描画し、今回の横・縦の描画は完了しています。
 モデルの確認画像は reports/streetscape-frontage.png、streetscape-depth.png、streetscape-overview.png です。junction-streetscape-review.json に確認段階と元ファイルの照合情報を記録しています。
-動画を更新する際は4本のMP4と2枚のポスター、junction-media-manifest.jsonを揃えて反映し、サイトのDRIVE_SECONDSを20、DRIVE_FPS・TURN_FPSを30へ変更してから操作確認を行ってください。
+動画を更新する際は4本のMP4と2枚のポスター、junction-media-manifest.jsonをそろえて反映します。現行サイトはDRIVE_SECONDS=20、DRIVE_FPS・TURN_FPS=30です。差し替え時はJUNCTION_MEDIA_VERSIONも更新して操作確認を行ってください。
 
 今回の追加修正: 新しい広告8種類、大小24面の追加広告、カフェ・ホテル・オフィス・ガレージ・閉店中の店舗・奥まったロビーの6種類の1階、街路樹8本、駐車区画の車1台、バス停と街路設備を配置しました。左車線の走行と路面表示を整え、古い地面による路面の遮蔽を除去しました。
-サイト側は、冒頭へ戻った際にスクロール用のシークを解除し、動画全体のループ再生へ戻す処理を修正しました。23件のテストと横・縦画面で復帰を確認済みです。CGの更新はMASTERと確認画像に反映済みで、サイトの動画差し替えは長編描画後です。
+サイト側は、冒頭へ戻った際にスクロール用のシークを解除し、動画全体のループ再生へ戻す処理を修正しました。23件のテストと横・縦画面で復帰を確認済みです。CGの更新はMASTER・確認画像・サイトのテスト品質動画に反映済みです。
 
 短い動きの確認は `render_junction.py -- short desktop` → `encode_streetlife_review.py`。reports/streetlife-short.mp4は元240〜329フレームの3秒、streetlife-loop-boundary.mp4は570〜599→0〜29の2秒です。30fpsを保ち、補間や速度変更は行いません。この2本は部分確認用で、サイト用の全編素材ではありません。
+
+`validate_junction_media.py --staged desktop`は横のみを検証し、候補出力先に結果を保存します。`--staged`だけで両方を検証し、元シーンと4本の動画のSHA-256を含む検証記録をreportsへ保存します。

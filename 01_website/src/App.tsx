@@ -8,7 +8,12 @@ import {
 import { content as c } from './content';
 import { WebsiteBody } from './WebsiteBody';
 import { JunctionTransition } from './JunctionTransition';
-import { JUNCTION_END, DRIVE_FPS, sampleJunction } from './junction-transition';
+import {
+  JUNCTION_END,
+  DRIVE_FPS,
+  JUNCTION_MEDIA_VERSION,
+  sampleJunction,
+} from './junction-transition';
 import {
   CHAPTER_PROGRESS,
   sampleJourney,
@@ -98,7 +103,9 @@ export default function Home() {
   const asset = (name: string) =>
     variant ? `/media/stage4/${variant}/${name}` : undefined;
   const streetAsset = (name: string) =>
-    variant ? `/media/junction/${variant}/${name}` : undefined;
+    variant
+      ? `/media/junction/${variant}/${name}?v=${JUNCTION_MEDIA_VERSION}`
+      : undefined;
   const junction = sampleJunction(scene.junction, entryPhase.current ?? 0);
   function go(next: number) {
     setMenu(false);
@@ -500,14 +507,14 @@ export default function Home() {
               media="(max-width:700px)"
               srcSet={
                 poster === 'city'
-                  ? '/media/junction/mobile/drive.jpg'
+                  ? `/media/junction/mobile/drive.jpg?v=${JUNCTION_MEDIA_VERSION}`
                   : '/media/stage4/mobile/' + poster + '.jpg'
               }
             />
             <img
               src={
                 poster === 'city'
-                  ? '/media/junction/desktop/drive.jpg'
+                  ? `/media/junction/desktop/drive.jpg?v=${JUNCTION_MEDIA_VERSION}`
                   : '/media/stage4/desktop/' + poster + '.jpg'
               }
               alt=""

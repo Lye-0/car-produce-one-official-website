@@ -9,7 +9,7 @@ import {
 } from '../src/junction-transition.ts';
 
 test('every starting phase reaches the common street endpoint before the turn', () => {
-  for (const phase of [0, 2.5, 5, 7.5, 9.875]) {
+  for (const phase of [0, 5, 10, 15, DRIVE_SECONDS - 1 / 30]) {
     const boundary =
       (DRIVE_SECONDS - phase) / (DRIVE_SECONDS - phase + TURN_SECONDS);
     const before = sampleJunction(boundary - 1e-6, phase);
@@ -22,23 +22,23 @@ test('every starting phase reaches the common street endpoint before the turn', 
   }
 });
 test('the first scroll continues from the visible loop position, with no reset', () => {
-  for (const phase of [0, 2.5, 7.5, 9.875]) {
+  for (const phase of [0, 5, 10, 15, DRIVE_SECONDS - 1 / 30]) {
     assert.equal(sampleJunction(0, phase).driveTime, phase);
     assert.ok(sampleJunction(0.0001, phase).driveTime >= phase);
   }
 });
 test('reverse scrolling retraces the same street and turn coordinates', () => {
   const positions = [0, 0.03, 0.18, 0.37, 0.6, 0.8, 1];
-  for (const phase of [0, 3.4, 9.8]) {
+  for (const phase of [0, 3.4, 12.5, 19.8]) {
     const forward = positions.map((p) => sampleJunction(p, phase));
     for (let i = positions.length - 1; i >= 0; i--)
       assert.deepEqual(sampleJunction(positions[i], phase), forward[i]);
   }
 });
 test('all phases end at the same arrival pose and tolerate invalid input', () => {
-  for (const phase of [0, 2.5, 7.5, 9.875])
+  for (const phase of [0, 5, 10, 15, DRIVE_SECONDS - 1 / 30])
     assert.deepEqual(sampleJunction(1, phase), {
-      driveTime: 10,
+      driveTime: DRIVE_SECONDS,
       turnTime: 16,
       stage: 'turn',
       complete: true,
@@ -59,7 +59,7 @@ test('arrival starts after the junction while the three reading positions remain
 
 test('scroll speed remains continuous from the turn into the arrival clip', () => {
   const epsilon = 1e-6;
-  for (const phase of [0, 2.5, 7.5, 9.875]) {
+  for (const phase of [0, 5, 10, 15, DRIVE_SECONDS - 1 / 30]) {
     const before =
       (TURN_SECONDS -
         sampleJunction(junctionProgress(JUNCTION_END - epsilon), phase)
