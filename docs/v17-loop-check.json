@@ -1,0 +1,6 @@
+{
+  "loop_start_end_rgb_mae": 0.0039707244008714586,
+  "arrival_loop_rgb_mae": 0.010615167710602759,
+  "arrival_cross_dissolve_seconds": 0.5,
+  "scope": "Normalized sRGB, 640x360, 48 samples. Loop is periodic; destination plot differs in arrival and uses a 0.5-second cross-dissolve."
+}
