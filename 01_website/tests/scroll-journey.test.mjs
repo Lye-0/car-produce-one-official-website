@@ -36,9 +36,9 @@ class Decoder {
   }
 }
 test('partial forward scroll positions the camera between chapter stops', () => {
-  const a = sampleJourney(0.1),
-    b = sampleJourney(0.11),
-    c = sampleJourney(0.12);
+  const a = sampleJourney(0.22),
+    b = sampleJourney(0.23),
+    c = sampleJourney(0.24);
   assert.ok(a.time < b.time && b.time < c.time);
   assert.ok(c.time < 35.5);
 });

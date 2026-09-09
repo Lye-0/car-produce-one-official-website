@@ -989,7 +989,7 @@ html {
   visibility: hidden;
 }
 
-.scroll-journey .corner-film {
+.scroll-journey .junction-film {
   z-index: -1;
   pointer-events: none;
 }

@@ -1,0 +1,46 @@
+{
+  "desktop/drive": {
+    "frames": 80,
+    "fps": 8,
+    "width": 960,
+    "height": 540,
+    "all_keyframes": true,
+    "bytes": 3914454,
+    "sha256": "dc319405434c517a3c0ba49210d32df4b3ccd55b865a634594f938d6b1b341f2",
+    "endpoint_anchor": false,
+    "source_sha256": "137bd75f58b1829e84e88bd581d686f0d378c51c7410a282e1db5acab15d8ba3"
+  },
+  "desktop/turn": {
+    "frames": 193,
+    "fps": 12,
+    "width": 960,
+    "height": 540,
+    "all_keyframes": true,
+    "bytes": 9428850,
+    "sha256": "4c64a3329c0eaa43234ff3f031bf179525885e1798757fcb0a1db2636d88d2fc",
+    "endpoint_anchor": true,
+    "source_sha256": "137bd75f58b1829e84e88bd581d686f0d378c51c7410a282e1db5acab15d8ba3"
+  },
+  "mobile/drive": {
+    "frames": 80,
+    "fps": 8,
+    "width": 540,
+    "height": 960,
+    "all_keyframes": true,
+    "bytes": 3100671,
+    "sha256": "d76c338c43fc889d5de93af6ce0a3b6b279b3c6c4ed63b03ebaaf3530580bc59",
+    "endpoint_anchor": false,
+    "source_sha256": "137bd75f58b1829e84e88bd581d686f0d378c51c7410a282e1db5acab15d8ba3"
+  },
+  "mobile/turn": {
+    "frames": 193,
+    "fps": 12,
+    "width": 540,
+    "height": 960,
+    "all_keyframes": true,
+    "bytes": 7379909,
+    "sha256": "96944e47f55c27aa57d0e8f4eb8ae0d655e7fb2c099451e2e9d4244e1b4691d2",
+    "endpoint_anchor": true,
+    "source_sha256": "137bd75f58b1829e84e88bd581d686f0d378c51c7410a282e1db5acab15d8ba3"
+  }
+}

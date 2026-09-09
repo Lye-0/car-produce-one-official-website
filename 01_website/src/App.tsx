@@ -7,8 +7,8 @@ import {
 } from 'react';
 import { content as c } from './content';
 import { WebsiteBody } from './WebsiteBody';
-import { CornerTransition } from './CornerTransition';
-import { CORNER_END, CORNER_DURATION } from './corner-transition';
+import { JunctionTransition } from './JunctionTransition';
+import { JUNCTION_END, DRIVE_FPS, sampleJunction } from './junction-transition';
 import {
   CHAPTER_PROGRESS,
   sampleJourney,
@@ -66,7 +66,7 @@ export default function Home() {
     magazines = useRef<HTMLVideoElement>(null),
     monitor = useRef<HTMLVideoElement>(null);
   const [scene, setScene] = useState(() => sampleJourney(0));
-  const [cornerCovered, setCornerCovered] = useState(false);
+  const [turnReady, setTurnReady] = useState(false);
   const cityDriver = useRef<ReturnType<typeof createVideoScrubber> | null>(
     null,
   );
@@ -97,6 +97,9 @@ export default function Home() {
     moving = !scene.hold && scene.progress > 0;
   const asset = (name: string) =>
     variant ? `/media/stage4/${variant}/${name}` : undefined;
+  const streetAsset = (name: string) =>
+    variant ? `/media/junction/${variant}/${name}` : undefined;
+  const junction = sampleJunction(scene.junction, entryPhase.current ?? 0);
   function go(next: number) {
     setMenu(false);
     if (window.location.hash)
@@ -186,13 +189,14 @@ export default function Home() {
     const sync = () => {
       frame = 0;
       const height = spacer.current?.offsetHeight ?? window.innerHeight * 12;
-      const next = sampleJourney(window.scrollY / height);
-      if (next.progress > 0 && lastProgress.current === 0) {
+      const progress = window.scrollY / height;
+      if (progress > 0 && lastProgress.current === 0) {
         entryPhase.current = city.current?.currentTime ?? 0;
       }
-      if (entryPhase.current !== null && next.corner < 1) {
+      const next = sampleJourney(progress, entryPhase.current ?? 0);
+      if (entryPhase.current !== null) {
         cityDriver.current?.seek(
-          (entryPhase.current + next.corner * CORNER_DURATION) % 48,
+          sampleJunction(next.junction, entryPhase.current).driveTime,
         );
       }
       if (next.progress === 0) entryPhase.current = null;
@@ -228,7 +232,7 @@ export default function Home() {
       p = portalFilm.current;
     if (!v || !p) return;
     const streetDriver = city.current
-      ? createVideoScrubber(city.current, 8)
+      ? createVideoScrubber(city.current, DRIVE_FPS)
       : null;
     cityDriver.current = streetDriver;
     const driver = createVideoScrubber(v),
@@ -238,6 +242,7 @@ export default function Home() {
     const time = sampleJourney(
       window.scrollY /
         (spacer.current?.offsetHeight ?? window.innerHeight * 12),
+      entryPhase.current ?? 0,
     ).time;
     driver.seek(time);
     portalDriver.seek(Math.max(0, time - 81));
@@ -490,17 +495,28 @@ export default function Home() {
           <picture className="film fallback">
             <source
               media="(max-width:700px)"
-              srcSet={'/media/stage4/mobile/' + poster + '.jpg'}
+              srcSet={
+                poster === 'city'
+                  ? '/media/junction/mobile/drive.jpg'
+                  : '/media/stage4/mobile/' + poster + '.jpg'
+              }
             />
-            <img src={'/media/stage4/desktop/' + poster + '.jpg'} alt="" />
+            <img
+              src={
+                poster === 'city'
+                  ? '/media/junction/desktop/drive.jpg'
+                  : '/media/stage4/desktop/' + poster + '.jpg'
+              }
+              alt=""
+            />
           </picture>
           <video
             aria-hidden="true"
             ref={city}
             style={{
               opacity:
-                scene.progress < CORNER_END &&
-                (scene.progress === 0 || !cornerCovered) &&
+                scene.progress < JUNCTION_END &&
+                (junction.stage === 'drive' || !turnReady) &&
                 !reduced
                   ? 1
                   : 0,
@@ -510,16 +526,20 @@ export default function Home() {
             muted
             loop
             playsInline
-            poster={asset('city.jpg')}
-            src={asset('city.mp4')}
+            poster={streetAsset('drive.jpg')}
+            src={streetAsset('drive.mp4')}
             onError={() => setFailed(true)}
           />
-          <CornerTransition
+          <JunctionTransition
             profile={variant}
-            progress={scene.corner}
-            view={view}
-            disabled={reduced || failed}
-            onCovered={setCornerCovered}
+            time={junction.turnTime}
+            active={
+              junction.stage === 'turn' &&
+              scene.progress < JUNCTION_END &&
+              !reduced &&
+              !failed
+            }
+            onReady={setTurnReady}
           />
           <video
             aria-hidden="true"
@@ -583,23 +603,7 @@ export default function Home() {
               alt=""
             />
           )}
-          {scene.progress < CORNER_END + 0.008 && (
-            <picture
-              className="film car-foreground"
-              style={{
-                opacity: Math.min(
-                  1,
-                  (CORNER_END + 0.008 - scene.progress) / 0.008,
-                ),
-              }}
-            >
-              <source
-                media="(max-width:700px)"
-                srcSet="/media/stage4/mobile/car-foreground.png"
-              />
-              <img src="/media/stage4/desktop/car-foreground.png" alt="" />
-            </picture>
-          )}
+
           <div className="film-shade" />
           {scene.progress < 0.03 && (
             <div className="welcome" style={{ opacity: scene.introOpacity }}>

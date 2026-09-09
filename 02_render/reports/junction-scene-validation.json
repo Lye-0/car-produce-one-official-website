@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "fixed_scene_objects": 14072,
+  "fixed_world_transform_max_delta": 0,
+  "camera_relative_to_vehicle_max_delta": 3.814697265625e-06,
+  "arrival_pose_max_error": 4.76837158203125e-07,
+  "turn_degrees": 90,
+  "max_heading_step_degrees": 0.6588070950258329,
+  "minimum_building_clearance_conservative_m": 5.0000001907348635,
+  "closest_building": {
+    "object": "JT.Module.V15 block 2.N retail podium",
+    "frame": 705,
+    "position": [
+      -66.06583404541016,
+      -5.650000095367432,
+      -0.09999925643205643
+    ]
+  },
+  "loop_seconds": 10,
+  "turn_seconds": 16,
+  "curve_speed_mps": 3.074375151316495
+}

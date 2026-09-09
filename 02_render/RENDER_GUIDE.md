@@ -2,68 +2,63 @@
 
 ## 使うファイル
 
-最新版は **scene/CPO_MASTER.blend** です。v16/v17/v18などの番号付きファイルは `90_archive` に保存した履歴です。
-MASTERには画像を内包してあり、過去のフォルダを参照せず開けます。
+最新版は **scene/CPO_MASTER.blend** です。ルートの **OPEN_BLENDER.cmd** で開けます。画像を内包しており、過去フォルダの素材を探す必要はありません。
+
+- `CPO_JUNCTION_DRIVE`: 最初の走行と交差点の右折。固定した街区の中を、車と車載カメラが走行します。
+- `CPO_V18_SITE_MAIN`: 会社への到着から店内、モニターまで。
+- `CPO_V18_CITY_LOOP`: 以前の都市ループの記録。現在のサイトでは使用しません。
 
 ## 実行方法
 
-1. 必要ならルートの `OPEN_BLENDER.cmd` からMASTERを編集し、保存してBlenderを閉じます。
-2. `settings.json` で画質を設定します。初期値は横1920×1080／縦1080×1920、30fps、Cycles 128 samples、デノイズ有効です。`width` と `height` は横向きの寸法を指定します。縦向きは自動で入れ替わります。`fps` は30のまま使用してください。
-3. ルートの `RENDER.cmd` をダブルクリックします。
-4. `1` でファイル確認、`2` で横・縦各2枚の小さなテストを実行します。テストは `output/test` に保存されます。
-5. `3` が横のみ、`4` が縦のみ、`5` が両方の最終レンダリングです。出力は `output/final-corner-01`（設定の `run_name`）です。
+1. 必要な編集をMASTERへ保存します。
+2. `settings.json` で画質を設定します。初期値は横1920×1080／縦1080×1920、30fps、Cycles 128 samples、デノイズ有効です。width・heightは横向きの寸法で、縦向きは自動で入れ替えます。fpsは30のまま使用してください。
+3. ルートの **RENDER.cmd** を開きます。
+4. `1` でファイルと設定を確認、`2` で横・縦各5枚の小さなテスト描画を実行します。
+5. `3` が横のみ、`4` が縦のみ、`5` が両方の最終描画です。
 
-Blender 5.2を使用します。別のインストール場所なら `scripts/render.ps1` 内の `blenderPath` を直してください。OPTIX対応GPUを優先し、利用できない場合はCPUを使います。
+現在の出力先は **output/final-junction-01** です。以前の出力と混ざらない名前にしています。
+テストは `output/test/{desktop,mobile}/drive` と `junction` に保存します。
 
-## 出力されるもの
+Blender 5.2を使用します。インストール場所が違う場合は `scripts/render.ps1` のblenderPathを変更してください。OPTIX対応GPUを優先し、利用できなければCPUを使用します。
 
-各方向に以下のPNG連番を生成します。透過対応RGBA、フレーム番号は00000から始まります。
+## 出力するPNG連番
 
-| フォルダ | 内容 | 連番の枚数 |
+| フォルダ | 内容 | 枚数 |
 |---|---|---:|
-| corner | 曲がり角の建物による接続、3.2秒＋終端 | 97 |
-| route | 入店からモニター前まで、81秒 | 2430 |
-| portal | モニター接近、終端を含む | 271 |
-| city | 窓の外の街、48秒ループ | 1440 |
+| drive | 交差点へ続く10秒の走行ループ | 300 |
+| junction | 減速・90度右折・直進、16秒＋終端 | 481 |
+| route | 会社への到着からモニター前まで | 2430 |
+| portal | モニターへの接近、終端を含む | 271 |
 | tools-idle | 工具の前、6秒ループ | 180 |
 | magazines-idle | 雑誌の前、6秒ループ | 180 |
 | monitor-idle | モニターの前、6秒ループ | 180 |
 
-ループの `endpoint.png` は継ぎ目比較用です。動画に含めません。ループではカメラを固定し、反射光だけを変化させます。このため、MASTERで単にCtrl+F12を押す操作と、メニューで全素材を出す操作は異なります。
+走行ループは元シーンの0〜299フレーム、右折は300〜780フレームです。driveの`endpoint.png`は300フレームで、junctionの最初と同じ位置です。endpoint.pngは動画に含めません。
+各ループの専用処理があるため、すべてのサイト素材を出す場合はBlenderのCtrl+F12ではなく、RENDER.cmdを使ってください。
 
-`complete.json` があるフォルダはそのクリップの描画が完了しています。`progress.json` は最新の進捗、`render-settings.json` は使用したMASTERと設定の記録です。
+## 中断・再開
 
-## 中断・再開と変更
+Ctrl+Cで中断できます。同じMASTER・設定・スクリプトで再実行すると、完了したPNGをスキップします。
+MASTERや画質設定を変更したら、run_nameを`final-junction-02`など新しい名前にしてください。異なる条件が混ざる場合は停止します。
+`complete.json`はクリップの完了記録、`progress.json`は最新の進捗、`render-settings.json`は使用条件の記録です。
 
-Ctrl+Cで中断できます。同じ設定・同じMASTERで同じメニューを再実行すると、完了済みPNGをスキップします。途中で壊れたPNGは描き直します。
-画質やMASTERを変更した場合は、`run_name` を `final-02` など新しい名前にしてください。異なる条件が同じ出力へ混ざる場合は停止します。
-PNG連番は高画質の原本です。十分なディスク空き容量を用意してください。今回の確認は低画質テストのみで、全編の所要時間・総容量は未計測です。
-
-個別クリップを再開する場合のPowerShell例（この02_renderフォルダ内で実行）:
-
-```powershell
-./scripts/render.ps1 -Action final -Profile desktop -Job tools-idle
-```
-
-## サイトへ組み込む段階
-
-このメニューは**最終画質のPNG原本を生成**します。サイト内の動画は自動で置き換えません。
-全素材が揃った後に、MP4への変換とサイト側のfps設定・画面追従の照合を行います。現在のroute/cityは8fps、portalと待機ループは24fpsの確認用動画なので、最終30fpsの動画だけを上書きするとスクロール位置がずれます。
-組み込み時は `01_website/src/App.tsx` のフレーム量子化設定、`src/journey-timeline.ts` と画面追従データを確認します。従来の変換処理は `90_archive/sites_project/tools/stage4/encode_assets.py` に資料として保管されています（旧パス・旧fpsのためそのまま実行しません）。
-
-PNGの検品用に `output/test` の4枚を残しています。本番素材として使用しないでください。
-
-## 曲がり角の接続素材
-
-MASTER内の `CPO_CORNER_CONNECTOR` が新しい接続シーンです。通常の最終レンダリングメニュー（3・4・5）に `corner` の出力を追加してあります。
-以前の出力と混ざらないよう、現在の `run_name` は `final-corner-01` です。
-
-接続だけの小さな確認は、02_render内で以下を実行します。横・縦それぞれ0・48・96フレームの3枚を出します。
+個別に描画する場合（02_render内のPowerShell）:
 
 ```powershell
-./scripts/render.ps1 -Action test -Profile both -Job corner
+./scripts/render.ps1 -Action final -Profile desktop -Job junction
 ```
 
-店舗や街の配置を変更したときは、接続シーンも更新してください。`scripts/build_corner.py` はMASTERの本編0フレームをもとに接続候補と輪郭データを `output/corner-work` に生成します。候補を確認してからMASTERへ反映します。
-今回のサイト用動画は `scripts/render_corner.py` と `scripts/encode_corner.py` で作成しました。変換・画像検証用Pythonライブラリは `scripts/requirements-media.txt` に記載しています。
-最終画質のPNG連番を描画する通常メニューには、これらの追加Pythonライブラリは不要です。
+## サイトへの組み込み
+
+通常の描画メニューは高画質のPNG原本を生成します。サイトの動画は自動で置き換えません。
+全素材が揃った後、MP4へ変換し、サイト側のfps設定を揃えて接続を確認します。現在の走行ループは8fps、右折は12fps、店内までのrouteは8fps、portalと待機ループは24fpsの確認用です。最終30fpsへ差し替える際は、それぞれのスクロール制御のfpsも変更してください。
+
+最終画質の全編描画は、今回の変更では実行していません。
+
+## 接続シーンを作り直す場合
+
+`scripts/build_junction.py`は本編の0フレームを基に、固定した交差点と車の経路の候補を `output/junction-work/CPO_JUNCTION_CANDIDATE.blend` に作ります。候補を確認してからMASTERへ反映してください。
+`scripts/render_junction.py`、`encode_junction.py`、`validate_junction_media.py`は確認用動画の作成・照合用です。動画変換に必要なPythonライブラリは `scripts/requirements-media.txt` に記載しています。
+通常のRENDER.cmdによるPNG描画には、これらの追加ライブラリは不要です。
+
+確認用の候補や画質を変更して作り直すときは、以前の `output/junction-work` を保管してから候補を生成してください。プレビュー描画・変換は元ファイルの照合情報を確認し、異なる条件のフレームが混ざる場合は停止します。

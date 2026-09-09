@@ -1,0 +1,45 @@
+{
+  "desktop": {
+    "loop_endpoint_blurred_rgb_mae": 0.8956462191358024,
+    "shared_entry_raw_rgb_mae": 0.011194540895061729,
+    "native_handoff_blurred_rgb_mae": 0.8886284722222222,
+    "streams": {
+      "drive": {
+        "frames": 80,
+        "fps": 8,
+        "width": 960,
+        "height": 540,
+        "all_keyframes": true
+      },
+      "turn": {
+        "frames": 193,
+        "fps": 12,
+        "width": 960,
+        "height": 540,
+        "all_keyframes": true
+      }
+    }
+  },
+  "mobile": {
+    "loop_endpoint_blurred_rgb_mae": 0.5245061728395062,
+    "shared_entry_raw_rgb_mae": 0.006739486882716049,
+    "native_handoff_blurred_rgb_mae": 0.7241094393004115,
+    "streams": {
+      "drive": {
+        "frames": 80,
+        "fps": 8,
+        "width": 540,
+        "height": 960,
+        "all_keyframes": true
+      },
+      "turn": {
+        "frames": 193,
+        "fps": 12,
+        "width": 540,
+        "height": 960,
+        "all_keyframes": true
+      }
+    }
+  },
+  "passed": true
+}

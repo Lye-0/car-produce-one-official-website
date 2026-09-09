@@ -1,4 +1,8 @@
-import { CORNER_END, cornerProgress } from './corner-transition.ts';
+import {
+  JUNCTION_END,
+  junctionProgress,
+  junctionDuration,
+} from './junction-transition.ts';
 /** Camera position is a pure function of document scroll, never elapsed time. */
 export type Hold = 'tools' | 'magazines' | 'monitor';
 export const CHAPTER_PROGRESS = [0, 0.4, 0.7, 0.89, 1] as const;
@@ -10,13 +14,18 @@ export const HOLD_RANGES = {
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
 const interpolate = (p: number, a: number, b: number, x: number, y: number) =>
   x + (y - x) * clamp((p - a) / (b - a));
-export function sampleJourney(value: number) {
+export function sampleJourney(value: number, entryPhase = 0) {
   const p = clamp(Number.isFinite(value) ? value : 0);
   let time = 0,
     hold: Hold | null = null;
-  if (p < CORNER_END) time = 0;
-  else if (p < 0.35) time = interpolate(p, CORNER_END, 0.35, 0, 34.2);
-  else if (p < 0.46) {
+  if (p < JUNCTION_END) time = 0;
+  else if (p < 0.35) {
+    // Match the outgoing turn's virtual-time slope at the shared arrival pose.
+    const u = (p - JUNCTION_END) / (0.35 - JUNCTION_END);
+    const linear =
+      (junctionDuration(entryPhase) / JUNCTION_END) * (0.35 - JUNCTION_END);
+    time = linear * u + (34.2 - linear) * u * u;
+  } else if (p < 0.46) {
     time = 34.2;
     hold = 'tools';
   } else if (p < 0.65) time = interpolate(p, 0.46, 0.65, 43.2, 56.7);
@@ -36,11 +45,11 @@ export function sampleJourney(value: number) {
   }
   return {
     progress: p,
-    corner: cornerProgress(p),
+    junction: junctionProgress(p),
     time,
     hold,
     cardOpacity,
-    chapter: p < CORNER_END ? 0 : p < 0.46 ? 1 : p < 0.76 ? 2 : 3,
+    chapter: p < JUNCTION_END ? 0 : p < 0.46 ? 1 : p < 0.76 ? 2 : 3,
     introOpacity: 1 - clamp(p / 0.03),
     portal: clamp((p - 0.9) / 0.1),
     complete: p >= 1,
