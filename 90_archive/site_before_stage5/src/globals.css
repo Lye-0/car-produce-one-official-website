@@ -986,8 +986,3 @@ html {
   min-height: 100svh;
   min-height: 100dvh;
 }
-
-/* Keep the normal document out of the camera view until the portal completes. */
-.main-site[inert] {
-  visibility: hidden;
-}

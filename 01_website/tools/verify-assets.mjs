@@ -58,4 +58,3 @@ for (const profile of ['desktop', 'mobile']) {
 console.log(
   `Verified ${checked} media files and both screen-tracking profiles.`,
 );
-

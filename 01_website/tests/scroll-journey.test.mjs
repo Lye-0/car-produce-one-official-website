@@ -138,4 +138,3 @@ test('leaving the monitor hold preserves the entire approach without a time jump
   assert.ok(sampleJourney(0.91).time < sampleJourney(0.95).time);
   assert.equal(sampleJourney(1).time, 90);
 });
-

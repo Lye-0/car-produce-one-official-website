@@ -1,3 +1,4 @@
+
 import {
   useEffect,
   useMemo,
@@ -6,7 +7,6 @@ import {
   type CSSProperties,
 } from 'react';
 import { content as c } from './content';
-import { WebsiteBody } from './WebsiteBody';
 import {
   CHAPTER_PROGRESS,
   sampleJourney,
@@ -91,12 +91,6 @@ export default function Home() {
     variant ? `/media/stage4/${variant}/${name}` : undefined;
   function go(next: number) {
     setMenu(false);
-    if (window.location.hash)
-      window.history.replaceState(
-        null,
-        '',
-        window.location.pathname + window.location.search,
-      );
     window.scrollTo({
       top:
         (spacer.current?.offsetHeight ?? window.innerHeight * 12) *
@@ -113,45 +107,10 @@ export default function Home() {
           target.getBoundingClientRect().top + window.scrollY - (id ? 90 : 0),
         behavior: 'instant',
       });
-    if (id && window.location.hash !== '#' + id) {
-      window.history.pushState(null, '', '#' + id);
-    }
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        target?.focus({ preventScroll: true });
-      }),
-    );
+    setTimeout(() => {
+      if (!id) main.current?.focus({ preventScroll: true });
+    }, 0);
   }
-  useEffect(() => {
-    const followHash = () => {
-      const id = window.location.hash.slice(1);
-      if (['services', 'about', 'access', 'contact'].includes(id)) {
-        requestAnimationFrame(() => skip(id));
-      }
-    };
-    followHash();
-    window.addEventListener('hashchange', followHash);
-    return () => window.removeEventListener('hashchange', followHash);
-  }, []);
-  useEffect(() => {
-    if (!menu) return;
-    const escape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setMenu(false);
-        document.querySelector<HTMLButtonElement>('.menu-toggle')?.focus();
-      }
-    };
-    const wide = window.matchMedia('(min-width: 701px)');
-    const dismiss = () => {
-      if (wide.matches) setMenu(false);
-    };
-    document.addEventListener('keydown', escape);
-    wide.addEventListener('change', dismiss);
-    return () => {
-      document.removeEventListener('keydown', escape);
-      wide.removeEventListener('change', dismiss);
-    };
-  }, [menu]);
   function replay() {
     go(0);
   }
@@ -357,7 +316,7 @@ export default function Home() {
       >
         サービスへ移動
       </a>
-      <header className={'site-header ' + (entered ? 'header-body' : '')}>
+      <header className="site-header">
         <button
           className="wordmark"
           onClick={() =>
@@ -372,7 +331,7 @@ export default function Home() {
         >
           CAR PRODUCE ONE<span>AUTOMOTIVE / SERVICE & CARE</span>
         </button>
-        <nav className="desktop-nav" aria-label="メインナビゲーション">
+        <nav className="desktop-nav">
           <a
             href="#services"
             onClick={(e) => {
@@ -396,17 +355,6 @@ export default function Home() {
             私たちについて
           </a>
           <a
-            href="#access"
-            onClick={(e) => {
-              if (!entered) {
-                e.preventDefault();
-                skip('access');
-              }
-            }}
-          >
-            アクセス
-          </a>
-          <a
             href="#contact"
             className="contact-link"
             onClick={(e) => {
@@ -421,8 +369,7 @@ export default function Home() {
         </nav>
         <button
           className="menu-toggle"
-          aria-label={menu ? 'メニューを閉じる' : 'メニューを開く'}
-          aria-controls="mobile-menu"
+          aria-label="メニュー"
           aria-expanded={menu}
           onClick={() => setMenu(!menu)}
         >
@@ -430,11 +377,7 @@ export default function Home() {
         </button>
       </header>
       {menu && (
-        <nav
-          id="mobile-menu"
-          className="menu-panel"
-          aria-label="メインナビゲーション"
-        >
+        <nav className="menu-panel">
           {[
             ['services', 'サービス'],
             ['about', '私たちについて'],
@@ -665,17 +608,138 @@ export default function Home() {
       <div ref={spacer} className="journey-scroll-space" aria-hidden="true" />
       <main ref={main} tabIndex={-1} className="main-site" inert={!entered}>
         <MainHero />
-        <WebsiteBody
-          replay={replay}
-          top={() => {
-            window.scrollTo({
-              top: spacer.current?.offsetHeight ?? 0,
-              behavior: reduced ? 'instant' : 'smooth',
-            });
-            main.current?.focus({ preventScroll: true });
-          }}
-        />
+        <section id="services" className="services section">
+          <div className="section-heading">
+            <p className="eyebrow">01 / WHAT WE DO</p>
+            <h2>
+              車のことを、
+              <br />
+              ひとつずつ。
+            </h2>
+            <p>
+              いつもの整備も、これからの車選びも。
+              <br />
+              お客様のご希望から、一緒に考えます。
+            </p>
+          </div>
+          <div className="service-list">
+            {c.services.map(([name, en, body], i) => (
+              <details key={en}>
+                <summary>
+                  <span className="service-num">0{i + 1}</span>
+                  <span className="service-name">
+                    {name}
+                    <small>{en}</small>
+                  </span>
+                  <span className="plus">+</span>
+                </summary>
+                <p>{body}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+        <section id="about" className="about section">
+          <div className="about-image">
+            <img
+              src="/media/stage4/desktop/tools.jpg"
+              alt="CAR PRODUCE ONE 店内の工具台を表現した3D映像"
+              loading="lazy"
+            />
+            <span>INSIDE CAR PRODUCE ONE</span>
+          </div>
+          <div className="about-copy">
+            <p className="eyebrow">02 / OUR APPROACH</p>
+            <h2>
+              大切にしているのは、
+              <br />
+              お客様のニーズです。
+            </h2>
+            <p>{c.introduction}</p>
+            <button className="text-link" onClick={replay}>
+              もう一度、店舗を巡る <span>↗</span>
+            </button>
+          </div>
+        </section>
+        <section id="access" className="access section">
+          <div>
+            <p className="eyebrow">03 / FIND US</p>
+            <h2>豊中で、お待ちしています。</h2>
+          </div>
+          <div className="shop-info">
+            <p className="address">大阪府{c.address}</p>
+            <a
+              className="text-link"
+              href={
+                'https://www.google.com/maps/search/?api=1&query=' +
+                encodeURIComponent('CAR PRODUCE ONE 豊中市城山町2-1-35')
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Google Mapsで見る <span>↗</span>
+            </a>
+            <dl>
+              <div>
+                <dt>NAME</dt>
+                <dd>CAR PRODUCE ONE</dd>
+              </div>
+              <div>
+                <dt>TEL</dt>
+                <dd>
+                  <a href="tel:0663357258">{c.phone}</a>
+                </dd>
+              </div>
+              <div>
+                <dt>FAX</dt>
+                <dd>{c.fax}</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+        <section id="contact" className="contact section">
+          <p className="eyebrow">LET’S TALK ABOUT YOUR CAR</p>
+          <h2>
+            車のこと、
+            <br />
+            まずはお聞かせください。
+          </h2>
+          <div className="contact-options">
+            <a href="tel:0663357258">
+              <small>電話で相談する</small>
+              <strong>{c.phone}</strong>
+              <span>↗</span>
+            </a>
+            <a href={c.line} target="_blank" rel="noopener noreferrer">
+              <small>メッセージで相談する</small>
+              <strong>LINE</strong>
+              <span>↗</span>
+            </a>
+          </div>
+          <details className="qr">
+            <summary>LINEのQRコードを表示 ＋</summary>
+            <img
+              src="/media/line-qr.png"
+              alt="CAR PRODUCE ONE LINE友だち追加QRコード"
+              loading="lazy"
+            />
+          </details>
+        </section>
+        <footer className="site-footer">
+          <span>CAR PRODUCE ONE</span>
+          <span>© CAR PRODUCE ONE</span>
+          <button
+            onClick={() =>
+              window.scrollTo({
+                top: spacer.current?.offsetHeight ?? 0,
+                behavior: reduced ? 'instant' : 'smooth',
+              })
+            }
+          >
+            BACK TO TOP ↑
+          </button>
+        </footer>
       </main>
     </>
   );
 }
+

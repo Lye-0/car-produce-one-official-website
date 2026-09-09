@@ -65,4 +65,3 @@ test('the final HTML reaches identity despite a quantized last video frame', () 
   assert.equal(handoffMix(2698.75, 2700, 2650), 1);
   assert.equal(handoffMix(2670, 2675, 2650), 0.5);
 });
-
