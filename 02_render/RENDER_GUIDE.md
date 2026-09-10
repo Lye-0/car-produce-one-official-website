@@ -33,7 +33,7 @@
 
 ## GPUでの動画生成
 
-`encoding.json` の `backend` は **nvenc**。H.265は `hevc_nvenc` のMain10・10bit、H.264は `h264_nvenc` のHigh・8bitです。両方とも1080p・30fps、SDR BT.709で色を合わせます。
+`encoding.json` の `backend` は **nvenc**。H.265は `hevc_nvenc` のMain10・10bit、H.264は `h264_nvenc` のHigh・8bitです。両方とも1080p・30fps。原画のsRGB伝達特性を維持し、BT.709の色域・YUV行列とlimited rangeで保存します。色メタデータはprimaries=1 / transfer=13（IEC 61966-2-1）/ matrix=1 / range=1です。
 
 現在は品質重視のP7/HQ、H.265 CQ18／H.264 CQ17。CQはCPUエンコーダーのCRFと異なる尺度で、数値をそのまま交換しません。スクロール映像はGOP6、走行・待機ループはGOP30。Bフレームなし、fast-start MP4です。
 
@@ -143,3 +143,11 @@ review_junction.pyはサイトに組み込んだ動画から「3周＋右折」�
 現在の原本は V14 Magazine raking key = 20 W、机のシャドウ透過RGB = 0.72 / 0.676 / 0.615。1950フレームと1230・1400・2390フレームを確認し、サイトと同じ暗いCSSグラデーションを重ねた机の見え方が承認済み。確認原本と画像は `output/approved-table-20w/` に保存。
 
 新しい連番先は `final-table-approved-20w`。走行と右折のシーンは11,645オブジェクトの基本属性と12カメラサンプルを旧原本と比較し一致。描画済み2,164枚を再利用し、室内側6,488枚を再描画する。同じ `RERENDER_TABLE.cmd` で描画・動画変換・完成後のローカルサイト反映まで実行する。準備中には長時間レンダリングを開始しない。原本をさらに保存変更した場合は、再び出力先と再利用範囲の検証が必要。
+
+## 静止画プレビューと動画の暗さを揃える色変換
+
+`delivery-srgb-nvenc-02` から、16bit PNGのsRGB画素値を保持して動画化する。以前のsRGB→BT.709 OETF変換では、ブラウザーで動画が静止画より暗く見えた。sRGB伝達特性を明示したHEVC/H.264の比較動画では、同じPNG・WebPに近い明るさになることを確認した。CSSによる一律の明るさ補正は使わない。
+
+`media_encoding.py` の書き込みフレームとストリームの両方にtransfer=13を指定する。`verify()`は全動画の色メタデータ・フレーム数・精度・キーフレーム間隔を検証する。テストは実エンコード後のsRGB値と元画像を直接比較し、逆ガンマ変換で問題を打ち消す検証をしない。
+
+色変換だけの変更なので、原本と完成PNGは保持し、`render.ps1 -Action encode -Profile both -Job all` で全動画を新しいencoding.nameへ生成する。全クリップの検証後に `-Action install` でサイトへまとめて反映する。旧版は保存される。

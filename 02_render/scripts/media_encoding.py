@@ -1,4 +1,4 @@
-"""16-bit sRGB PNG -> correctly tagged SDR BT.709 delivery encodes."""
+"""16-bit sRGB PNG -> sRGB transfer with BT.709 primaries/matrix, SDR limited range."""
 from pathlib import Path
 from fractions import Fraction
 import json,hashlib,time,tempfile
@@ -6,14 +6,10 @@ from contextlib import ExitStack
 from media_runtime import av,np,Image
 from av.video.reformatter import Colorspace,ColorRange,Interpolation
 
-def transfer_tables():
- v=np.arange(65536,dtype=np.float64)/65535
- linear=np.where(v<=.04045,v/12.92,((v+.055)/1.055)**2.4)
- forward=np.rint(np.clip(np.where(linear<.018,4.5*linear,1.099*linear**.45-.099),0,1)*65535).astype(np.uint16)
- linear=np.where(v<.081,v/4.5,((v+.099)/1.099)**(1/.45))
- inverse=np.rint(np.clip(np.where(linear<=.0031308,12.92*linear,1.055*linear**(1/2.4)-.055),0,1)*65535).astype(np.uint16)
- return forward,inverse
-TO_709,TO_SRGB=transfer_tables()
+# Keep the PNG transfer function: converting dark sRGB values to BT.709 OETF
+# made browser video darker than the same image. Signal IEC 61966-2-1 (13)
+# explicitly; the YUV matrix/primaries remain BT.709 and levels remain limited.
+SRGB_TRC=13
 
 def read_png16(path):
  with av.open(str(path)) as source:frame=next(source.decode(video=0))
@@ -21,17 +17,17 @@ def read_png16(path):
  return frame.to_ndarray(format='rgb48le')
 
 def format_frame(frame,w,h,depth,pixel_format=None):
- result=frame.reformat(width=w,height=h,format=pixel_format or ('yuv420p10le' if depth==10 else 'yuv420p'),src_colorspace=Colorspace.ITU709,dst_colorspace=Colorspace.ITU709,src_color_range=ColorRange.JPEG,dst_color_range=ColorRange.MPEG,interpolation=Interpolation.LANCZOS,dst_color_trc=1,dst_color_primaries=1)
- result.color_range=1;result.colorspace=1;result.color_trc=1;result.color_primaries=1
+ result=frame.reformat(width=w,height=h,format=pixel_format or ('yuv420p10le' if depth==10 else 'yuv420p'),src_colorspace=Colorspace.ITU709,dst_colorspace=Colorspace.ITU709,src_color_range=ColorRange.JPEG,dst_color_range=ColorRange.MPEG,interpolation=Interpolation.LANCZOS,dst_color_trc=SRGB_TRC,dst_color_primaries=1)
+ result.color_range=1;result.colorspace=1;result.color_trc=SRGB_TRC;result.color_primaries=1
  return result
 
 def encode_frame(rgb,w,h,depth,pixel_format=None):
- frame=av.VideoFrame.from_ndarray(TO_709[rgb],format='rgb48le')
+ frame=av.VideoFrame.from_ndarray(rgb,format='rgb48le')
  return format_frame(frame,w,h,depth,pixel_format)
 
 def decoded_srgb(frame):
  frame=frame.reformat(format='rgb48le',src_colorspace=Colorspace.ITU709,dst_colorspace=Colorspace.ITU709,src_color_range=ColorRange.MPEG,dst_color_range=ColorRange.JPEG)
- return TO_SRGB[frame.to_ndarray()]
+ return frame.to_ndarray()
 
 def codec_string(context):
  data=context.extradata
@@ -50,7 +46,7 @@ def configure_stream(output,w,h,codec,quality,gop,preset,fps,backend):
  encoder=(codec+'_nvenc') if backend=='nvenc' else ('libx265' if codec=='hevc' else 'libx264')
  pixel_format=('p010le' if backend=='nvenc' else 'yuv420p10le') if depth==10 else 'yuv420p'
  stream=output.add_stream(encoder,rate=fps);stream.width=w;stream.height=h;stream.pix_fmt=pixel_format
- context=stream.codec_context;context.color_range=1;context.colorspace=1;context.color_trc=1;context.color_primaries=1
+ context=stream.codec_context;context.color_range=1;context.colorspace=1;context.color_trc=SRGB_TRC;context.color_primaries=1
  if backend=='nvenc':
   # CQ and software CRF are independent quality scales. Never substitute one silently.
   context.bit_rate=0
@@ -74,7 +70,7 @@ def write_rgb_sequences(arrays,targets,w,h,qualities,gop,preset,fps,backend):
    stream,depth,pixel_format,encoder=configure_stream(output,w,h,codec,qualities[codec],gop,preset,fps,backend)
    streams.append((output,stream,depth,pixel_format));encoders[codec]=encoder
   for i,rgb in enumerate(arrays):
-   rgb_frame=av.VideoFrame.from_ndarray(TO_709[rgb],format='rgb48le')
+   rgb_frame=av.VideoFrame.from_ndarray(rgb,format='rgb48le')
    for output,stream,depth,pixel_format in streams:
     frame=format_frame(rgb_frame,w,h,depth,pixel_format);frame.pts=i;frame.time_base=Fraction(1,fps)
     for packet in stream.encode(frame):output.mux(packet)
@@ -134,7 +130,7 @@ def verify(path,count,fps,w,h,codec,gop):
   stream=source.streams.video[0];context=stream.codec_context
   assert float(stream.average_rate)==fps and context.name==('hevc' if codec=='hevc' else 'h264')
   assert (context.width,context.height)==(w,h)
-  assert (context.color_primaries,context.color_trc,context.colorspace,context.color_range)==(1,1,1,1)
+  assert (context.color_primaries,context.color_trc,context.colorspace,context.color_range)==(1,SRGB_TRC,1,1)
   codecs=codec_string(context)
   for i,frame in enumerate(source.decode(video=0)):
    assert abs(float(frame.pts*frame.time_base)-i/fps)<1e-6
@@ -145,7 +141,7 @@ def verify(path,count,fps,w,h,codec,gop):
    seen+=1
  assert seen==count,(seen,count)
  data=Path(path).read_bytes();assert data.find(b'moov')<data.find(b'mdat'),'MP4 is not fast-start'
- return {'codec':codec,'type':f'video/mp4; codecs="{codecs}"','frames':count,'fps':fps,'width':w,'height':h,'bit_depth':10 if codec=='hevc' else 8,'color':'BT.709 SDR limited range','max_keyframe_gap':max_gap,'validated':True}
+ return {'codec':codec,'type':f'video/mp4; codecs="{codecs}"','frames':count,'fps':fps,'width':w,'height':h,'bit_depth':10 if codec=='hevc' else 8,'color':'sRGB transfer / BT.709 primaries and matrix / SDR limited range','color_transfer':SRGB_TRC,'max_keyframe_gap':max_gap,'validated':True}
 
 def poster(path,target,width=1280):
  rgb=read_png16(path);im=Image.fromarray((rgb/257).round().astype(np.uint8),'RGB');im.thumbnail((width,width),Image.Resampling.LANCZOS);im.save(target,quality=90,method=6)

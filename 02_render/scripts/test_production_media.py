@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile,unittest,struct,zlib,json
 from unittest.mock import patch
 from render_contract import valid_png,fingerprint,load_config
-from media_encoding import read_png16,TO_709,TO_SRGB,encode,decoded_srgb
+from media_encoding import read_png16,encode,decoded_srgb,SRGB_TRC
 from media_runtime import np,av
 
 def png16(path,rgb):
@@ -28,18 +28,20 @@ class MediaTests(unittest.TestCase):
   # A smooth neutral ramp is sensitive to transfer/range mistakes and 8-bit truncation.
   ramp=np.linspace(0,65535,128).round().astype(np.uint16)
   rgb=np.repeat(np.repeat(ramp[None,:,None],64,axis=0),3,axis=2)
-  self.assertGreater(len(np.unique(TO_709)),40000)
-  roundtrip=TO_SRGB[TO_709].astype(np.int32)-np.arange(65536)
-  self.assertLess(np.percentile(abs(roundtrip),99),4)
   with tempfile.TemporaryDirectory() as temp:
    source=Path(temp)/'ramp.png';png16(source,rgb)
    for codec in ('hevc','h264'):
     target=Path(temp)/(codec+'.mp4');stats=encode([source]*7,target,128,64,codec,12,3,'fast')
     self.assertEqual(stats['frames'],7);self.assertTrue(stats['validated'])
-    with av.open(str(target)) as container:decoded=decoded_srgb(next(container.decode(video=0)))
+    with av.open(str(target)) as container:
+     self.assertEqual(container.streams.video[0].codec_context.color_trc,SRGB_TRC)
+     decoded=decoded_srgb(next(container.decode(video=0)))
     error=decoded.astype(np.float64)-rgb
     psnr=20*np.log10(65535/np.sqrt(np.mean(error**2)))
     self.assertGreater(psnr,40,(codec,psnr))
+    # Direct decoded sRGB dark values must match PNG, without an inverse gamma LUT.
+    dark=(rgb>=3000)&(rgb<=14000)
+    self.assertLess(abs(error[dark].mean()),600,(codec,error[dark].mean()))
 
  def test_gpu_failure_stops_preflight_without_silent_cpu_fallback(self):
   import package_media
