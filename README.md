@@ -37,3 +37,10 @@ MASTERの外部リンク切れなし。実行メニューによる横・縦の�
 
 今回の追加修正: 新しい広告8種類、大小24面の追加広告、カフェ・ホテル・オフィス・ガレージ・閉店中の店舗・奥まったロビーの6種類の1階、街路樹8本、駐車区画の車1台、バス停と街路設備を配置しました。左車線の走行と路面表示を整え、古い地面による路面の遮蔽を除去しました。
 サイト側は、冒頭へ戻った際にスクロール用のシークを解除し、動画全体のループ再生へ戻す処理を修正しました。23件のテストと横・縦画面で復帰を確認済みです。CGの更新はMASTER・確認画像・サイトのテスト品質動画に反映済みです。
+## 大容量データとGit管理
+
+ソース・設定・最新のBlender MASTER・掲載資料をGitで管理します。生成済み本番動画（`01_website/public/media/production/`）、レンダリング元画像（`02_render/output/`）、ローカルPython依存（`02_render/.python_vendor/`）、ビルド出力はGit管理外です。
+
+別のPCで本番動画を使う場合は、`01_website/src/production-media.json` の `version` と一致する配信フォルダをコピーしてください。その後 `01_website` で `npm ci`、`npm run build` を実行すると素材のハッシュ・フレーム数・形式が検証されます。生成済み素材をGitへ強制追加しないでください。
+
+最終フレーム `02_render/output/final-table-approved-20w/` と最新の `02_render/scene/CPO_MASTER.blend` は編集・再合成のため保持します。Python依存は `02_render/scripts/requirements-media.txt` から導入できます。このPCでは既存の依存ライブラリを `02_render/.python_vendor/` に保存しています。

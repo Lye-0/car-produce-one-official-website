@@ -18,3 +18,8 @@ __pycache__/
 /90_archive/sites_project/
 /90_archive/session_work/
 /90_archive/legacy_project/work/
+
+# Generated delivery media and local renderer dependencies
+/01_website/public/media/production/
+/02_render/.python_vendor/
+/90_archive/
