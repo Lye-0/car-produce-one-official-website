@@ -1,5 +1,6 @@
 import { MediaVideo } from './MediaVideo';
-import { getProductionClip } from './production-media';
+import { getProductionClip, getProductionPoster } from './production-media';
+import { INITIAL_MEDIA_REQUESTS, requestNearbyMedia } from './media-loading';
 import {
   useEffect,
   useMemo,
@@ -81,7 +82,6 @@ export default function Home() {
   const lastProgress = useRef(0);
   const [ready, setReady] = useState(false),
     [portalReady, setPortalReady] = useState(false),
-    [portalRequested, setPortalRequested] = useState(false),
     [failed, setFailed] = useState(false),
     [paused, setPaused] = useState(false),
     [reduced, setReduced] = useState(false),
@@ -91,6 +91,7 @@ export default function Home() {
     [view, setView] = useState({ width: 1280, height: 720 }),
     [presentedFrame, setPresentedFrame] = useState(2430),
     [idleReady, setIdleReady] = useState<Record<string, boolean>>({});
+  const [requestedMedia, setRequestedMedia] = useState(INITIAL_MEDIA_REQUESTS);
   const profile = variant ?? 'desktop';
   const routeFps = getProductionClip(variant, 'route')?.fps ?? 8;
   const portalFps = getProductionClip(variant, 'portal')?.fps ?? 24;
@@ -267,7 +268,10 @@ export default function Home() {
     };
     const fallback = () =>
       setPresentedFrame(
-        Math.min(2700, 2430 + (Math.floor(p.currentTime * portalFps) / portalFps) * 30),
+        Math.min(
+          2700,
+          2430 + (Math.floor(p.currentTime * portalFps) / portalFps) * 30,
+        ),
       );
     p.addEventListener('seeked', fallback);
     if (typeof p.requestVideoFrameCallback === 'function')
@@ -284,8 +288,12 @@ export default function Home() {
     };
   }, [routeFps, portalFps]);
   useEffect(() => {
-    if (scene.progress > 0.65 && !entered) setPortalRequested(true);
-  }, [scene.progress, entered]);
+    if (!reduced && !entered) {
+      setRequestedMedia((previous) =>
+        requestNearbyMedia(previous, scene.progress),
+      );
+    }
+  }, [scene.progress, entered, reduced]);
   useEffect(() => {
     if (!variant) return;
     const active = entered || paused || reduced ? null : scene.hold;
@@ -510,16 +518,18 @@ export default function Home() {
             <source
               media="(max-width:700px)"
               srcSet={
-                poster === 'city'
+                getProductionPoster('mobile', poster) ??
+                (poster === 'city'
                   ? `/media/junction/mobile/drive.jpg?v=${JUNCTION_MEDIA_VERSION}`
-                  : '/media/stage4/mobile/' + poster + '.jpg'
+                  : '/media/stage4/mobile/' + poster + '.jpg')
               }
             />
             <img
               src={
-                poster === 'city'
+                getProductionPoster('desktop', poster) ??
+                (poster === 'city'
                   ? `/media/junction/desktop/drive.jpg?v=${JUNCTION_MEDIA_VERSION}`
-                  : '/media/stage4/desktop/' + poster + '.jpg'
+                  : '/media/stage4/desktop/' + poster + '.jpg')
               }
               alt=""
             />
@@ -540,15 +550,20 @@ export default function Home() {
             muted
             loop
             playsInline
-            poster={streetAsset('drive.jpg')}
+            poster={
+              getProductionPoster(profile, 'city') ?? streetAsset('drive.jpg')
+            }
             src={streetAsset('drive.mp4')}
             media={getProductionClip(variant, 'drive')}
+            enabled={!reduced}
+            preload="auto"
             playing={scene.progress === 0 && !paused && !reduced && !entered}
             onPlayBlocked={() => setPaused(true)}
             onError={() => setFailed(true)}
           />
           <JunctionTransition
             profile={variant}
+            requested={requestedMedia.junction && !reduced}
             time={junction.turnTime}
             active={
               junction.stage === 'turn' &&
@@ -569,9 +584,11 @@ export default function Home() {
             }
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
             src={asset('route.mp4')}
             media={getProductionClip(variant, 'route')}
+            enabled={requestedMedia.route && !reduced}
+            onLoadStart={() => setReady(false)}
             onLoadedData={() => setReady(true)}
             onError={() => setFailed(true)}
           />
@@ -584,9 +601,12 @@ export default function Home() {
             }
             muted
             playsInline
-            preload="auto"
-            src={portalRequested ? asset('portal.mp4') : undefined}
-            media={portalRequested ? getProductionClip(variant, 'portal') : undefined}
+            preload="metadata"
+            src={asset('portal.mp4')}
+            media={getProductionClip(variant, 'portal')}
+            enabled={requestedMedia.portal && !reduced}
+            onLoadStart={() => setPortalReady(false)}
+            onError={() => setPortalReady(false)}
             onLoadedData={() => setPortalReady(true)}
           />
           {(
@@ -613,6 +633,8 @@ export default function Home() {
               preload="auto"
               src={asset(name + '-idle.mp4')}
               media={getProductionClip(variant, name + '-idle')}
+              enabled={requestedMedia[name] && !reduced}
+              onLoadStart={() => setIdleReady((v) => ({ ...v, [name]: false }))}
               playing={!entered && !paused && !reduced && scene.hold === name}
               onLoadedData={() => setIdleReady((v) => ({ ...v, [name]: true }))}
             />
@@ -620,7 +642,10 @@ export default function Home() {
           {scene.hold && !idleReady[scene.hold] && (
             <img
               className="film hold-poster"
-              src={asset(scene.hold + '.jpg')}
+              src={
+                getProductionPoster(profile, scene.hold) ??
+                asset(scene.hold + '.jpg')
+              }
               alt=""
             />
           )}
@@ -742,4 +767,3 @@ export default function Home() {
     </>
   );
 }
-

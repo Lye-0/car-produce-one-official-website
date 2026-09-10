@@ -90,3 +90,71 @@ for (const profile of ['desktop', 'mobile']) {
     throw new Error(`Invalid driving poster: ${profile}`);
 }
 console.log('Verified all four junction videos and both driving posters.');
+
+const production = JSON.parse(
+  readFileSync(resolve(root, 'src/production-media.json'), 'utf8'),
+);
+if (production.production) {
+  const jobs = [
+    'drive',
+    'junction',
+    'route',
+    'portal',
+    'tools-idle',
+    'magazines-idle',
+    'monitor-idle',
+  ];
+  let videos = 0;
+  for (const profile of ['desktop', 'mobile']) {
+    for (const job of jobs) {
+      const asset = production.profiles?.[profile]?.[job];
+      const prefix = `/media/production/${production.version}/${profile}/${job}/`;
+      if (
+        !asset ||
+        asset.fps !== 30 ||
+        !Number.isInteger(asset.frames) ||
+        asset.frames <= 0 ||
+        asset.variants?.length !== 2 ||
+        !asset.poster?.startsWith(prefix)
+      )
+        throw new Error(`Invalid production asset: ${profile}/${job}`);
+      const poster = readFileSync(resolve(root, 'public', '.' + asset.poster));
+      if (
+        poster.toString('ascii', 0, 4) !== 'RIFF' ||
+        poster.toString('ascii', 8, 12) !== 'WEBP'
+      )
+        throw new Error(`Invalid production poster: ${profile}/${job}`);
+      for (const codec of ['hevc', 'h264']) {
+        const variant = asset.variants.find((v) => v.codec === codec);
+        const [width, height] =
+          profile === 'desktop' ? [1920, 1080] : [1080, 1920];
+        if (
+          !variant ||
+          !variant.validated ||
+          !variant.src.startsWith(prefix) ||
+          variant.src.includes('..') ||
+          variant.frames !== asset.frames ||
+          variant.fps !== asset.fps ||
+          variant.width !== width ||
+          variant.height !== height
+        )
+          throw new Error(
+            `Invalid production variant: ${profile}/${job}/${codec}`,
+          );
+        const data = readFileSync(resolve(root, 'public', '.' + variant.src));
+        if (
+          data.length !== variant.bytes ||
+          data.toString('ascii', 4, 8) !== 'ftyp' ||
+          createHash('sha256').update(data).digest('hex') !== variant.sha256
+        )
+          throw new Error(
+            `Production video differs from validated export: ${profile}/${job}/${codec}`,
+          );
+        videos++;
+      }
+    }
+  }
+  console.log(
+    `Verified ${videos} production videos by SHA-256 and 14 production posters (${production.version}).`,
+  );
+}

@@ -6,10 +6,17 @@ import { TURN_FPS, JUNCTION_MEDIA_VERSION } from './junction-transition';
 type Props = {
   profile: 'desktop' | 'mobile' | null;
   time: number;
+  requested: boolean;
   active: boolean;
   onReady: (ready: boolean) => void;
 };
-export function JunctionTransition({ profile, time, active, onReady }: Props) {
+export function JunctionTransition({
+  profile,
+  time,
+  active,
+  requested,
+  onReady,
+}: Props) {
   const video = useRef<HTMLVideoElement>(null);
   const driver = useRef<ReturnType<typeof createVideoScrubber> | null>(null);
   const [ready, setReady] = useState(false);
@@ -33,6 +40,7 @@ export function JunctionTransition({ profile, time, active, onReady }: Props) {
     <MediaVideo
       videoRef={video}
       media={getProductionClip(profile, 'junction')}
+      enabled={requested}
       aria-hidden="true"
       className="film junction-film"
       style={{ opacity: active && ready ? 1 : 0 }}
@@ -43,7 +51,11 @@ export function JunctionTransition({ profile, time, active, onReady }: Props) {
       }
       muted
       playsInline
-      preload="auto"
+      preload="metadata"
+      onLoadStart={() => {
+        setReady(false);
+        onReady(false);
+      }}
       onLoadedData={() => {
         setReady(true);
         onReady(true);
@@ -55,4 +67,3 @@ export function JunctionTransition({ profile, time, active, onReady }: Props) {
     />
   );
 }
-

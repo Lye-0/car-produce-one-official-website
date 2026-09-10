@@ -76,11 +76,12 @@ export function createVideoScrubber(video: SeekableVideo, fps = 8) {
       ? Math.max(0, video.duration - 1 / fps)
       : 89.875;
     const next = Math.min(max, Math.max(0, desired));
-    if (Math.abs(video.currentTime - next) >= 0.5 / fps)
+    if (video.readyState < 2 || Math.abs(video.currentTime - next) >= 0.5 / fps)
       video.currentTime = next;
   };
   video.pause();
   video.addEventListener('seeked', flush);
+  video.addEventListener('loadedmetadata', flush);
   video.addEventListener('loadeddata', flush);
   return {
     seek(time: number) {
@@ -95,6 +96,7 @@ export function createVideoScrubber(video: SeekableVideo, fps = 8) {
     dispose() {
       disposed = true;
       video.removeEventListener('seeked', flush);
+      video.removeEventListener('loadedmetadata', flush);
       video.removeEventListener('loadeddata', flush);
     },
   };
