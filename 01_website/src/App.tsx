@@ -6,13 +6,7 @@ import {
 import { MediaVideo } from './MediaVideo';
 import { getProductionClip, getProductionPoster } from './production-media';
 import { INITIAL_MEDIA_REQUESTS, requestNearbyMedia } from './media-loading';
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { content as c } from './content';
 import { WebsiteBody } from './WebsiteBody';
 import { JunctionTransition } from './JunctionTransition';
@@ -27,15 +21,8 @@ import {
   sampleJourney,
   createVideoScrubber,
 } from './journey-timeline';
-import {
-  sampleQuad,
-  coverQuad,
-  firstCoverFrame,
-  blendQuad,
-  rectQuad,
-  quadMatrix,
-  handoffMix,
-} from './screen-projection';
+import { firstCoverFrame } from './screen-projection';
+import { PortalNoise, usePortalHandoff } from './PortalHandoff';
 import tracking from './screen-tracking.json';
 function MainHero() {
   return (
@@ -91,7 +78,7 @@ export default function Home() {
     [paused, setPaused] = useState(false),
     [reduced, setReduced] = useState(false),
     [menu, setMenu] = useState(false),
-    [noise, setNoise] = useState(false);
+    [visible, setVisible] = useState(true);
   const [variant, setVariant] = useState<'desktop' | 'mobile' | null>(null),
     [view, setView] = useState({ width: 1280, height: 720 }),
     [presentedFrame, setPresentedFrame] = useState(2430),
@@ -104,8 +91,6 @@ export default function Home() {
     portalScrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(
       null,
     );
-  const noiseGate = useRef(false),
-    noiseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const chapter = scene.chapter,
     entered = scene.complete,
     portal = scene.portal > 0,
@@ -125,6 +110,7 @@ export default function Home() {
       : window.innerHeight * BASE_SCROLL_VIEWPORTS;
   }
   function go(next: number) {
+    if (next < 4) handoff.reset('camera');
     setMenu(false);
     if (window.location.hash)
       window.history.replaceState(
@@ -144,6 +130,7 @@ export default function Home() {
     });
   }
   function skip(id?: string) {
+    handoff.reset('site');
     setMenu(false);
     const target = id ? document.getElementById(id) : main.current;
     if (target)
@@ -301,9 +288,9 @@ export default function Home() {
           2430 + (Math.floor(p.currentTime * portalFps) / portalFps) * 30,
         ),
       );
-    p.addEventListener('seeked', fallback);
     if (typeof p.requestVideoFrameCallback === 'function')
       callback = p.requestVideoFrameCallback(receive);
+    else p.addEventListener('seeked', fallback);
     return () => {
       driver.dispose();
       streetDriver?.dispose();
@@ -314,7 +301,7 @@ export default function Home() {
       if (callback) p.cancelVideoFrameCallback(callback);
       p.removeEventListener('seeked', fallback);
     };
-  }, [routeFps, portalFps]);
+  }, [routeFps, portalFps, variant]);
   useEffect(() => {
     if (!reduced && !entered) {
       setRequestedMedia((previous) =>
@@ -323,44 +310,11 @@ export default function Home() {
     }
   }, [scene.progress, entered, reduced]);
   useEffect(() => {
-    if (!variant) return;
-    const active = entered || paused || reduced ? null : scene.hold;
-    for (const [name, ref] of [
-      ['tools', tools],
-      ['magazines', magazines],
-      ['monitor', monitor],
-    ] as const) {
-      const v = ref.current;
-      if (!v) continue;
-      if (name === active) v.play().catch(() => {});
-      else v.pause();
-    }
-    const v = city.current;
-    if (v) {
-      if (scene.progress === 0) cityDriver.current?.release();
-      if (scene.progress === 0 && !paused && !reduced && !entered)
-        v.play().catch((error) => {
-          if (error?.name === 'NotAllowedError') setPaused(true);
-        });
-      else v.pause();
-    }
-  }, [scene.hold, scene.progress === 0, entered, paused, reduced, variant]);
-  useEffect(() => {
-    if (scene.portal < 0.25) noiseGate.current = false;
-    if (scene.portal >= 0.4 && !noiseGate.current && !reduced && !entered) {
-      noiseGate.current = true;
-      setNoise(true);
-      if (noiseTimer.current) clearTimeout(noiseTimer.current);
-      noiseTimer.current = setTimeout(() => setNoise(false), 160);
-    }
-    if (entered || !portal) setNoise(false);
-  }, [scene.portal, entered, reduced, portal]);
-  useEffect(
-    () => () => {
-      if (noiseTimer.current) clearTimeout(noiseTimer.current);
-    },
-    [],
-  );
+    const update = () => setVisible(document.visibilityState === 'visible');
+    update();
+    document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
   const card =
     scene.hold === 'tools'
       ? c.cards[0]
@@ -371,49 +325,21 @@ export default function Home() {
     () => firstCoverFrame(tracking[profile], profiles[profile], view),
     [profile, view],
   );
-  const screenFrame =
-    scene.hold === 'monitor' || !portalReady ? 2430 : presentedFrame;
-  const normalized =
-    scene.time >= 81 ? sampleQuad(tracking[profile], screenFrame) : null;
-  const handoff = handoffMix(screenFrame, scene.time * 30, coverAt);
-  const screenQuad = normalized
-    ? blendQuad(
-        coverQuad(normalized, profiles[profile], view),
-        rectQuad(view),
-        handoff,
-      )
-    : null;
-  // A real monitor is landscape even when the visitor's phone is portrait.
-  // Preserve that aspect until its bezel leaves the viewport, then reflow into
-  // the actual responsive hero. This avoids stretching the Japanese glyphs.
-  const mix = (a: number, b: number) => a + (b - a) * handoff;
-  const narrow = view.width <= 700;
-  const screenSource = {
-    width: mix(1280, view.width),
-    height: mix(720, view.height),
-  };
-  const screenMatrix = screenQuad ? quadMatrix(screenSource, screenQuad) : null;
-  const projectedStyle = {
-    width: screenSource.width,
-    height: screenSource.height,
-    transform: screenMatrix
-      ? 'matrix3d(' + screenMatrix.join(',') + ')'
-      : 'none',
-    '--screen-font':
-      mix(64, narrow ? 38 : Math.min(90, Math.max(40, view.width * 0.058))) +
-      'px',
-    '--screen-top': mix(120, narrow ? 150 : 180) + 'px',
-    '--screen-side': mix(102.4, view.width * (narrow ? 0.07 : 0.08)) + 'px',
-    '--screen-bottom': mix(60, narrow ? 70 : 80) + 'px',
-    '--screen-heading-bottom': mix(32, narrow ? 42 : 48) + 'px',
-    '--screen-letter-spacing': mix(0.12, narrow ? 0.06 : 0.12) + 'em',
-    '--screen-label': mix(9, narrow ? 8 : 9) + 'px',
-    '--screen-copy': mix(13, narrow ? 11 : 13) + 'px',
-    '--screen-footer-display': narrow && handoff > 0.8 ? 'block' : 'flex',
-    '--screen-link-margin': narrow && handoff > 0.8 ? '20px' : '0px',
-    '--screen-giant':
-      mix(371.2, Math.min(450, Math.max(170, view.width * 0.29))) + 'px',
-  } as CSSProperties;
+  const handoff = usePortalHandoff({
+    requested: scene.time * 30,
+    presented: portalReady ? presentedFrame : 2430,
+    coverAt,
+    reduced,
+    profile,
+    onArrive: () =>
+      window.scrollTo({
+        top: Math.max(
+          window.scrollY,
+          spacer.current?.offsetHeight ?? window.scrollY,
+        ),
+        behavior: 'instant',
+      }),
+  });
 
   const poster =
     chapter === 0
@@ -585,7 +511,9 @@ export default function Home() {
             media={getProductionClip(variant, 'drive')}
             enabled={!reduced}
             preload="auto"
-            playing={scene.progress === 0 && !paused && !reduced && !entered}
+            playing={
+              visible && scene.progress === 0 && !paused && !reduced && !entered
+            }
             onPlayBlocked={() => setPaused(true)}
             onError={() => setFailed(true)}
           />
@@ -663,7 +591,13 @@ export default function Home() {
               media={getProductionClip(variant, name + '-idle')}
               enabled={requestedMedia[name] && !reduced}
               onLoadStart={() => setIdleReady((v) => ({ ...v, [name]: false }))}
-              playing={!entered && !paused && !reduced && scene.hold === name}
+              playing={
+                visible &&
+                !entered &&
+                !paused &&
+                !reduced &&
+                scene.hold === name
+              }
               onLoadedData={() => setIdleReady((v) => ({ ...v, [name]: true }))}
             />
           ))}
@@ -698,6 +632,8 @@ export default function Home() {
           {card && (
             <article
               style={{ opacity: scene.cardOpacity }}
+              inert={scene.cardOpacity < 0.1}
+              aria-hidden={scene.cardOpacity < 0.1}
               key={chapter}
               className={'reading-card card-' + chapter}
             >
@@ -709,26 +645,18 @@ export default function Home() {
               </button>
             </article>
           )}
-          {scene.hold === 'monitor' && (
+          {scene.inviteOpacity > 0 && (
             <div
               className="monitor-invite"
-              style={{ opacity: scene.cardOpacity }}
+              inert={scene.inviteOpacity < 0.1}
+              aria-hidden={scene.inviteOpacity < 0.1}
+              style={{ opacity: scene.inviteOpacity }}
             >
               <p className="eyebrow">03 / CONTINUE THE STORY</p>
               <h2>この先も、あなたと。</h2>
               <button className="text-link" onClick={() => go(4)}>
                 サイトへ入る ↗
               </button>
-            </div>
-          )}
-          {screenMatrix && !reduced && (
-            <div
-              className="projected-screen"
-              aria-hidden="true"
-              inert
-              style={projectedStyle}
-            >
-              <MainHero />
             </div>
           )}
           {portal && reduced && (
@@ -741,7 +669,11 @@ export default function Home() {
               <MainHero />
             </div>
           )}
-          {noise && <div className="noise" aria-hidden="true" />}
+          {handoff.showSite && !reduced && (
+            <div className="responsive-screen" aria-hidden="true" inert>
+              <MainHero />
+            </div>
+          )}
           <div className="journey-bottom">
             <div className="chapter-nav" aria-label="映像の場面">
               {c.chapters.map((label, i) => (
@@ -778,6 +710,15 @@ export default function Home() {
           </span>
         </section>
       }
+      {handoff.active && !reduced && (
+        <PortalNoise
+          key={handoff.active.id}
+          video={portalFilm}
+          direction={handoff.active.to}
+          onSwap={handoff.swap}
+          onComplete={handoff.finish}
+        />
+      )}
       <div
         ref={spacer}
         className="journey-scroll-space"

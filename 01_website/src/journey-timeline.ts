@@ -49,6 +49,10 @@ export function sampleJourney(value: number, entryPhase = 0) {
     time,
     hold,
     cardOpacity,
+    inviteOpacity: Math.min(
+      clamp((p - 0.85) / 0.012),
+      clamp((0.94 - p) / 0.012),
+    ),
     chapter: p < JUNCTION_END ? 0 : p < 0.46 ? 1 : p < 0.76 ? 2 : 3,
     introOpacity: 1 - clamp(p / 0.03),
     portal: clamp((p - 0.9) / 0.1),

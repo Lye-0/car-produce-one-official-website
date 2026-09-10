@@ -1,4 +1,5 @@
 import { content as c } from './content';
+import { getProductionPoster } from './production-media';
 
 const Arrow = ({ diagonal = false }: { diagonal?: boolean }) => (
   <span aria-hidden="true">{diagonal ? '↗' : '→'}</span>
@@ -78,7 +79,10 @@ export function WebsiteBody({
         <div className="about-visual">
           <figure className="about-image">
             <img
-              src="/media/stage4/desktop/tools.jpg"
+              src={
+                getProductionPoster('desktop', 'tools') ??
+                '/media/stage4/desktop/tools.jpg'
+              }
               alt="工具が整然と並ぶ作業台を表現した3Dイメージ"
               width="1280"
               height="720"
@@ -89,7 +93,10 @@ export function WebsiteBody({
           </figure>
           <figure className="about-detail-image">
             <img
-              src="/media/stage4/desktop/magazines.jpg"
+              src={
+                getProductionPoster('desktop', 'magazines') ??
+                '/media/stage4/desktop/magazines.jpg'
+              }
               alt="自動車雑誌が並ぶガラステーブルを表現した3Dイメージ"
               width="1280"
               height="720"

@@ -996,3 +996,24 @@ html {
   z-index: -1;
   pointer-events: none;
 }
+
+.responsive-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scroll-journey .monitor-invite {
+  z-index: 3;
+}
+
+.portal-noise-live {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  z-index: 120;
+  pointer-events: none;
+}
