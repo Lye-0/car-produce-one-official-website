@@ -103,6 +103,7 @@ if (production.production) {
     'tools-idle',
     'magazines-idle',
     'monitor-idle',
+    'monitor-approach',
   ];
   let videos = 0;
   for (const profile of ['desktop', 'mobile']) {
@@ -155,6 +156,6 @@ if (production.production) {
     }
   }
   console.log(
-    `Verified ${videos} production videos by SHA-256 and 14 production posters (${production.version}).`,
+    `Verified ${videos} production videos by SHA-256 and 16 production posters (${production.version}).`,
   );
 }

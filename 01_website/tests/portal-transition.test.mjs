@@ -15,17 +15,17 @@ test('entry waits for the displayed frame to cover the viewport; a fast end scro
     assert.equal(portalDirection('camera', 2700, 2430, cover), 'site');
   }
 });
-test('a stopped scroll still finishes after 700ms and the swap is fully covered', () => {
-  assert.equal(portalTiming(149).swapped, false);
-  assert.equal(portalTiming(299).swapped, false);
-  assert.equal(portalTiming(300).swapped, true);
-  for (const t of [299, 300, 301]) {
+test('a stopped scroll still finishes after 450ms and the swap is fully covered', () => {
+  assert.equal(portalTiming(99).swapped, false);
+  assert.equal(portalTiming(189).swapped, false);
+  assert.equal(portalTiming(190).swapped, true);
+  for (const t of [189, 190, 191]) {
     assert.equal(portalTiming(t).cover, 1);
-    assert.equal(portalTiming(t).reveal, 0);
+    assert.equal(portalTiming(t).settle, 0);
   }
-  assert.equal(portalTiming(699).complete, false);
-  assert.equal(portalTiming(700).complete, true);
-  assert.equal(portalTiming(9000).reveal, 1);
+  assert.equal(portalTiming(449).complete, false);
+  assert.equal(portalTiming(450).complete, true);
+  assert.equal(portalTiming(9000).settle, 1);
 });
 test('reverse entry has hysteresis and cannot retrigger at the same boundary', () => {
   assert.equal(portalDirection('site', 2670, 2670, 2673), null);

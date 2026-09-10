@@ -1017,3 +1017,8 @@ html {
   z-index: 120;
   pointer-events: none;
 }
+
+.scroll-journey .monitor-approach {
+  z-index: -2;
+  transition: none;
+}

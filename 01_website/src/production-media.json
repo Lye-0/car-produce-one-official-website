@@ -1,5 +1,5 @@
 {
-  "version": "final-table-approved-20w-monitor-baked-03",
+  "version": "final-table-approved-20w-monitor-power-04",
   "production": true,
   "profiles": {
     "desktop": {
@@ -7,7 +7,7 @@
         "fps": 30,
         "frames": 600,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/drive/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/drive/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -21,7 +21,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/drive/drive-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/drive/drive-hevc.mp4",
             "bytes": 24318186,
             "sha256": "c623a80bb5c9056cd60d7eb6bc392975e92ab27a5a354f828b61230bb721ee80",
             "encode_seconds": 124.53824700000405,
@@ -48,7 +48,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/drive/drive-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/drive/drive-h264.mp4",
             "bytes": 39997199,
             "sha256": "6193746228de6607281c92b89f980ed2e52f976b1232f6098e03b9b0b4507c7d",
             "encode_seconds": 124.53824700000405,
@@ -69,7 +69,7 @@
         "fps": 30,
         "frames": 481,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/junction/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/junction/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -83,7 +83,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/junction/junction-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/junction/junction-hevc.mp4",
             "bytes": 19481498,
             "sha256": "f2c96ce4cf152d490302df12a42f769c4484f126d3d5885721f8aa114570ed0f",
             "encode_seconds": 101.52284970000619,
@@ -110,7 +110,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/junction/junction-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/junction/junction-h264.mp4",
             "bytes": 32446833,
             "sha256": "53f0ab13728ee65666c299ea848e9b94934fac69b22d37a171d14532144dd2af",
             "encode_seconds": 101.52284970000619,
@@ -131,7 +131,7 @@
         "fps": 30,
         "frames": 2430,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/route/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/route/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -145,7 +145,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/route/route-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/route/route-hevc.mp4",
             "bytes": 86003913,
             "sha256": "b730d9b76d69f60259dc4e470ac36a5614c7fe0deb7eca49aee6c0633f664d50",
             "encode_seconds": 541.512268800012,
@@ -172,7 +172,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/route/route-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/route/route-h264.mp4",
             "bytes": 145733766,
             "sha256": "ab92e4b92bb6f994ccf110690cbd15f8b92a932c2e0543c3c8b09f36dcd0478c",
             "encode_seconds": 541.512268800012,
@@ -193,7 +193,7 @@
         "fps": 30,
         "frames": 271,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/portal/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/portal/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -207,7 +207,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/portal/portal-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/portal/portal-hevc.mp4",
             "bytes": 8863744,
             "sha256": "db5a313a55ab3c575affcf1b2698a99ec6305e555b19ad1f198caa85504ccdb4",
             "screen_baked": true,
@@ -232,7 +232,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/portal/portal-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/portal/portal-h264.mp4",
             "bytes": 15060426,
             "sha256": "fd64e7a89f4acd093c8e6406f3800db17a1bdacc1821acd648f83de2ea656186",
             "screen_baked": true,
@@ -252,7 +252,7 @@
         "fps": 30,
         "frames": 180,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/tools-idle/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/tools-idle/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -266,7 +266,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/tools-idle/tools-idle-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/tools-idle/tools-idle-hevc.mp4",
             "bytes": 1004272,
             "sha256": "09dc1746aa5bbdf51613e940648cad232faf080c4b7046e5b29e3838fae12f6d",
             "encode_seconds": 41.11327070000698,
@@ -293,7 +293,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/tools-idle/tools-idle-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/tools-idle/tools-idle-h264.mp4",
             "bytes": 2621591,
             "sha256": "553cacea6dac9e4cea6b6c65fcc93ceb6e78abe3a6878945d16953b2b766bbf9",
             "encode_seconds": 41.11327070000698,
@@ -314,7 +314,7 @@
         "fps": 30,
         "frames": 180,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/magazines-idle/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/magazines-idle/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -328,7 +328,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/magazines-idle/magazines-idle-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/magazines-idle/magazines-idle-hevc.mp4",
             "bytes": 863165,
             "sha256": "792b34352f5324cba3f410ac40be81d4f642c6a0e12932a8ac963769842c94f1",
             "encode_seconds": 41.327119599998696,
@@ -355,7 +355,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/magazines-idle/magazines-idle-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/magazines-idle/magazines-idle-h264.mp4",
             "bytes": 2157307,
             "sha256": "c11858d8696a414770ec6f5ea7c441bf70809285ee076002e676c85ce15c4bf6",
             "encode_seconds": 41.327119599998696,
@@ -376,7 +376,7 @@
         "fps": 30,
         "frames": 180,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/monitor-idle/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/monitor-idle/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -390,7 +390,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/monitor-idle/monitor-idle-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/monitor-idle/monitor-idle-hevc.mp4",
             "bytes": 577813,
             "sha256": "bd14d62bd6e639d66556f3f590b06de0d3089f84f6cf03b2b7d86f25af87280c",
             "screen_baked": true,
@@ -415,7 +415,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/desktop/monitor-idle/monitor-idle-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/monitor-idle/monitor-idle-h264.mp4",
             "bytes": 1952156,
             "sha256": "e1bbaee66d1e57530dfb82196a6835d39880d2f7a2bcef652717351d2ad0acdc",
             "screen_baked": true,
@@ -430,6 +430,58 @@
           }
         ],
         "screen_baked": true
+      },
+      "monitor-approach": {
+        "fps": 30,
+        "frames": 91,
+        "source_start": 2340,
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/monitor-approach/00000.webp",
+        "variants": [
+          {
+            "codec": "hevc",
+            "type": "video/mp4; codecs=\"hvc1.2.4.L120.90\"",
+            "frames": 91,
+            "fps": 30,
+            "width": 1920,
+            "height": 1080,
+            "bit_depth": 10,
+            "color": "sRGB transfer / BT.709 primaries and matrix / SDR limited range",
+            "color_transfer": 13,
+            "max_keyframe_gap": 6,
+            "validated": true,
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/monitor-approach/monitor-approach-hevc.mp4",
+            "bytes": 3697009,
+            "sha256": "f7a5428cc0a6165038caffdd402506daf2f2c58bcd9d3822812edac5644b89a9",
+            "bitrate": 9750353,
+            "screen_baked": true,
+            "screen_power_frames": [
+              2370,
+              2424
+            ]
+          },
+          {
+            "codec": "h264",
+            "type": "video/mp4; codecs=\"avc1.640028\"",
+            "frames": 91,
+            "fps": 30,
+            "width": 1920,
+            "height": 1080,
+            "bit_depth": 8,
+            "color": "sRGB transfer / BT.709 primaries and matrix / SDR limited range",
+            "color_transfer": 13,
+            "max_keyframe_gap": 6,
+            "validated": true,
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/desktop/monitor-approach/monitor-approach-h264.mp4",
+            "bytes": 5837391,
+            "sha256": "51fe14b9d58300ec5aff1a4e6c37105ae7f07a20cc2f3ba4fa2777403ae25b1a",
+            "bitrate": 15395317,
+            "screen_baked": true,
+            "screen_power_frames": [
+              2370,
+              2424
+            ]
+          }
+        ]
       }
     },
     "mobile": {
@@ -437,7 +489,7 @@
         "fps": 30,
         "frames": 600,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/drive/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/drive/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -451,7 +503,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/drive/drive-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/drive/drive-hevc.mp4",
             "bytes": 24320256,
             "sha256": "5043fdb1d08fd85586a373286eb3ddd62e1fb4cdb2299389924c866d491b8fed",
             "encode_seconds": 125.70978210000612,
@@ -478,7 +530,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/drive/drive-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/drive/drive-h264.mp4",
             "bytes": 39961853,
             "sha256": "f09f4deb3fd9971c95c1ad01a1d66c700f25fa42562f842bff761fac25a55014",
             "encode_seconds": 125.70978210000612,
@@ -499,7 +551,7 @@
         "fps": 30,
         "frames": 481,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/junction/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/junction/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -513,7 +565,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/junction/junction-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/junction/junction-hevc.mp4",
             "bytes": 19478509,
             "sha256": "c15897f4469e380d1176bf8df2f2aeb78adef8b73c5dcab20af0a929132024a5",
             "encode_seconds": 100.65867830000934,
@@ -540,7 +592,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/junction/junction-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/junction/junction-h264.mp4",
             "bytes": 32171900,
             "sha256": "8a3c2bfdc422484eb93d7e9687d7b015be61931f60eefcc6e8efc9079a2f673c",
             "encode_seconds": 100.65867830000934,
@@ -561,7 +613,7 @@
         "fps": 30,
         "frames": 2430,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/route/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/route/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -575,7 +627,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/route/route-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/route/route-hevc.mp4",
             "bytes": 88214440,
             "sha256": "8733ba795913aa1d13beb53c2816433df01e1daab05f09bed3059461da0f55c8",
             "encode_seconds": 556.3414994999912,
@@ -602,7 +654,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/route/route-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/route/route-h264.mp4",
             "bytes": 148161416,
             "sha256": "2d4b46587b9cb977592fdcb45478bcc3154dde02893fa9029b2d0ab7c5e469cf",
             "encode_seconds": 556.3414994999912,
@@ -623,7 +675,7 @@
         "fps": 30,
         "frames": 271,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/portal/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/portal/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -637,7 +689,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/portal/portal-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/portal/portal-hevc.mp4",
             "bytes": 8252540,
             "sha256": "6d563eef8d2c2de973e6c44855e72a785c6172e63b086acfeb3ab511eae026b9",
             "screen_baked": true,
@@ -662,7 +714,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/portal/portal-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/portal/portal-h264.mp4",
             "bytes": 14673611,
             "sha256": "1f7d1a3e67b0f01a09a74e66aa9d017e25b07da79c1e7ecaecb337acc7907043",
             "screen_baked": true,
@@ -682,7 +734,7 @@
         "fps": 30,
         "frames": 180,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/tools-idle/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/tools-idle/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -696,7 +748,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/tools-idle/tools-idle-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/tools-idle/tools-idle-hevc.mp4",
             "bytes": 1272437,
             "sha256": "d122cb52dcde030ef73281ad67d2e7bf7584a3d4de21d5a8f974fbeef6e90aec",
             "encode_seconds": 43.957686800014926,
@@ -723,7 +775,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/tools-idle/tools-idle-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/tools-idle/tools-idle-h264.mp4",
             "bytes": 3399700,
             "sha256": "075a976c3f0c1b19f765ab48394f028736aeb110cc066c2d10cdf678382d8701",
             "encode_seconds": 43.957686800014926,
@@ -744,7 +796,7 @@
         "fps": 30,
         "frames": 180,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/magazines-idle/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/magazines-idle/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -758,7 +810,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/magazines-idle/magazines-idle-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/magazines-idle/magazines-idle-hevc.mp4",
             "bytes": 1071761,
             "sha256": "eebb12cbebf14e329f2585afaaaa69e88b7ad09d5a2c0ac391b01e9437887f43",
             "encode_seconds": 41.690739699988626,
@@ -785,7 +837,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/magazines-idle/magazines-idle-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/magazines-idle/magazines-idle-h264.mp4",
             "bytes": 2489880,
             "sha256": "d9d64e92f085f1103b61825b863e8c824c99f8e3010306d84e262bc60dfd0165",
             "encode_seconds": 41.690739699988626,
@@ -806,7 +858,7 @@
         "fps": 30,
         "frames": 180,
         "source_start": 0,
-        "poster": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/monitor-idle/00000.webp",
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/monitor-idle/00000.webp",
         "variants": [
           {
             "codec": "hevc",
@@ -820,7 +872,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/monitor-idle/monitor-idle-hevc.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/monitor-idle/monitor-idle-hevc.mp4",
             "bytes": 658275,
             "sha256": "8c32f3af70e23c791825ed67b3dfb256ad73dbd7664e6c592b453cd8e0ee59b1",
             "screen_baked": true,
@@ -845,7 +897,7 @@
             "color_transfer": 13,
             "max_keyframe_gap": 30,
             "validated": true,
-            "src": "/media/production/final-table-approved-20w-monitor-baked-03/mobile/monitor-idle/monitor-idle-h264.mp4",
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/monitor-idle/monitor-idle-h264.mp4",
             "bytes": 2117302,
             "sha256": "273ed1bd690254aed732a02764a88bb49c5412411b83e1f83dc5ee907d2d5932",
             "screen_baked": true,
@@ -860,6 +912,58 @@
           }
         ],
         "screen_baked": true
+      },
+      "monitor-approach": {
+        "fps": 30,
+        "frames": 91,
+        "source_start": 2340,
+        "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/monitor-approach/00000.webp",
+        "variants": [
+          {
+            "codec": "hevc",
+            "type": "video/mp4; codecs=\"hvc1.2.4.L120.90\"",
+            "frames": 91,
+            "fps": 30,
+            "width": 1080,
+            "height": 1920,
+            "bit_depth": 10,
+            "color": "sRGB transfer / BT.709 primaries and matrix / SDR limited range",
+            "color_transfer": 13,
+            "max_keyframe_gap": 6,
+            "validated": true,
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/monitor-approach/monitor-approach-hevc.mp4",
+            "bytes": 3749359,
+            "sha256": "045e3f0d8be50a94b5db9afc9cb9f0291be78e35c9be335c9958daa8e9d4e396",
+            "bitrate": 9888419,
+            "screen_baked": true,
+            "screen_power_frames": [
+              2370,
+              2424
+            ]
+          },
+          {
+            "codec": "h264",
+            "type": "video/mp4; codecs=\"avc1.640028\"",
+            "frames": 91,
+            "fps": 30,
+            "width": 1080,
+            "height": 1920,
+            "bit_depth": 8,
+            "color": "sRGB transfer / BT.709 primaries and matrix / SDR limited range",
+            "color_transfer": 13,
+            "max_keyframe_gap": 6,
+            "validated": true,
+            "src": "/media/production/final-table-approved-20w-monitor-power-04/mobile/monitor-approach/monitor-approach-h264.mp4",
+            "bytes": 5889880,
+            "sha256": "2a6d77eeef06fe610a91524ad3819cfe7f1fdeb0f7f7bb0b84a729f3c8d04280",
+            "bitrate": 15533749,
+            "screen_baked": true,
+            "screen_power_frames": [
+              2370,
+              2424
+            ]
+          }
+        ]
       }
     }
   }

@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { content as c } from './content';
 import { WebsiteBody } from './WebsiteBody';
 import { JunctionTransition } from './JunctionTransition';
+import { MonitorApproach } from './MonitorApproach';
 import {
   JUNCTION_END,
   DRIVE_FPS,
@@ -21,7 +22,15 @@ import {
   sampleJourney,
   createVideoScrubber,
 } from './journey-timeline';
-import { firstCoverFrame } from './screen-projection';
+import {
+  firstCoverFrame,
+  sampleQuad,
+  coverQuad,
+  blendQuad,
+  rectQuad,
+  quadMatrix,
+} from './screen-projection';
+import type { CSSProperties } from 'react';
 import { PortalNoise, usePortalHandoff } from './PortalHandoff';
 import tracking from './screen-tracking.json';
 function MainHero() {
@@ -341,6 +350,47 @@ export default function Home() {
       }),
   });
 
+  // Blend only after the physical bezel has left the viewport. Match the baked
+  // monitor typography at the start and the normal desktop hero at the end.
+  const desktopFade =
+    variant === 'desktop' && handoff.active
+      ? (() => {
+          const t = handoff.siteOpacity;
+          const mix = (a: number, b: number) => a + (b - a) * t;
+          const q = sampleQuad(tracking.desktop, presentedFrame);
+          if (!q) return undefined;
+          const source = {
+            width: mix(1280, view.width),
+            height: mix(720, view.height),
+          };
+          const matrix = quadMatrix(
+            source,
+            blendQuad(coverQuad(q, profiles.desktop, view), rectQuad(view), t),
+          );
+          return {
+            width: source.width,
+            height: source.height,
+            transform: matrix
+              ? 'matrix3d(' + matrix.join(',') + ')'
+              : undefined,
+            '--screen-font':
+              mix(64, Math.min(90, Math.max(40, view.width * 0.058))) + 'px',
+            '--screen-top': mix(120, 180) + 'px',
+            '--screen-side': mix(102.4, view.width * 0.08) + 'px',
+            '--screen-bottom': mix(60, 80) + 'px',
+            '--screen-heading-bottom': mix(32, 48) + 'px',
+            '--screen-letter-spacing': '.12em',
+            '--screen-label': '9px',
+            '--screen-copy': '13px',
+            '--screen-footer-display': 'flex',
+            '--screen-link-margin': '0px',
+            '--screen-giant':
+              mix(371.2, Math.min(450, Math.max(170, view.width * 0.29))) +
+              'px',
+          } as CSSProperties;
+        })()
+      : undefined;
+
   const poster =
     chapter === 0
       ? 'city'
@@ -548,6 +598,11 @@ export default function Home() {
             onLoadedData={() => setReady(true)}
             onError={() => setFailed(true)}
           />
+          <MonitorApproach
+            profile={variant}
+            time={scene.time}
+            requested={requestedMedia.monitor && !reduced}
+          />
           <MediaVideo
             aria-hidden="true"
             videoRef={portalFilm}
@@ -669,8 +724,13 @@ export default function Home() {
               <MainHero />
             </div>
           )}
-          {handoff.showSite && !reduced && (
-            <div className="responsive-screen" aria-hidden="true" inert>
+          {handoff.siteOpacity > 0 && !reduced && (
+            <div
+              className={desktopFade ? 'projected-screen' : 'responsive-screen'}
+              style={{ ...desktopFade, opacity: handoff.siteOpacity }}
+              aria-hidden="true"
+              inert
+            >
               <MainHero />
             </div>
           )}
@@ -710,7 +770,7 @@ export default function Home() {
           </span>
         </section>
       }
-      {handoff.active && !reduced && (
+      {handoff.active && variant === 'mobile' && !reduced && (
         <PortalNoise
           key={handoff.active.id}
           video={portalFilm}

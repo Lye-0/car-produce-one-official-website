@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { lockPageScroll } from './scroll-lock';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from 'react';
 import {
   portalDirection,
   portalTiming,
@@ -19,11 +26,14 @@ export function usePortalHandoff(input: Input) {
   latest.current = input;
   const suppressed = useRef<number | null>(null);
   const sequence = useRef(0);
+  const unlock = useRef<() => void>(() => {});
+  const [desktopBlend, setDesktopBlend] = useState(0);
   const [side, setSide] = useState<PortalSide>('camera');
   const [active, setActive] = useState<{ id: number; to: PortalSide } | null>(
     null,
   );
   const reset = (next: PortalSide) => {
+    unlock.current();
     suppressed.current = latest.current.requested;
     setActive(null);
     setSide(next);
@@ -52,27 +62,61 @@ export function usePortalHandoff(input: Input) {
     input.presented,
     input.coverAt,
     input.reduced,
+    input.profile,
     side,
     active,
   ]);
+  const finish = () => {
+    unlock.current();
+    if (!active) return;
+    setSide(active.to);
+    setActive(null);
+    // Keep rapid forward scrolling; only advance the remaining approach if still entering.
+    if (
+      active.to === 'site' &&
+      latest.current.requested >= latest.current.coverAt - PORTAL_RESET_MARGIN
+    )
+      latest.current.onArrive();
+  };
+  useLayoutEffect(() => {
+    if (!active || input.profile !== 'mobile' || input.reduced) return;
+    const release = lockPageScroll();
+    unlock.current = release;
+    return () => {
+      release();
+      if (unlock.current === release) unlock.current = () => {};
+    };
+  }, [active, input.profile, input.reduced]);
+  useLayoutEffect(() => {
+    if (!active || input.profile !== 'desktop' || input.reduced) return;
+    const from = side === 'site' ? 1 : 0,
+      to = active.to === 'site' ? 1 : 0;
+    const start = performance.now();
+    let frame = 0;
+    setDesktopBlend(from);
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / 320),
+        eased = t * t * (3 - 2 * t);
+      setDesktopBlend(from + (to - from) * eased);
+      if (t < 1) frame = requestAnimationFrame(tick);
+      else finish();
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [active, input.profile, input.reduced]);
   return {
     active,
-    showSite: side === 'site',
+    siteOpacity:
+      active && input.profile === 'desktop'
+        ? desktopBlend
+        : side === 'site'
+          ? 1
+          : 0,
     reset,
     swap: () => {
       if (active) setSide(active.to);
     },
-    finish: () => {
-      if (!active) return;
-      setSide(active.to);
-      setActive(null);
-      // Keep rapid forward scrolling; only advance the remaining approach if still entering.
-      if (
-        active.to === 'site' &&
-        latest.current.requested >= latest.current.coverAt - PORTAL_RESET_MARGIN
-      )
-        latest.current.onArrive();
-    },
+    finish,
   };
 }
 
@@ -160,23 +204,22 @@ export function PortalNoise({
       }
       ctx.globalAlpha = 1;
       ctx.save();
-      const beam = height * timing.reveal;
-      ctx.beginPath();
-      ctx.rect(0, beam, width, height - beam);
-      ctx.clip();
-      ctx.globalAlpha = timing.cover;
+      const strength = 1 - timing.settle;
+      ctx.globalAlpha = timing.cover * strength * strength;
       ctx.fillStyle = '#0b181c';
       ctx.fillRect(0, 0, width, height);
       for (let i = 0; i < pixels.data.length; i += 4) {
-        const v = 14 + Math.floor(Math.random() * 62);
+        const v = 14 + Math.floor(Math.random() * (18 + 44 * strength));
         pixels.data[i] = v * 0.55;
         pixels.data[i + 1] = v * 0.85;
         pixels.data[i + 2] = v;
-        pixels.data[i + 3] = 255;
+        pixels.data[i + 3] = Math.random() < strength ? 255 : 0;
       }
       gc.putImageData(pixels, 0, 0);
       ctx.imageSmoothingEnabled = false;
+      ctx.globalAlpha = timing.cover * strength;
       ctx.drawImage(grain, 0, 0, width, height);
+      ctx.globalAlpha = timing.cover * strength * strength;
       ctx.fillStyle = '#00101488';
       for (let y = Math.floor(elapsed / 12) % 4; y < height; y += 4)
         ctx.fillRect(0, y, width, 1);
@@ -190,14 +233,6 @@ export function PortalNoise({
         );
       }
       ctx.restore();
-      if (timing.reveal > 0) {
-        const glow = ctx.createLinearGradient(0, beam - 18, 0, beam + 12);
-        glow.addColorStop(0, '#86bdc900');
-        glow.addColorStop(0.6, '#86bdc966');
-        glow.addColorStop(1, '#86bdc900');
-        ctx.fillStyle = glow;
-        ctx.fillRect(0, beam - 18, width, 30);
-      }
       frame = requestAnimationFrame(draw);
     };
     draw(started);
