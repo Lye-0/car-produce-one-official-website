@@ -1,0 +1,41 @@
+{
+  "old_master_sha256": "4882dc89b1cea5c8cf95393006d05679442cd2e6ce10dbf1593906a62e7d03f3",
+  "new_master_sha256": "3d1f04d6f2aaa15d0da7e60e535270f3343ff9dfb2c444031024e742cc8f11dd",
+  "changed_object": "F05.Table.UpperGlass",
+  "changed_property": "Main table shadow-ray material and main magazine key light power",
+  "before": "unattenuated shadow visibility bypass",
+  "after": "shadow-ray-only warm partial transparent shader; camera shader retained",
+  "affected_scenes": [
+    "CPO_V18_SITE_MAIN"
+  ],
+  "unchanged_jobs": [
+    "drive",
+    "junction"
+  ],
+  "rerender_jobs": [
+    "route",
+    "portal",
+    "tools-idle",
+    "magazines-idle",
+    "monitor-idle"
+  ],
+  "source_bank": "final-glass-fixed-01",
+  "target_bank": "final-table-approved-20w",
+  "reason": "Approved preview: warm partial glass shadow transmission plus 20 W main magazine key light. Street duplicate light remains 43.2 W; street-scene comparison passed. Rerender all main-scene clips for direct and indirect lighting changes.",
+  "validation_images": [
+    "user-light-20w-1950.png",
+    "user-current-1230.png",
+    "user-current-1400.png",
+    "user-current-2390.png"
+  ],
+  "previous_master_sha256": "85a762dfc13ee8f386858114e48110bf7cb445af64750851279f2ce3d4006bb3",
+  "previous_target_bank": "final-table-glass-tone-03",
+  "shadow_transmission_linear_rgb": [
+    0.72,
+    0.676,
+    0.615
+  ],
+  "validation_image_folder": "output/approved-table-20w",
+  "main_magazine_key_watts": 20,
+  "scope_validation_report": "reports/approved-20w-preparation.json"
+}

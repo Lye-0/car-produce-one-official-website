@@ -1,0 +1,9 @@
+{
+  "source_master_sha256": "4882dc89b1cea5c8cf95393006d05679442cd2e6ce10dbf1593906a62e7d03f3",
+  "approved_master_sha256": "3d1f04d6f2aaa15d0da7e60e535270f3343ff9dfb2c444031024e742cc8f11dd",
+  "street_object_count": 11645,
+  "camera_samples": 12,
+  "street_signature_sha256": "8f05c5caaa3c9a7daa44c9a2aaf92d1ecbe7b9ae664bc48a568c2249e795d980",
+  "street_scene_comparison": "Object transforms, visibility, mesh topology counts, material assignments, lights and 12 camera samples unchanged",
+  "main_magazine_key_watts": 20.0
+}
