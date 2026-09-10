@@ -840,6 +840,9 @@ html {
 }
 .scroll-journey {
   touch-action: pan-y;
+  /* Identity filter keeps video and translucent cards in one compositing
+     surface, avoiding a video color-path change when the card appears. */
+  filter: brightness(1);
 }
 .scroll-journey[hidden] {
   display: none;

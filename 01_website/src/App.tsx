@@ -1,3 +1,8 @@
+import {
+  BASE_SCROLL_VIEWPORTS,
+  journeyScrollDistance,
+  journeyProgressFromScroll,
+} from './journey-scroll';
 import { MediaVideo } from './MediaVideo';
 import { getProductionClip, getProductionPoster } from './production-media';
 import { INITIAL_MEDIA_REQUESTS, requestNearbyMedia } from './media-loading';
@@ -112,6 +117,13 @@ export default function Home() {
       ? `/media/junction/${variant}/${name}?v=${JUNCTION_MEDIA_VERSION}`
       : undefined;
   const junction = sampleJunction(scene.junction, entryPhase.current ?? 0);
+  const scrollScale = journeyScrollDistance(1, entryPhase.current ?? 0);
+  function baseScrollHeight() {
+    const node = spacer.current;
+    return node
+      ? node.offsetHeight / Number(node.dataset.scrollScale ?? 1)
+      : window.innerHeight * BASE_SCROLL_VIEWPORTS;
+  }
   function go(next: number) {
     setMenu(false);
     if (window.location.hash)
@@ -120,10 +132,14 @@ export default function Home() {
         '',
         window.location.pathname + window.location.search,
       );
+    const target = CHAPTER_PROGRESS[Math.max(0, Math.min(4, next))];
+    if (target > 0 && target < 1 && entryPhase.current === null) {
+      entryPhase.current = city.current?.currentTime ?? 0;
+    }
     window.scrollTo({
       top:
-        (spacer.current?.offsetHeight ?? window.innerHeight * 12) *
-        CHAPTER_PROGRESS[Math.max(0, Math.min(4, next))],
+        baseScrollHeight() *
+        journeyScrollDistance(target, entryPhase.current ?? 0),
       behavior: 'instant',
     });
   }
@@ -200,11 +216,21 @@ export default function Home() {
     let frame = 0;
     const sync = () => {
       frame = 0;
-      const height = spacer.current?.offsetHeight ?? window.innerHeight * 12;
-      const progress = window.scrollY / height;
-      if (progress > 0 && lastProgress.current === 0) {
+      const height = baseScrollHeight();
+      const distance = window.scrollY / height;
+      if (
+        distance > 0 &&
+        distance <
+          journeyScrollDistance(1, entryPhase.current ?? 0) - 1 / height &&
+        lastProgress.current === 0 &&
+        entryPhase.current === null
+      ) {
         entryPhase.current = city.current?.currentTime ?? 0;
       }
+      const progress = journeyProgressFromScroll(
+        distance,
+        entryPhase.current ?? 0,
+      );
       const next = sampleJourney(progress, entryPhase.current ?? 0);
       if (next.progress === 0) {
         cityDriver.current?.release();
@@ -254,8 +280,10 @@ export default function Home() {
     scrubber.current = driver;
     portalScrubber.current = portalDriver;
     const time = sampleJourney(
-      window.scrollY /
-        (spacer.current?.offsetHeight ?? window.innerHeight * 12),
+      journeyProgressFromScroll(
+        window.scrollY / baseScrollHeight(),
+        entryPhase.current ?? 0,
+      ),
       entryPhase.current ?? 0,
     ).time;
     driver.seek(time);
@@ -750,7 +778,13 @@ export default function Home() {
           </span>
         </section>
       }
-      <div ref={spacer} className="journey-scroll-space" aria-hidden="true" />
+      <div
+        ref={spacer}
+        className="journey-scroll-space"
+        aria-hidden="true"
+        data-scroll-scale={scrollScale}
+        style={{ height: `${BASE_SCROLL_VIEWPORTS * 100 * scrollScale}svh` }}
+      />
       <main ref={main} tabIndex={-1} className="main-site" inert={!entered}>
         <MainHero />
         <WebsiteBody
