@@ -1,46 +1,38 @@
 # CAR PRODUCE ONE 制作フォルダ
 
-今後の作業場所はこのフォルダです。
-`C:\Users\kawau\dev\car-produce-one-official-website`
+## 現在の構成
 
-| やりたいこと | 開くもの |
+| フォルダ | 内容 |
 |---|---|
-| サイトをローカルで確認 | `OPEN_PREVIEW.cmd` |
-| 最新の3Dシーンを編集 | `OPEN_BLENDER.cmd` → `02_render/scene/CPO_MASTER.blend` |
-| 最終画質でレンダリング | `RENDER.cmd`（まず 1 の確認、次に 2 のテスト） |
-| レンダリングの設定・手順を見る | `02_render/RENDER_GUIDE.md` |
+| `01_website` | React + Viteのサイト、配信素材、検証ツール |
+| `02_render` | 最新Blender MASTER、レンダリング・合成スクリプト、最終元画像 |
+| `03_reference` | 掲載内容の根拠と提供された参考資料 |
 
-## フォルダの役割
+- サイトの確認: `OPEN_PREVIEW.cmd`
+- 3Dシーンの編集: `OPEN_BLENDER.cmd` → `02_render/scene/CPO_MASTER.blend`
+- レンダリング: `RENDER.cmd`。操作は `02_render/RENDER_GUIDE.md` を参照。
+- サイトの文章・連絡先: `01_website/src/content.ts`
+- 映像・サイト接続: `01_website/src/App.tsx`、`PortalHandoff.tsx`
 
-- **01_website** — 現在のサイト。React + Vite。文章は `src/content.ts`、画面は `src/App.tsx`、見た目は `src/globals.css`。現在の確認用動画は `public/media/junction` と `public/media/stage4`。
-- **02_render** — 最新MASTER、画質設定、実行スクリプト、出力先。最終レンダリングの入口はここです。
-- **03_reference** — 掲載内容メモと、提供・収集した参考写真や資料。
-- **90_archive** — 過去版、旧Sitesプロジェクト、旧出力、作業途中のデータ。制作の履歴として保存。
+本番映像は横1920×1080・縦1080×1920、30fps。配信版は `01_website/src/production-media.json` で指定します。サイトと映像の詳細は `01_website/README.md` にあります。
 
-## サイト
+## 起動・検証
 
-ChatGPT Sitesへの依存を外しました。APIキーやSitesのプロジェクト情報なしで起動・ビルドできます。
-`OPEN_PREVIEW.cmd` を開き、表示されたローカルURLをブラウザーで開いてください。起動中のウィンドウは開いたままにします。終了は Ctrl+C。
+Node.js 22.13以上を使用し、`01_website` 内で `npm ci`、`npm run dev` を実行します。`npm test` でテスト、`npm run build` で素材検証・型検査・配布用ビルドを行います。公開先はまだ設定していません。
 
-別のPCでは Node.js 22.13以上を用意し、`01_website` 内で `npm ci`、`npm run dev`。配布用ファイルの生成は `npm run build`、出力先は `01_website/dist` です。新しい公開先はまだ設定していません。
-旧Sitesの非公開プレビューは過去のスナップショットとして残っていますが、今後の作業・更新先には使いません。
-
-## 現在の状態
-
-第5段階のサイト本体を実装済み。6サービスの説明、店舗紹介、アクセス、電話・LINE・QRの相談導線を整えました。横画面と390px・320pxの縦画面で操作を確認済みです。詳細は `01_website/README.md`。ビルドと23件のテストも成功しています。
-MASTERの外部リンク切れなし。実行メニューによる横・縦の代表フレームの低画質テスト済み。
-新しい街並みをテスト品質の動画としてサイトへ反映済みです。走行20秒・右折16秒、横640×360／縦360×640、30fpsです。最終画質の全編レンダリングはまだ実行していません。
-
-現在の接続は、固定した交差点を車と車載カメラが右折する構成です。CPO_MASTER.blendに走行・右折シーンを含め、RENDER.cmdの最終描画へ反映しています。詳細は01_website/README.mdと02_render/RENDER_GUIDE.mdをご覧ください。
-
-最新MASTERは20秒・160mの街並みループです。道路に向いた店舗・ホテル・中層建築に、下層部の壁・柱・基礎、大小の広告、背後の建物を追加しました。テスト品質の走行・右折動画を横・縦ともサイトへ反映しました。走行位置を道路中心から2.6m左へ移し、右折の終点は既存の到着位置に合わせています。確認画像は02_render/reports/streetscape-*.pngです。
-
-今回の追加修正: 新しい広告8種類、大小24面の追加広告、カフェ・ホテル・オフィス・ガレージ・閉店中の店舗・奥まったロビーの6種類の1階、街路樹8本、駐車区画の車1台、バス停と街路設備を配置しました。左車線の走行と路面表示を整え、古い地面による路面の遮蔽を除去しました。
-サイト側は、冒頭へ戻った際にスクロール用のシークを解除し、動画全体のループ再生へ戻す処理を修正しました。23件のテストと横・縦画面で復帰を確認済みです。CGの更新はMASTER・確認画像・サイトのテスト品質動画に反映済みです。
 ## 大容量データとGit管理
 
-ソース・設定・最新のBlender MASTER・掲載資料をGitで管理します。生成済み本番動画（`01_website/public/media/production/`）、レンダリング元画像（`02_render/output/`）、ローカルPython依存（`02_render/.python_vendor/`）、ビルド出力はGit管理外です。
+Gitではソース・設定・最新Blender MASTER・掲載資料を管理します。以下はローカルに保持する生成物・依存で、Gitへ追加しません。
 
-別のPCで本番動画を使う場合は、`01_website/src/production-media.json` の `version` と一致する配信フォルダをコピーしてください。その後 `01_website` で `npm ci`、`npm run build` を実行すると素材のハッシュ・フレーム数・形式が検証されます。生成済み素材をGitへ強制追加しないでください。
+- `01_website/public/media/production/`: 現在使う本番配信動画
+- `02_render/output/final-table-approved-20w/`: 再合成・再エンコード用の最終16-bit元画像
+- `02_render/.python_vendor/`: このPCの動画処理ライブラリ
+- `01_website/node_modules/`、`01_website/dist/`: 再生成できる依存とビルド出力
 
-最終フレーム `02_render/output/final-table-approved-20w/` と最新の `02_render/scene/CPO_MASTER.blend` は編集・再合成のため保持します。Python依存は `02_render/scripts/requirements-media.txt` から導入できます。このPCでは既存の依存ライブラリを `02_render/.python_vendor/` に保存しています。
+別のPCで本番動画を使う場合は、`01_website/src/production-media.json` の `version` と一致する配信フォルダをコピーしてから起動・ビルドしてください。再合成には最終元画像も必要です。Python依存は `02_render/scripts/requirements-media.txt` から導入できます。
+
+生成済み素材を `git add -f` で追加しないでください。大きな動画は通常のGit履歴へ入れるとプッシュを妨げます。
+
+## 整理方針
+
+現在使用する配信版・最終元画像・最新MASTERを保持します。旧プロジェクト、旧試作レンダリング、旧配信版は削除しました。最終元画像は再生成に時間がかかり、今後のPC版接続の検証にも使うため保持しています。

@@ -1,5 +1,0 @@
-# 接続方式の過去版
-
-建物の遮蔽を使った旧接続のコード・素材・検証記録です。現在のサイトと最終レンダリングでは使用しません。
-最新版は01_website/src/JunctionTransition.tsxと、02_render/scene/CPO_MASTER.blend内のCPO_JUNCTION_DRIVEです。
-このフォルダのスクリプトは移動前の相対パスを前提としているため、そのまま実行しないでください。
