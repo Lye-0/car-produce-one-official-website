@@ -22,16 +22,19 @@ Node.js 22.13以上を使用し、`01_website` 内で `npm ci`、`npm run dev` �
 
 ## 大容量データとGit管理
 
-Gitではソース・設定・最新Blender MASTER・掲載資料を管理します。以下はローカルに保持する生成物・依存で、Gitへ追加しません。
+ソース・設定・掲載資料・静止画は通常のGit、サイトで使う本番動画28本はGit LFSで管理します。`.gitattributes` と `.gitignore` は現在の配信マニフェストにある動画・ポスターのみを対象にします。動画はLFSポインター、ポスター20枚は通常のGitへ保存します。
 
-- `01_website/public/media/production/`: 現在使う本番配信動画
-- `02_render/output/final-table-approved-20w/`: 再合成・再エンコード用の最終16-bit元画像
-- `02_render/.python_vendor/`: このPCの動画処理ライブラリ
-- `01_website/node_modules/`、`01_website/dist/`: 再生成できる依存とビルド出力
+以下はGit／LFSの対象外です。
 
-別のPCで本番動画を使う場合は、`01_website/src/production-media.json` の `version` と一致する配信フォルダと、PC用 `01_website/public/media/production/desktop-live-screen-05/` とスマホ用 `01_website/public/media/production/mobile-live-screen-06/` をコピーしてから起動・ビルドしてください。再合成には最終元画像も必要です。Python依存は `02_render/scripts/requirements-media.txt` から導入できます。
+- `02_render/output/`: レンダリング元の連番画像、中間出力、エンコード出力
+- `01_website/public/media/production/` 内の書き出し用JSONなど、対象一覧にないファイル
+- `02_render/.python_vendor/`、`01_website/node_modules/`、`01_website/dist/`: 依存とビルド出力
 
-生成済み素材を `git add -f` で追加しないでください。大きな動画は通常のGit履歴へ入れるとプッシュを妨げます。
+別のPCではGit LFSを導入し、`git lfs install`、clone後に必要なら `git lfs pull` を実行してください。その後 `01_website` で `npm ci`、`npm run build` を実行すると動画本体も照合できます。LFSポインターだけの状態では素材検証が失敗します。
+
+新しい配信版を追加する場合は、対応するマニフェストを更新し、動画の正確なパスを `.gitattributes` のLFS対象へ追加してください。動画と必要なポスターのパスを `.gitignore` の許可一覧にも追加し、`git add`、`git lfs status`、`npm run build` で確認します。レンダリング出力を `git add -f` で追加しないでください。
+
+LFSは保管・履歴管理用です。公開時の動画配信にはR2を使用する予定で、R2へのアップロードとデプロイ設定は別途行います。
 
 ## 整理方針
 
