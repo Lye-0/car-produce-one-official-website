@@ -24,14 +24,34 @@ import {
 } from './journey-timeline';
 import { firstCoverFrame } from './screen-projection';
 import { DesktopPortal } from './DesktopPortal';
-import { desktopPortalMedia } from './desktop-portal-media';
+import { desktopPortalMedia, mobilePortalMedia } from './desktop-portal-media';
 import { PortalNoise, usePortalHandoff } from './PortalHandoff';
 import tracking from './screen-tracking.json';
-export function MainHero({ desktop = false }: { desktop?: boolean }) {
+export function MainHero({
+  desktop = false,
+  mobileWings = false,
+}: {
+  desktop?: boolean;
+  mobileWings?: boolean;
+}) {
   return (
     <section className={'main-hero' + (desktop ? ' desktop-live-hero' : '')}>
       {desktop && (
         <canvas className="desktop-hero-background" aria-hidden="true" />
+      )}
+      {mobileWings && (
+        <div className="mobile-monitor-wings" aria-hidden="true">
+          <div className="monitor-wing monitor-wing-left">
+            <img
+              src="/media/monitor-wings/tools.webp"
+              alt=""
+              decoding="async"
+            />
+          </div>
+          <div className="monitor-wing monitor-wing-right">
+            <img src="/media/monitor-wings/car.jpg" alt="" decoding="async" />
+          </div>
+        </div>
       )}
       <div className="hero-label eyebrow">
         CAR PRODUCE ONE — TOYONAKA, OSAKA
@@ -108,9 +128,11 @@ export default function Home() {
     [idleReady, setIdleReady] = useState<Record<string, boolean>>({});
   const [requestedMedia, setRequestedMedia] = useState(INITIAL_MEDIA_REQUESTS);
   const profile = variant ?? 'desktop';
-  const desktopEnabled = variant === 'desktop' && !reduced;
+  const liveEnabled = variant !== null && !reduced;
   const routeFps = getProductionClip(variant, 'route')?.fps ?? 8;
   const portalFps = getProductionClip(variant, 'portal')?.fps ?? 24;
+  const liveMedia =
+    profile === 'mobile' ? mobilePortalMedia : desktopPortalMedia;
   const scrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(null),
     portalScrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(
       null,
@@ -118,7 +140,7 @@ export default function Home() {
   const chapter = scene.chapter,
     entered =
       scene.complete &&
-      (!desktopEnabled || desktopEndReady || desktopBypass || failed),
+      (!liveEnabled || desktopEndReady || desktopBypass || failed),
     portal = scene.portal > 0,
     moving = !scene.hold && scene.progress > 0;
   const asset = (name: string) =>
@@ -217,7 +239,7 @@ export default function Home() {
   }
   useLayoutEffect(() => {
     const progress = pendingDesktopResize.current;
-    if (variant !== 'desktop' || progress === null) return;
+    if (variant === null || progress === null) return;
     pendingDesktopResize.current = null;
     window.scrollTo({
       top:
@@ -262,7 +284,6 @@ export default function Home() {
         entryPhase.current = city.current?.currentTime ?? 0;
       }
       const progress =
-        mobile.matches === false &&
         window.scrollY >= (spacer.current?.offsetHeight ?? Infinity) - 0.5
           ? 1
           : journeyProgressFromScroll(distance, entryPhase.current ?? 0);
@@ -292,7 +313,6 @@ export default function Home() {
     };
     const resize = () => {
       if (
-        !mobile.matches &&
         previousHeight !== window.innerHeight &&
         lastProgress.current > 0 &&
         lastProgress.current < 1
@@ -326,7 +346,7 @@ export default function Home() {
       : null;
     cityDriver.current = streetDriver;
     const driver = createVideoScrubber(v, routeFps),
-      portalDriver = createVideoScrubber(p, portalFps, variant === 'desktop');
+      portalDriver = createVideoScrubber(p, portalFps, variant !== null);
     scrubber.current = driver;
     portalScrubber.current = portalDriver;
     const time = sampleJourney(
@@ -351,7 +371,7 @@ export default function Home() {
           2430 + (Math.floor(p.currentTime * portalFps) / portalFps) * 30,
         ),
       );
-    if (variant !== 'desktop') {
+    if (variant === null) {
       if (typeof p.requestVideoFrameCallback === 'function')
         callback = p.requestVideoFrameCallback(receive);
       else p.addEventListener('seeked', fallback);
@@ -372,13 +392,13 @@ export default function Home() {
       setRequestedMedia((previous) =>
         requestNearbyMedia(
           previous,
-          desktopEnabled && !entered
+          liveEnabled && !entered
             ? Math.min(0.999, scene.progress)
             : scene.progress,
         ),
       );
     }
-  }, [scene.progress, entered, reduced, desktopEnabled]);
+  }, [scene.progress, entered, reduced, liveEnabled]);
   useEffect(() => {
     const update = () => setVisible(document.visibilityState === 'visible');
     update();
@@ -399,7 +419,7 @@ export default function Home() {
     requested: scene.time * 30,
     presented: portalReady ? presentedFrame : 2430,
     coverAt,
-    reduced: reduced || desktopEnabled,
+    reduced: reduced || liveEnabled,
     profile,
     onArrive: () =>
       window.scrollTo({
@@ -418,10 +438,10 @@ export default function Home() {
       setDesktopBypass(false);
       return;
     }
-    if (!desktopEnabled || entered) return;
+    if (!liveEnabled || entered) return;
     const timer = window.setTimeout(() => setDesktopBypass(true), 1500);
     return () => window.clearTimeout(timer);
-  }, [desktopEnabled, scene.complete, entered]);
+  }, [liveEnabled, scene.complete, entered]);
   const poster =
     chapter === 0
       ? 'city'
@@ -445,7 +465,7 @@ export default function Home() {
       <header
         className={
           'site-header ' +
-          (entered && (!desktopEnabled || pastHero) ? 'header-body' : '')
+          (entered && (!liveEnabled || pastHero) ? 'header-body' : '')
         }
       >
         <button
@@ -551,7 +571,7 @@ export default function Home() {
             'journey scroll-journey ' +
             (moving ? 'moving ' : '') +
             (portal ? 'portal ' : '') +
-            (desktopEnabled && scene.time >= 78 ? 'desktop-exact-journey' : '')
+            (liveEnabled && scene.time >= 78 ? 'desktop-exact-journey' : '')
           }
           aria-label="店舗を巡る映像"
         >
@@ -638,7 +658,7 @@ export default function Home() {
           <MonitorApproach
             profile={variant}
             time={scene.time}
-            requested={requestedMedia.monitor && !reduced && !desktopEnabled}
+            requested={requestedMedia.monitor && !reduced && !liveEnabled}
           />
           <MediaVideo
             aria-hidden="true"
@@ -652,15 +672,15 @@ export default function Home() {
             preload="metadata"
             src={asset('portal.mp4')}
             media={
-              desktopEnabled
-                ? desktopPortalMedia('portal')
+              liveEnabled
+                ? liveMedia('portal')
                 : getProductionClip(variant, 'portal')
             }
             enabled={requestedMedia.portal && !reduced}
             onLoadStart={() => setPortalReady(false)}
             onError={() => {
               setPortalReady(false);
-              if (desktopEnabled) setFailed(true);
+              if (liveEnabled) setFailed(true);
             }}
             onLoadedData={() => setPortalReady(true)}
           />
@@ -688,8 +708,8 @@ export default function Home() {
               preload="auto"
               src={asset(name + '-idle.mp4')}
               media={
-                desktopEnabled && name === 'monitor'
-                  ? desktopPortalMedia('monitor-idle')
+                liveEnabled && name === 'monitor'
+                  ? liveMedia('monitor-idle')
                   : getProductionClip(variant, name + '-idle')
               }
               enabled={requestedMedia[name] && !reduced}
@@ -716,7 +736,8 @@ export default function Home() {
           )}
 
           <DesktopPortal
-            enabled={desktopEnabled}
+            profile={profile}
+            enabled={liveEnabled}
             time={scene.time}
             hold={scene.hold === 'monitor'}
             complete={scene.complete}
@@ -786,7 +807,7 @@ export default function Home() {
               <MainHero />
             </div>
           )}
-          {handoff.siteOpacity > 0 && !reduced && !desktopEnabled && (
+          {handoff.siteOpacity > 0 && !reduced && !liveEnabled && (
             <div
               className="responsive-screen"
               style={{ opacity: handoff.siteOpacity }}
@@ -798,8 +819,8 @@ export default function Home() {
           )}
           <div
             className="journey-bottom"
-            style={desktopEnabled ? { opacity: desktopUiOpacity } : undefined}
-            inert={desktopEnabled && desktopUiOpacity === 0}
+            style={liveEnabled ? { opacity: desktopUiOpacity } : undefined}
+            inert={liveEnabled && desktopUiOpacity === 0}
           >
             <div className="chapter-nav" aria-label="映像の場面">
               {c.chapters.map((label, i) => (
@@ -830,7 +851,7 @@ export default function Home() {
           <span
             className="status"
             aria-live="polite"
-            style={desktopEnabled ? { opacity: desktopUiOpacity } : undefined}
+            style={liveEnabled ? { opacity: desktopUiOpacity } : undefined}
           >
             {failed
               ? '映像を読み込めませんでした。各場面とサービスは引き続きご覧いただけます。'
@@ -840,7 +861,7 @@ export default function Home() {
           </span>
         </section>
       }
-      {handoff.active && variant === 'mobile' && !reduced && (
+      {handoff.active && variant === 'mobile' && !reduced && !liveEnabled && (
         <PortalNoise
           key={handoff.active.id}
           video={portalFilm}
@@ -855,16 +876,16 @@ export default function Home() {
         aria-hidden="true"
         data-scroll-scale={scrollScale}
         style={{
-          height: desktopEnabled
+          height: liveEnabled
             ? `${Math.round(view.height * BASE_SCROLL_VIEWPORTS * scrollScale)}px`
             : `${BASE_SCROLL_VIEWPORTS * 100 * scrollScale}svh`,
         }}
       />
       <main ref={main} tabIndex={-1} className="main-site" inert={!entered}>
-        {desktopEnabled ? (
+        {liveEnabled ? (
           <div ref={heroSlot} className="desktop-hero-slot">
             <div ref={heroViewport} className="desktop-hero-viewport">
-              <MainHero desktop />
+              <MainHero desktop mobileWings={profile === 'mobile'} />
             </div>
           </div>
         ) : (

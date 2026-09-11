@@ -1094,3 +1094,41 @@ html {
 .desktop-hero-link > .text-link {
   pointer-events: none;
 }
+
+/* Side imagery belongs to the physical monitor, outside the native mobile page.
+   The endpoint viewport crops both wings without moving the central layout. */
+.mobile-monitor-wings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.monitor-wing {
+  position: absolute;
+  top: var(--desktop-bg-top);
+  height: var(--desktop-bg-height);
+  overflow: hidden;
+}
+.monitor-wing-left {
+  right: 100%;
+  width: calc(0px - var(--desktop-bg-left));
+  mask-image: linear-gradient(to right, #000 40%, transparent 100%);
+}
+.monitor-wing-right {
+  left: 100%;
+  width: calc(var(--desktop-bg-width) + var(--desktop-bg-left) - 100%);
+  mask-image: linear-gradient(to left, #000 40%, transparent 100%);
+}
+.monitor-wing img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.48;
+  filter: saturate(0.3) brightness(0.65);
+  mask-image: linear-gradient(transparent, #000 20%, #000 80%, transparent);
+}
+.monitor-wing-left img {
+  object-position: 57% center;
+}
+.monitor-wing-right img {
+  object-position: 24% center;
+}

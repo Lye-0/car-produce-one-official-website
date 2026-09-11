@@ -51,8 +51,8 @@ export function desktopProjection(
   rows: TrackingFrame[],
   frame: number,
   view: Viewport,
+  source: Viewport = { width: 1920, height: 1080 },
 ) {
-  const source = { width: 1920, height: 1080 };
   const normalized = sampleQuad(rows, frame),
     terminal = sampleQuad(rows, DESKTOP_SCREEN_END);
   if (!normalized || !terminal) return null;

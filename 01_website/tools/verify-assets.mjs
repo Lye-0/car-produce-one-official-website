@@ -160,52 +160,64 @@ if (production.production) {
   );
 }
 
-const desktop = JSON.parse(
-  readFileSync(resolve(root, 'src/desktop-portal-media.json'), 'utf8'),
-);
-for (const [job, frames] of [
-  ['portal', 271],
-  ['monitor-idle', 180],
+for (const [profile, version, width, height] of [
+  ['desktop', 'desktop-live-screen-05', 1920, 1080],
+  ['mobile', 'mobile-live-screen-06', 1080, 1920],
 ]) {
-  const asset = desktop[job];
-  const prefix = `/media/production/desktop-live-screen-05/${job}/`;
-  if (
-    !asset ||
-    asset.fps !== 30 ||
-    asset.frames !== frames ||
-    asset.variants?.length !== 2 ||
-    !asset.poster?.startsWith(prefix) ||
-    asset.poster.includes('..')
-  )
-    throw new Error(`Invalid desktop asset: ${job}`);
-  const poster = readFileSync(resolve(root, 'public', '.' + asset.poster));
-  if (
-    poster.toString('ascii', 0, 4) !== 'RIFF' ||
-    poster.toString('ascii', 8, 12) !== 'WEBP'
-  )
-    throw new Error(`Invalid desktop poster: ${job}`);
-  for (const codec of ['hevc', 'h264']) {
-    const variant = asset.variants.find((v) => v.codec === codec);
+  const desktop = JSON.parse(
+    readFileSync(resolve(root, `src/${profile}-portal-media.json`), 'utf8'),
+  );
+  for (const [job, frames] of [
+    ['portal', 271],
+    ['monitor-idle', 180],
+  ]) {
+    const asset = desktop[job];
+    const prefix = `/media/production/${version}/${job}/`;
     if (
-      !variant ||
-      !variant.validated ||
-      !variant.src.startsWith(prefix) ||
-      variant.src.includes('..') ||
-      variant.frames !== frames ||
-      variant.fps !== 30 ||
-      variant.width !== 1920 ||
-      variant.height !== 1080
+      !asset ||
+      asset.fps !== 30 ||
+      asset.frames !== frames ||
+      asset.variants?.length !== 2 ||
+      !asset.poster?.startsWith(prefix) ||
+      asset.poster.includes('..')
     )
-      throw new Error(`Invalid desktop variant: ${job}/${codec}`);
-    const data = readFileSync(resolve(root, 'public', '.' + variant.src));
+      throw new Error(`Invalid desktop asset: ${job}`);
+    const poster = readFileSync(resolve(root, 'public', '.' + asset.poster));
     if (
-      data.length !== variant.bytes ||
-      data.toString('ascii', 4, 8) !== 'ftyp' ||
-      createHash('sha256').update(data).digest('hex') !== variant.sha256
+      poster.toString('ascii', 0, 4) !== 'RIFF' ||
+      poster.toString('ascii', 8, 12) !== 'WEBP'
     )
-      throw new Error(
-        `Desktop video differs from validated export: ${job}/${codec}`,
-      );
+      throw new Error(`Invalid desktop poster: ${job}`);
+    for (const codec of ['hevc', 'h264']) {
+      const variant = asset.variants.find((v) => v.codec === codec);
+      if (
+        !variant ||
+        !variant.validated ||
+        !variant.src.startsWith(prefix) ||
+        variant.src.includes('..') ||
+        variant.frames !== frames ||
+        variant.fps !== 30 ||
+        variant.width !== width ||
+        variant.height !== height
+      )
+        throw new Error(`Invalid desktop variant: ${job}/${codec}`);
+      const data = readFileSync(resolve(root, 'public', '.' + variant.src));
+      if (
+        data.length !== variant.bytes ||
+        data.toString('ascii', 4, 8) !== 'ftyp' ||
+        createHash('sha256').update(data).digest('hex') !== variant.sha256
+      )
+        throw new Error(
+          `Desktop video differs from validated export: ${job}/${codec}`,
+        );
+    }
   }
+  console.log(
+    `Verified four ${profile} camera videos by SHA-256 and two posters.`,
+  );
 }
-console.log('Verified four desktop camera videos by SHA-256 and two posters.');
+
+for (const name of ['tools.webp', 'car.jpg']) {
+  const data = readFileSync(resolve(root, 'public/media/monitor-wings', name));
+  if (data.length === 0) throw new Error(`Missing monitor wing: ${name}`);
+}

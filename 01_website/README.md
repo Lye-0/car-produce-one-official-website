@@ -107,3 +107,16 @@ PC用の画面未合成素材は `src/desktop-portal-media.json` が参照する
 `npm test` は射影・終端・点灯を含む54件。`npm run build` はPC用4動画と2ポスターも照合します。`tests/desktop-portal-fixture.html` は同じMainHeroとDesktopPortalで終端前後を比較する開発用画面で、配布ビルドには含みません。
 
 Windows Edgeで16:9・16:10・21:9・正方形など9つの画面幅／DPR条件と実ブラウザーズーム75–200%の6条件を比較し、終端前後の画像差分は15条件すべて0でした。通常・高速・逆スクロール・停止・リサイズと、スマートフォン320/390/430pxの既存版との画像一致も確認しました。Safari／Firefoxおよび実スマートフォンでは未検証です。
+
+
+## スマートフォンの中央進入と左右の背景（2026-09-11、最新）
+
+スマートフォンも同一HTMLの連続投影へ移行しました。従来の450msノイズとスクロール固定は通常の接続では使用しません。中央は通常のスマートフォン用MainHeroを維持し、左右のモニター領域に工具の3Dイメージと提供写真の車体を配置します。左右は暗さ・彩度・マスクで背景へなじませ、終端でビューポートの外へ抜けます。左右には操作要素を配置しません。
+
+- `DesktopPortal.tsx` はprofileに応じて1920×1080／1080×1920の動画と四隅を扱う共通レンダラーです。`mobile-screen-tracking.json` は2340–2700フレームを含みます。
+- `mobile-portal-media.json` は画面未合成の `public/media/production/mobile-live-screen-06/` を参照します。元素材は `02_render/output/final-table-approved-20w/exports/delivery-srgb-nvenc-02/mobile/` のportal・monitor-idleです。
+- 左右の素材は `public/media/monitor-wings/`。tools.webpは既存の本番tools-idleポスター、car.jpgは提供素材 `03_reference/source_materials/photos/5.jpg` のコピーです。トリミングと暗さはCSSで調整します。
+- 動画シークはフレーム中央を指定し、表示中のrVFCに加え非表示中のseekedでも画像と投影を更新します。本文から映像へ戻ったときは省略状態を解除します。
+- 表示領域の高さが変わっても接近位置を保持し、端末の縦横切り替え時にprofileを更新します。背景Canvasのスマホ用解像度を1倍に抑え、画面外の大きな背景によるメモリ消費を抑えます。
+
+検証は60件の単体テスト、追加の縦動画4本のSHA-256照合、型チェックとビルド。Windows Edgeのスマホ相当表示で320/375/390/430pxのタッチ・高速/逆スクロール・停止・本文リンク・縦横回転・高さ変更を確認しました。終端比較は5条件すべて画像差分0、描画フレーム番号の不一致0でした。動きを抑える設定でも本文へ進めます。iPhone/SafariおよびAndroidの実機では未検証です。

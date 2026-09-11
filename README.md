@@ -29,7 +29,7 @@ Gitではソース・設定・最新Blender MASTER・掲載資料を管理しま
 - `02_render/.python_vendor/`: このPCの動画処理ライブラリ
 - `01_website/node_modules/`、`01_website/dist/`: 再生成できる依存とビルド出力
 
-別のPCで本番動画を使う場合は、`01_website/src/production-media.json` の `version` と一致する配信フォルダと、PC用 `01_website/public/media/production/desktop-live-screen-05/` をコピーしてから起動・ビルドしてください。再合成には最終元画像も必要です。Python依存は `02_render/scripts/requirements-media.txt` から導入できます。
+別のPCで本番動画を使う場合は、`01_website/src/production-media.json` の `version` と一致する配信フォルダと、PC用 `01_website/public/media/production/desktop-live-screen-05/` とスマホ用 `01_website/public/media/production/mobile-live-screen-06/` をコピーしてから起動・ビルドしてください。再合成には最終元画像も必要です。Python依存は `02_render/scripts/requirements-media.txt` から導入できます。
 
 生成済み素材を `git add -f` で追加しないでください。大きな動画は通常のGit履歴へ入れるとプッシュを妨げます。
 

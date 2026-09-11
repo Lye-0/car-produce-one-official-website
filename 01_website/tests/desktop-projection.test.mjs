@@ -91,3 +91,45 @@ test('PC scrubbing selects the last frame center despite rounded MP4 duration', 
   assert.equal(video.currentTime, 0.5 / 30);
   driver.dispose();
 });
+
+const mobileRows = (
+  await import('../src/mobile-screen-tracking.json', { with: { type: 'json' } })
+).default;
+for (const view of [
+  { width: 320, height: 568 },
+  { width: 375, height: 812 },
+  { width: 390, height: 844 },
+  { width: 430, height: 932 },
+  { width: 700, height: 500 },
+]) {
+  test(
+    'Mobile central page fills endpoint without stretching at ' +
+      view.width +
+      'x' +
+      view.height,
+    () => {
+      const source = { width: 1080, height: 1920 };
+      const end = desktopProjection(mobileRows, 2700, view, source);
+      assert.equal(end.transform, IDENTITY_TRANSFORM);
+      for (const point of [
+        [0, 0],
+        [view.width, 0],
+        [view.width, view.height],
+        [0, view.height],
+      ])
+        assert(containsPoint(end.quad, point));
+      for (let frame = 2340; frame <= 2700; frame += 3) {
+        const current = desktopProjection(mobileRows, frame, view, source);
+        end.quad.forEach(([x, y], i) => {
+          const mapped = projectPoint(current.matrix, x, y);
+          assert(
+            Math.hypot(
+              mapped[0] - current.quad[i][0],
+              mapped[1] - current.quad[i][1],
+            ) < 1e-6,
+          );
+        });
+      }
+    },
+  );
+}

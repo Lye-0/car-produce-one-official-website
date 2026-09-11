@@ -4,9 +4,11 @@ import {
   IDENTITY_TRANSFORM,
   screenPower,
 } from './desktop-projection';
-import tracking from './desktop-screen-tracking.json';
+import desktopTracking from './desktop-screen-tracking.json';
+import mobileTracking from './mobile-screen-tracking.json';
 
 type Props = {
+  profile?: 'desktop' | 'mobile';
   enabled: boolean;
   time: number;
   hold: boolean;
@@ -38,6 +40,14 @@ export function DesktopPortal(props: Props) {
       latest.current.onEndpoint(true);
       return;
     }
+    const tracking =
+      props.profile === 'mobile' ? mobileTracking : desktopTracking;
+    const source =
+      props.profile === 'mobile'
+        ? { width: 1080, height: 1920 }
+        : { width: 1920, height: 1080 };
+    const project = (frame: number, width: number, height: number) =>
+      desktopProjection(tracking, frame, { width, height }, source);
     const snapshots = new Map<HTMLVideoElement, Snapshot>();
     let disposed = false,
       endpoint = false,
@@ -66,7 +76,7 @@ export function DesktopPortal(props: Props) {
       hero.style.minHeight = height + 'px';
       const heroHeight = parseFloat(getComputedStyle(hero).height);
       slot.style.height = heroHeight + 'px';
-      const bounds = desktopProjection(tracking, 2700, { width, height })!.quad;
+      const bounds = project(2700, width, height)!.quad;
       const left = Math.floor(Math.min(0, ...bounds.map((p) => p[0]))) - 2;
       const top = Math.floor(Math.min(0, ...bounds.map((p) => p[1]))) - 2;
       hero.style.setProperty('--desktop-bg-left', left + 'px');
@@ -102,7 +112,8 @@ export function DesktopPortal(props: Props) {
       const background = hero.querySelector<HTMLCanvasElement>(
         '.desktop-hero-background',
       );
-      const dprForBackground = window.devicePixelRatio || 1;
+      const dprForBackground =
+        props.profile === 'mobile' ? 1 : window.devicePixelRatio || 1;
       const bgWidth =
         Math.ceil(Math.max(width, ...bounds.map((p) => p[0])) - left) + 2;
       const bgHeight =
@@ -150,10 +161,7 @@ export function DesktopPortal(props: Props) {
         resetProjection();
         return;
       }
-      const geometry = desktopProjection(tracking, shot.frame, {
-        width,
-        height,
-      });
+      const geometry = project(shot.frame, width, height);
       if (!geometry) {
         resetProjection();
         return;
@@ -280,6 +288,7 @@ export function DesktopPortal(props: Props) {
     };
   }, [
     props.enabled,
+    props.profile,
     props.route,
     props.portal,
     props.monitor,
