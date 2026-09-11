@@ -1,0 +1,133 @@
+{
+  "encoding_settings": {
+    "name": "delivery-nvenc-01",
+    "width": 1920,
+    "height": 1080,
+    "hevc_crf": 22,
+    "h264_crf": 19,
+    "preset": "slow",
+    "scroll_gop": 6,
+    "loop_gop": 30,
+    "backend": "nvenc",
+    "nvenc_preset": "p7",
+    "hevc_cq": 18,
+    "h264_cq": 17
+  },
+  "renderer_settings": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "samples": 48,
+    "noise_threshold": 0.05,
+    "min_samples": 8,
+    "color_depth": 16,
+    "color_mode": "RGB",
+    "denoiser": "OPENIMAGEDENOISE",
+    "motion_blur": false,
+    "device": "OPTIX",
+    "require_gpu": true,
+    "reserve_gib": 20,
+    "run_name": "final-optimized-02",
+    "denoising_use_gpu": true,
+    "max_bounces": 6,
+    "caustics_reflective": false,
+    "caustics_refractive": false
+  },
+  "hardware": "NVIDIA GeForce RTX 4080 SUPER",
+  "driver": "616.56",
+  "validated_profiles": [
+    "1920x1080 HEVC Main10",
+    "1920x1080 H264 High",
+    "1080x1920 HEVC Main10",
+    "1080x1920 H264 High"
+  ],
+  "tests_passed": 7,
+  "launcher_preflight": "PASS",
+  "gpu_failure_behavior": "Stop before scene rendering; no automatic software fallback",
+  "input_handling": "One PNG decode and transfer conversion shared by the two encoders; bounded frame memory",
+  "measurements": [
+    {
+      "source_set": "street-motion",
+      "frames": 12,
+      "cpu_dual_seconds": 11.441780600005586,
+      "gpu_shared_dual_seconds": 5.742136100001517,
+      "speedup": 1.99260003607413
+    },
+    {
+      "source_set": "interior-still",
+      "frames": 12,
+      "cpu_dual_seconds": 7.271490200007975,
+      "gpu_shared_dual_seconds": 3.235671700000239,
+      "speedup": 2.247289241367546
+    }
+  ],
+  "limitations": [
+    "Short 12-frame test, not full production throughput.",
+    "Interior uses one still repeated twelve times.",
+    "CPU CRF and NVENC CQ were tuned separately; encoded sizes differ.",
+    "PNG decode, colour conversion and validation still use the CPU."
+  ],
+  "first_frame_psnr": [
+    {
+      "source_set": "street-motion",
+      "backend": "software",
+      "codec": "hevc",
+      "psnr_srgb": 40.08017734898634,
+      "bytes": 250029
+    },
+    {
+      "source_set": "street-motion",
+      "backend": "software",
+      "codec": "h264",
+      "psnr_srgb": 36.16544177012448,
+      "bytes": 377970
+    },
+    {
+      "source_set": "street-motion",
+      "backend": "nvenc",
+      "codec": "hevc",
+      "psnr_srgb": 40.72580626642444,
+      "bytes": 454609
+    },
+    {
+      "source_set": "street-motion",
+      "backend": "nvenc",
+      "codec": "h264",
+      "psnr_srgb": 36.55483947686994,
+      "bytes": 709464
+    },
+    {
+      "source_set": "interior-still",
+      "backend": "software",
+      "codec": "hevc",
+      "psnr_srgb": 43.13108625421516,
+      "bytes": 81290
+    },
+    {
+      "source_set": "interior-still",
+      "backend": "software",
+      "codec": "h264",
+      "psnr_srgb": 36.152745274304706,
+      "bytes": 235064
+    },
+    {
+      "source_set": "interior-still",
+      "backend": "nvenc",
+      "codec": "hevc",
+      "psnr_srgb": 43.368412638201576,
+      "bytes": 169086
+    },
+    {
+      "source_set": "interior-still",
+      "backend": "nvenc",
+      "codec": "h264",
+      "psnr_srgb": 36.18942708468613,
+      "bytes": 317292
+    }
+  ],
+  "scripts_sha256": {
+    "media_encoding.py": "856e439a9514d38679485a57ae51da789b4403a7194d027d6b0816f8ef24724e",
+    "package_media.py": "ab4d24007cbd2e7922977454e55495a1bb99d6717286a7dedf9e572dbb98a762",
+    "media_runtime.py": "0e5c791f2952cca9fd7db79bcad87a580add01f38a44b10c2044313aef49d318"
+  }
+}

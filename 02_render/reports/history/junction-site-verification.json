@@ -1,0 +1,129 @@
+{
+  "verified_at_utc": "2026-09-09T14:27:09.534015+00:00",
+  "url": "http://127.0.0.1:5173/",
+  "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e",
+  "media_version": "streetlife-v4",
+  "site_media_updated": true,
+  "tests_passed": 23,
+  "asset_manifest_verified": true,
+  "typecheck_passed": true,
+  "production_build_passed": true,
+  "desktop_staged_interaction": {
+    "viewport": [
+      1280,
+      720
+    ],
+    "url": "http://127.0.0.1:5174/",
+    "scope": "staged copy of the installation source",
+    "media_version": "streetlife-v4",
+    "drive_duration_seconds": 20,
+    "turn_duration_seconds": 16.033333,
+    "drive_dimensions": [
+      640,
+      360
+    ],
+    "turn_dimensions": [
+      640,
+      360
+    ],
+    "initial_loop_observations_seconds": [
+      9.718268,
+      19.585973,
+      11.583454,
+      6.328135
+    ],
+    "scroll_stops": [
+      {
+        "scroll": 216,
+        "drive": 14.331007
+      },
+      {
+        "scroll": 792,
+        "turn": 3.651004
+      },
+      {
+        "scroll": 1080,
+        "turn": 8.311002
+      },
+      {
+        "scroll": 1584,
+        "route": 0.470011
+      }
+    ],
+    "reverse_scroll_reproduced_exact_times": true,
+    "return_autoplay": {
+      "scroll": 0,
+      "paused": false,
+      "first_time": 14.524971,
+      "after_wrap_time": 2.560907
+    },
+    "console_errors": [],
+    "console_warnings": [],
+    "visual_checks": [
+      "new streetscape and left lane",
+      "right turn",
+      "native arrival connection"
+    ],
+    "temporary_browser_and_server_closed": true,
+    "passed": true
+  },
+  "desktop_installed_site": {
+    "viewport": [
+      1280,
+      720
+    ],
+    "drive_duration": 20,
+    "turn_duration": 16.033333,
+    "video_dimensions": [
+      640,
+      360
+    ],
+    "new_version_urls_verified": true,
+    "arrival_scroll": 3456,
+    "arrival_route_time": 34.2,
+    "return_scroll": 0,
+    "return_time_after_wrap": 0.138245,
+    "return_paused": false,
+    "console_errors": [],
+    "console_warnings": []
+  },
+  "mobile_installed_site": {
+    "viewport": [
+      390,
+      844
+    ],
+    "drive_duration": 20,
+    "turn_duration": 16.033333,
+    "video_dimensions": [
+      360,
+      640
+    ],
+    "new_version_urls_verified": true,
+    "starting_phase": 4.611445,
+    "scroll_stops": [
+      {
+        "scroll": 253,
+        "drive": 8.991585
+      },
+      {
+        "scroll": 1266,
+        "turn": 6.417589
+      },
+      {
+        "scroll": 1857,
+        "route": 0.585975
+      }
+    ],
+    "stopping_scroll_stops_video": true,
+    "reverse_scroll_reproduces_exact_times": true,
+    "return_scroll": 0,
+    "return_first_time": 9.149021,
+    "return_time_after_wrap": 0.33355,
+    "return_paused": false,
+    "content_width": 375,
+    "console_errors": [],
+    "console_warnings": []
+  },
+  "viewport_override_reset": true,
+  "passed": true
+}

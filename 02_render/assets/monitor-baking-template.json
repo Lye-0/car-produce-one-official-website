@@ -1,0 +1,42 @@
+{
+  "desktop": {
+    "portal": {
+      "frames": 271,
+      "fps": 30,
+      "poster": "/media/images/fallback/desktop/portal.webp",
+      "variants": []
+    },
+    "monitor-idle": {
+      "frames": 180,
+      "fps": 30,
+      "poster": "/media/images/fallback/desktop/monitor-idle.webp",
+      "variants": []
+    },
+    "monitor-approach": {
+      "frames": 91,
+      "fps": 30,
+      "poster": "/media/images/fallback/desktop/monitor-approach.webp",
+      "variants": []
+    }
+  },
+  "mobile": {
+    "portal": {
+      "frames": 271,
+      "fps": 30,
+      "poster": "/media/images/fallback/mobile/portal.webp",
+      "variants": []
+    },
+    "monitor-idle": {
+      "frames": 180,
+      "fps": 30,
+      "poster": "/media/images/fallback/mobile/monitor-idle.webp",
+      "variants": []
+    },
+    "monitor-approach": {
+      "frames": 91,
+      "fps": 30,
+      "poster": "/media/images/fallback/mobile/monitor-approach.webp",
+      "variants": []
+    }
+  }
+}

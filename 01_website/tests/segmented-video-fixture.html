@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Route segment verification</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      font: 16px system-ui;
+    }
+    #stage {
+      width: 100vw;
+      height: 85vh;
+      position: relative;
+    }
+    video {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    video[data-media-active='false'] {
+      visibility: hidden;
+    }
+    label {
+      display: block;
+      padding: 1rem;
+    }
+    input {
+      width: min(70vw, 900px);
+    }
+  </style>
+  <div id="stage">
+    <video muted playsinline data-media-active="false"></video>
+    <video muted playsinline data-media-active="false"></video>
+  </div>
+  <label
+    >全体の時刻
+    <input
+      id="time"
+      type="range"
+      min="0"
+      max="80.966667"
+      step="0.0333333333"
+      value="0"
+    />
+    <output>0.000</output>s</label
+  >
+  <script type="module">
+    import manifest from '../src/media/manifests/journey.json';
+    import { createSegmentedPlayback } from '../src/media/segmented-playback.ts';
+    const query = new URLSearchParams(location.search);
+    const profile = query.get('profile') === 'mobile' ? 'mobile' : 'desktop';
+    const media = manifest.profiles[profile].route;
+    const videos = [...document.querySelectorAll('video')];
+    const fixture = (window.routeFixture = {
+      ready: false,
+      errors: 0,
+      media,
+      videos,
+    });
+    const controller = createSegmentedPlayback(videos, {
+      onReady: (value) => {
+        fixture.ready = value;
+      },
+      onError: () => {
+        fixture.errors++;
+      },
+    });
+    fixture.seek = (time) => {
+      controller.seek(time);
+      document.querySelector('output').value = time.toFixed(3);
+    };
+    fixture.setMedia = (asset, probe) => controller.setMedia(asset, probe);
+    fixture.dispose = () => controller.dispose();
+    document
+      .querySelector('input')
+      .addEventListener('input', (event) =>
+        fixture.seek(Number(event.target.value)),
+      );
+    fixture.seek(0);
+    await controller.setMedia(media, async () => query.get('codec') === 'hevc');
+  </script>
+</html>

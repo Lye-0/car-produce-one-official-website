@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "fixed_scene_objects": 15189,
+  "fixed_world_transform_max_delta": 0,
+  "camera_relative_to_vehicle_max_delta": 7.62939453125e-06,
+  "arrival_pose_max_error": 4.76837158203125e-07,
+  "turn_degrees": 90,
+  "max_heading_step_degrees": 0.7219342812544983,
+  "minimum_building_clearance_conservative_m": 3.120703814056709,
+  "closest_building": {
+    "object": "JT.Streetlife.tree6.V15 tree 01.15 branch",
+    "frame": 21,
+    "position": [
+      -88.5999984741211,
+      -200.04998779296875,
+      -0.09999925643205643
+    ]
+  },
+  "loop_seconds": 20,
+  "turn_seconds": 16,
+  "curve_speed_mps": 3.273053188758095,
+  "street_frontage_groups": [
+    "blade-east",
+    "brick-east",
+    "brick-west",
+    "office-west",
+    "oval-west",
+    "retail-east"
+  ],
+  "cycle_length_m": 160,
+  "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e",
+  "closed_ground_meshes": 85,
+  "grounded_foundations": 7,
+  "additional_advertisements_per_district": 24,
+  "background_buildings_per_district": 11,
+  "previous_motion_position_delta_m": 2.6168461397528984,
+  "previous_motion_heading_delta_radians": 0.22199259164811935,
+  "left_lane_offset_m": 2.6,
+  "street_level_uses": "{'brick-west': 'cafe', 'oval-west': 'hotel', 'office-west': 'office', 'retail-east': 'garage', 'brick-east': 'closed-shop', 'blade-east': 'recessed-lobby'}",
+  "street_trees": 8,
+  "parked_cars": 1,
+  "new_campaigns": 8
+}

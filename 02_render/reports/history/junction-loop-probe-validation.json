@@ -1,0 +1,15 @@
+{
+  "stage": "rendered_probe_frames",
+  "source_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e",
+  "desktop": {
+    "same_pose_rgb_mae": 0.6677517361111112,
+    "max_boundary_to_normal_ratio": 1.39612074190811,
+    "max_local_same_pose_error": 1.4988317757009346
+  },
+  "mobile": {
+    "same_pose_rgb_mae": 0.38408130787037037,
+    "max_boundary_to_normal_ratio": 1.2571937110649658,
+    "max_local_same_pose_error": 1.0174621804903494
+  },
+  "passed": true
+}

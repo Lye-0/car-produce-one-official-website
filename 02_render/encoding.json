@@ -1,0 +1,14 @@
+{
+  "name": "delivery-srgb-nvenc-02",
+  "width": 1920,
+  "height": 1080,
+  "hevc_crf": 22,
+  "h264_crf": 19,
+  "preset": "slow",
+  "scroll_gop": 6,
+  "loop_gop": 30,
+  "backend": "nvenc",
+  "nvenc_preset": "p7",
+  "hevc_cq": 18,
+  "h264_cq": 17
+}

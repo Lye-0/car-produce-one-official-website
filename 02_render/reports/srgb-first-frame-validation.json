@@ -1,0 +1,198 @@
+[
+  {
+    "profile": "desktop",
+    "job": "drive",
+    "codec": "hevc",
+    "psnr_db": 44.45,
+    "shadow_mean_error_255": -0.05
+  },
+  {
+    "profile": "desktop",
+    "job": "drive",
+    "codec": "h264",
+    "psnr_db": 41.73,
+    "shadow_mean_error_255": -1.994
+  },
+  {
+    "profile": "desktop",
+    "job": "junction",
+    "codec": "hevc",
+    "psnr_db": 44.09,
+    "shadow_mean_error_255": -0.037
+  },
+  {
+    "profile": "desktop",
+    "job": "junction",
+    "codec": "h264",
+    "psnr_db": 41.19,
+    "shadow_mean_error_255": -2.011
+  },
+  {
+    "profile": "desktop",
+    "job": "route",
+    "codec": "hevc",
+    "psnr_db": 43.15,
+    "shadow_mean_error_255": -0.05
+  },
+  {
+    "profile": "desktop",
+    "job": "route",
+    "codec": "h264",
+    "psnr_db": 40.74,
+    "shadow_mean_error_255": -1.955
+  },
+  {
+    "profile": "desktop",
+    "job": "portal",
+    "codec": "hevc",
+    "psnr_db": 50.95,
+    "shadow_mean_error_255": -0.01
+  },
+  {
+    "profile": "desktop",
+    "job": "portal",
+    "codec": "h264",
+    "psnr_db": 42.06,
+    "shadow_mean_error_255": -1.8
+  },
+  {
+    "profile": "desktop",
+    "job": "tools-idle",
+    "codec": "hevc",
+    "psnr_db": 46.3,
+    "shadow_mean_error_255": -0.027
+  },
+  {
+    "profile": "desktop",
+    "job": "tools-idle",
+    "codec": "h264",
+    "psnr_db": 40.48,
+    "shadow_mean_error_255": -2.156
+  },
+  {
+    "profile": "desktop",
+    "job": "magazines-idle",
+    "codec": "hevc",
+    "psnr_db": 49.86,
+    "shadow_mean_error_255": -0.065
+  },
+  {
+    "profile": "desktop",
+    "job": "magazines-idle",
+    "codec": "h264",
+    "psnr_db": 42.29,
+    "shadow_mean_error_255": -1.969
+  },
+  {
+    "profile": "desktop",
+    "job": "monitor-idle",
+    "codec": "hevc",
+    "psnr_db": 51.41,
+    "shadow_mean_error_255": -0.053
+  },
+  {
+    "profile": "desktop",
+    "job": "monitor-idle",
+    "codec": "h264",
+    "psnr_db": 42.05,
+    "shadow_mean_error_255": -1.821
+  },
+  {
+    "profile": "mobile",
+    "job": "drive",
+    "codec": "hevc",
+    "psnr_db": 44.65,
+    "shadow_mean_error_255": -0.045
+  },
+  {
+    "profile": "mobile",
+    "job": "drive",
+    "codec": "h264",
+    "psnr_db": 42.32,
+    "shadow_mean_error_255": -2.115
+  },
+  {
+    "profile": "mobile",
+    "job": "junction",
+    "codec": "hevc",
+    "psnr_db": 44.33,
+    "shadow_mean_error_255": -0.044
+  },
+  {
+    "profile": "mobile",
+    "job": "junction",
+    "codec": "h264",
+    "psnr_db": 41.98,
+    "shadow_mean_error_255": -2.105
+  },
+  {
+    "profile": "mobile",
+    "job": "route",
+    "codec": "hevc",
+    "psnr_db": 43.38,
+    "shadow_mean_error_255": -0.058
+  },
+  {
+    "profile": "mobile",
+    "job": "route",
+    "codec": "h264",
+    "psnr_db": 41.93,
+    "shadow_mean_error_255": -1.91
+  },
+  {
+    "profile": "mobile",
+    "job": "portal",
+    "codec": "hevc",
+    "psnr_db": 50.07,
+    "shadow_mean_error_255": -0.045
+  },
+  {
+    "profile": "mobile",
+    "job": "portal",
+    "codec": "h264",
+    "psnr_db": 42.18,
+    "shadow_mean_error_255": -1.785
+  },
+  {
+    "profile": "mobile",
+    "job": "tools-idle",
+    "codec": "hevc",
+    "psnr_db": 44.77,
+    "shadow_mean_error_255": -0.033
+  },
+  {
+    "profile": "mobile",
+    "job": "tools-idle",
+    "codec": "h264",
+    "psnr_db": 40.53,
+    "shadow_mean_error_255": -2.141
+  },
+  {
+    "profile": "mobile",
+    "job": "magazines-idle",
+    "codec": "hevc",
+    "psnr_db": 49.91,
+    "shadow_mean_error_255": -0.054
+  },
+  {
+    "profile": "mobile",
+    "job": "magazines-idle",
+    "codec": "h264",
+    "psnr_db": 41.36,
+    "shadow_mean_error_255": -2.047
+  },
+  {
+    "profile": "mobile",
+    "job": "monitor-idle",
+    "codec": "hevc",
+    "psnr_db": 50.42,
+    "shadow_mean_error_255": -0.041
+  },
+  {
+    "profile": "mobile",
+    "job": "monitor-idle",
+    "codec": "h264",
+    "psnr_db": 42.17,
+    "shadow_mean_error_255": -1.802
+  }
+]

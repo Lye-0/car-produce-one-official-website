@@ -1,0 +1,27 @@
+{
+  "camera_samples_compared": 36,
+  "max_camera_matrix_or_lens_change": 0.0,
+  "evaluated_mesh_closed_manifold": true,
+  "glass_volume_m3": 0.00248974294723555,
+  "single_solidify": true,
+  "door_parent_preserved": true,
+  "shared_main_junction_mesh": true,
+  "door_exit_samples": 146,
+  "closest_camera_distance": {
+    "frame": 380,
+    "camera": "V18_desktop_Route",
+    "distance_m": 0.2935445440022089
+  },
+  "status": "PASS",
+  "source_before_sha256": "7ccd0df887e3da00469f6e79901cb4c52b289a86eeab143b89fed4bc56102a8e",
+  "master_after_sha256": "4882dc89b1cea5c8cf95393006d05679442cd2e6ce10dbf1593906a62e7d03f3",
+  "backup": "C:\\Users\\kawau\\dev\\car-produce-one-official-website\\02_render\\output\\glass-fix-01\\CPO_MASTER_before_glass_fix.blend",
+  "production_run_name": "final-glass-fixed-01",
+  "old_output_retained": "output/final-optimized-02",
+  "stopped_after_valid_frames": 181,
+  "review_images": [
+    "output/glass-fix-01/desktop-drive-240.png",
+    "output/glass-fix-01/mobile-drive-240.png",
+    "output/glass-fix-01/desktop-exit-450.png"
+  ]
+}

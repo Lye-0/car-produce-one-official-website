@@ -1,53 +1,114 @@
-# 最終レンダリングの手順
+# 映像の制作とサイトへの反映
 
-## 使うファイル
+## 使用するファイル
 
-最新版は **scene/CPO_MASTER.blend** です。v16/v17/v18などの番号付きファイルは `90_archive` に保存した履歴です。
-MASTERには画像を内包してあり、過去のフォルダを参照せず開けます。
+| ファイル | 役割 |
+|---|---|
+| [scene/CPO_MASTER.blend](scene/CPO_MASTER.blend) | Blender原本 |
+| [settings.json](settings.json) | 解像度・描画品質・PNG出力名 |
+| [encoding.json](encoding.json) | 動画形式・品質・動画出力名 |
+| [scripts/render.ps1](scripts/render.ps1) | 操作メニューと実行環境 |
+| [scripts/render.py](scripts/render.py) | PNG描画 |
+| [scripts/package_media.py](scripts/package_media.py) | 動画生成・検証・サイト反映 |
+| [scripts/site_media_layout.py](scripts/site_media_layout.py) | 配信用ファイルとマニフェストの配置 |
 
-## 実行方法
+原本は[OPEN_BLENDER.cmd](../OPEN_BLENDER.cmd)で開けます。動画用のカメラとフレーム対応はスクリプトが設定するため、生成には[RENDER.cmd](../RENDER.cmd)を使用します。
 
-1. 必要ならルートの `OPEN_BLENDER.cmd` からMASTERを編集し、保存してBlenderを閉じます。
-2. `settings.json` で画質を設定します。初期値は横1920×1080／縦1080×1920、30fps、Cycles 128 samples、デノイズ有効です。`width` と `height` は横向きの寸法を指定します。縦向きは自動で入れ替わります。`fps` は30のまま使用してください。
-3. ルートの `RENDER.cmd` をダブルクリックします。
-4. `1` でファイル確認、`2` で横・縦各2枚の小さなテストを実行します。テストは `output/test` に保存されます。
-5. `3` が横のみ、`4` が縦のみ、`5` が両方の最終レンダリングです。出力は `output/final-01`（設定の `run_name`）です。
+## 実行環境
 
-Blender 5.2を使用します。別のインストール場所なら `scripts/render.ps1` 内の `blenderPath` を直してください。OPTIX対応GPUを優先し、利用できない場合はCPUを使います。
+Blender 5.2、OptiX対応GPU、NVENC対応ドライバー、Pythonを使用します。Blenderの実行パスは `scripts/render.ps1` で設定します。
 
-## 出力されるもの
-
-各方向に以下のPNG連番を生成します。透過対応RGBA、フレーム番号は00000から始まります。
-
-| フォルダ | 内容 | 連番の枚数 |
-|---|---|---:|
-| route | 入店からモニター前まで、81秒 | 2430 |
-| portal | モニター接近、終端を含む | 271 |
-| city | 窓の外の街、48秒ループ | 1440 |
-| tools-idle | 工具の前、6秒ループ | 180 |
-| magazines-idle | 雑誌の前、6秒ループ | 180 |
-| monitor-idle | モニターの前、6秒ループ | 180 |
-
-ループの `endpoint.png` は継ぎ目比較用です。動画に含めません。ループではカメラを固定し、反射光だけを変化させます。このため、MASTERで単にCtrl+F12を押す操作と、メニューで全素材を出す操作は異なります。
-
-`complete.json` があるフォルダはそのクリップの描画が完了しています。`progress.json` は最新の進捗、`render-settings.json` は使用したMASTERと設定の記録です。
-
-## 中断・再開と変更
-
-Ctrl+Cで中断できます。同じ設定・同じMASTERで同じメニューを再実行すると、完了済みPNGをスキップします。途中で壊れたPNGは描き直します。
-画質やMASTERを変更した場合は、`run_name` を `final-02` など新しい名前にしてください。異なる条件が同じ出力へ混ざる場合は停止します。
-PNG連番は高画質の原本です。十分なディスク空き容量を用意してください。今回の確認は低画質テストのみで、全編の所要時間・総容量は未計測です。
-
-個別クリップを再開する場合のPowerShell例（この02_renderフォルダ内で実行）:
+Pythonを指定する場合は、このフォルダで次を実行します。
 
 ```powershell
-./scripts/render.ps1 -Action final -Profile desktop -Job tools-idle
+$env:CPO_PYTHON = (Get-Command python).Source
+& $env:CPO_PYTHON -m pip install -r ./scripts/requirements-media.txt
 ```
 
-## サイトへ組み込む段階
+ランチャーは `CPO_PYTHON`、同梱ランタイム、PATHの順にPythonを選択します。
 
-このメニューは**最終画質のPNG原本を生成**します。サイト内の動画は自動で置き換えません。
-全素材が揃った後に、MP4への変換とサイト側のfps設定・画面追従の照合を行います。現在のroute/cityは8fps、portalと待機ループは24fpsの確認用動画なので、最終30fpsの動画だけを上書きするとスクロール位置がずれます。
-組み込み時は `01_website/src/App.tsx` のフレーム量子化設定、`src/journey-timeline.ts` と画面追従データを確認します。従来の変換処理は `90_archive/sites_project/tools/stage4/encode_assets.py` に資料として保管されています（旧パス・旧fpsのためそのまま実行しません）。
+## 現在の出力設定
 
-PNGの検品用に `output/test` の4枚を残しています。本番素材として使用しないでください。
+設定の参照元は `settings.json` と `encoding.json` です。
+
+- PCは1920×1080、スマートフォンは1080×1920、30fps。
+- 元画像は16-bit RGB PNG。Cycles最大48・最小8サンプル、ノイズ閾値0.05、OptiXとOpenImageDenoiseを使用。
+- 配信動画はHEVC 10-bitとH.264 8-bit。NVENC P7、HEVC CQ18／H.264 CQ17。
+- 色はsRGB伝達特性、BT.709色域・YUV行列、limited range。スクロール用GOPは6、ループ用GOPは30。
+
+| 出力 | 保存先 |
+|---|---|
+| PNG | `output/<run_name>/{desktop,mobile}/<job>/` |
+| 動画・ポスター・検証情報 | `output/<run_name>/exports/<name>/` |
+| 品質サンプル | `output/quality-<run_name>/` |
+
+現在保存されている本番PNGは `output/final-table-approved-20w/`、検証済み動画はその配下の `exports/delivery-srgb-nvenc-02/` にあります。
+
+## 実行する処理
+
+`RENDER.cmd` のメニューから選択します。
+
+| 番号 | 処理 |
+|---|---|
+| 1 | GPU・原本・空き容量・エンコーダーを確認 |
+| 2 | 小規模な描画テスト |
+| 3 | 本番品質の部分サンプルと動画を生成 |
+| 4 | 全編PNGと両形式の動画を生成 |
+| 5 | 完成済みPNGから両形式の動画を生成 |
+| 6 | 品質サンプルから時間・容量を見積もる |
+| 7 | 検証済みの全場面をローカルサイトへ反映 |
+| 8 | 出力フォルダを開く |
+
+生成時は1で環境を確認し、3で品質を確認してから4へ進みます。PNGを再利用する場合は、`encoding.json` に新しい `name` を設定して5を実行します。出力を確認後、7でサイトへ反映します。
+
+[RERENDER_TABLE.cmd](../RERENDER_TABLE.cmd)は、全編の生成とサイトへの反映を連続して実行する入口です。
+
+## 場面とフレーム数
+
+| job | 内容 | 各方向の動画フレーム数 |
+|---|---|---:|
+| drive | 街の走行ループ | 600 |
+| junction | 右折と合流 | 481 |
+| route | 到着から店内・モニター前まで | 2430 |
+| portal | モニターへの接近 | 271 |
+| tools-idle | 工具前の待機ループ | 180 |
+| magazines-idle | 雑誌前の待機ループ | 180 |
+| monitor-idle | モニター前の待機ループ | 180 |
+
+ループ検証用の `endpoint.png` を含む全PNGは8,652枚です。動画の時刻・カメラ対応は [scripts/render_contract.py](scripts/render_contract.py)で定義します。カメラやモニターの形状を変更するときは、サイト側の [portal/tracking](../01_website/src/portal/tracking)も同じシーンに合わせて更新します。
+
+## 再開と出力名
+
+同じ入力で再開すると、寸法・精度・CRCを確認したPNGと、ハッシュ・デコード検証に通った動画を再利用します。
+
+- 原本・描画設定・描画スクリプトを変更した場合は、新しい `run_name` を使用します。
+- エンコード設定・エンコード関連スクリプトを変更した場合は、新しい `name` を使用します。
+
+描画の一致条件は `render-settings.json`、動画生成の一致条件は `export-settings.json` に保存されます。検証が不一致を報告した場合は、変更した層の設定と出力名を確認します。必要容量は残りの画像と、設定された予備容量を基準に計算されます。
+
+## 保管
+
+原本・テクスチャ・設定・制作スクリプトはGitで管理します。完成したPNGとエンコード出力は `output/` に保持します。別のPCで既存PNGから動画を生成する場合は、対応するフレームバンクと検証情報をまとめてコピーします。Python依存は `scripts/requirements-media.txt` から導入できます。
+
+## サイトへの反映と検証
+
+メニュー7は全14クリップの両形式を検証してコピーし、routeのH.264を各2本へ分割します。最終的な配信物は動画30本とポスター14枚です。参照情報は [src/media/manifests](../01_website/src/media/manifests)へ書き込みます。
+
+| 内容 | 反映先 |
+|---|---|
+| 動画 | `01_website/public/media/videos/<profile>/<job>/<codec>.mp4`（routeのH.264は `h264-part-1.mp4`・`h264-part-2.mp4`） |
+| ポスター | `01_website/public/media/images/posters/<profile>/<job>.webp` |
+| 進行映像のマニフェスト | `journey.json` |
+| 接続映像のマニフェスト | `portal-desktop.json`・`portal-mobile.json` |
+
+反映後は `01_website` で `npm test` と `npm run build` を実行し、[サイト側の確認手順](../01_website/README.md)に沿って表示と操作を確認します。配信動画30本とポスター・マニフェストは、すべて通常Gitで保存します。
+
+分割処理は [scripts/split_route_media.py](scripts/split_route_media.py) が行います。40.4秒のキーフレームでパケットをコピーし、全フレームが元と一致することを確認してから反映します。元のH.264は `output/` のエンコード出力へ保持します。分割済みの配信を再度処理した場合はハッシュを確認して終了します。サイト側の仕様は[店内映像の分割配信](../01_website/docs/route-media.md)を参照してください。
+
+制作ツールのテストは、依存を導入したPythonでこのフォルダから実行できます。
+
+```powershell
+& $env:CPO_PYTHON -m unittest discover -s ./scripts -p "test_*.py"
+```
+
+入力の一致条件を調査するときは、[プロジェクト固有の知識](../agent-knowledge/INDEX.md)も参照します。

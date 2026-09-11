@@ -2,7 +2,19 @@
   "width": 1920,
   "height": 1080,
   "fps": 30,
-  "samples": 128,
+  "samples": 48,
+  "noise_threshold": 0.05,
+  "min_samples": 8,
+  "color_depth": 16,
+  "color_mode": "RGB",
+  "denoiser": "OPENIMAGEDENOISE",
+  "motion_blur": false,
   "device": "OPTIX",
-  "run_name": "final-01"
+  "require_gpu": true,
+  "reserve_gib": 20,
+  "run_name": "final-table-approved-20w",
+  "denoising_use_gpu": true,
+  "max_bounces": 6,
+  "caustics_reflective": false,
+  "caustics_refractive": false
 }

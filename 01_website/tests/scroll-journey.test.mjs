@@ -4,7 +4,7 @@ import {
   sampleJourney,
   createVideoScrubber,
   HOLD_RANGES,
-} from '../src/journey-timeline.ts';
+} from '../src/journey/timeline.ts';
 class Decoder {
   duration = 90;
   readyState = 4;
@@ -35,10 +35,42 @@ class Decoder {
     this.listeners.get('seeked')?.();
   }
 }
+test('returning to autoplay releases old seeks across repeated native loop boundaries', () => {
+  const v = new Decoder();
+  v.duration = 10;
+  const driver = createVideoScrubber(v);
+  driver.seek(9.875);
+  v.complete();
+  driver.release();
+  const count = v.writes.length;
+  for (let cycle = 0; cycle < 3; cycle++) {
+    v.time = 0;
+    v.complete();
+    assert.equal(v.time, 0);
+    assert.equal(v.writes.length, count);
+    v.time = 5;
+    v.listeners.get('loadeddata')?.();
+    assert.equal(v.time, 5);
+  }
+  driver.seek(2.5);
+  v.complete();
+  assert.equal(v.time, 2.5);
+  driver.dispose();
+});
+test('release cancels a queued seek before an in-flight decoder completes', () => {
+  const v = new Decoder(),
+    driver = createVideoScrubber(v);
+  driver.seek(8);
+  driver.seek(3);
+  driver.release();
+  v.complete();
+  assert.deepEqual(v.writes, [8]);
+  driver.dispose();
+});
 test('partial forward scroll positions the camera between chapter stops', () => {
-  const a = sampleJourney(0.1),
-    b = sampleJourney(0.11),
-    c = sampleJourney(0.12);
+  const a = sampleJourney(0.22),
+    b = sampleJourney(0.23),
+    c = sampleJourney(0.24);
   assert.ok(a.time < b.time && b.time < c.time);
   assert.ok(c.time < 35.5);
 });

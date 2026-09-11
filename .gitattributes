@@ -1,0 +1,2 @@
+# Runtime videos are ordinary Git binaries; do not apply LFS or text conversion.
+01_website/public/media/videos/**/*.mp4 -text -filter -diff -merge

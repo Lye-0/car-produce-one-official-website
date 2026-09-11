@@ -1,16 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import tracking from '../src/screen-tracking.json' with { type: 'json' };
+import desktop from '../src/portal/tracking/desktop.json' with { type: 'json' };
+import mobile from '../src/portal/tracking/mobile.json' with { type: 'json' };
+const tracking = { desktop, mobile };
 import {
   sampleQuad,
   coverQuad,
   quadMatrix,
-  firstCoverFrame,
-  blendQuad,
   rectQuad,
-  containsPoint,
-  handoffMix,
-} from '../src/screen-projection.ts';
+} from '../src/portal/geometry.ts';
 const apply = (m, [x, y]) => {
   const w = m[3] * x + m[7] * y + m[15];
   return [(m[0] * x + m[4] * y + m[12]) / w, (m[1] * x + m[5] * y + m[13]) / w];
@@ -36,18 +34,6 @@ for (const [profile, media, view] of [
       }
     },
   );
-  test(
-    profile + ': handoff starts only after all bezel edges leave the viewport',
-    () => {
-      const f = firstCoverFrame(tracking[profile], media, view);
-      assert.ok(f < 2700);
-      const q = coverQuad(sampleQuad(tracking[profile], f), media, view);
-      assert.ok(rectQuad(view).every((p) => containsPoint(q, p)));
-      const end = blendQuad(q, rectQuad(view), 1),
-        m = quadMatrix(view, end);
-      for (const p of rectQuad(view)) assert.deepEqual(apply(m, p), p);
-    },
-  );
 }
 test('same frame and viewport reproduce the same projection when scrolling back', () => {
   const view = { width: 390, height: 844 },
@@ -57,11 +43,5 @@ test('same frame and viewport reproduce the same projection when scrolling back'
   const first = at(2580.5);
   at(2650);
   assert.deepEqual(at(2580.5), first);
-  assert.equal(sampleQuad(tracking.mobile, 2429), null);
-});
-
-test('the final HTML reaches identity despite a quantized last video frame', () => {
-  assert.equal(handoffMix(2640, 2700, 2650), 0);
-  assert.equal(handoffMix(2698.75, 2700, 2650), 1);
-  assert.equal(handoffMix(2670, 2675, 2650), 0.5);
+  assert.equal(sampleQuad(tracking.mobile, 2339), null);
 });
