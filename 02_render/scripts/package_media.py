@@ -122,6 +122,8 @@ def install():
   shutil.copy2(out/source,temporary);temporary.replace(target)
  for profile,clips in portals.items():write_json(manifests/f'portal-{profile}.json',clips)
  write_json(manifests/'journey.json',journey)
+ from split_route_media import install as split_routes
+ split_routes(website)
  print('PRODUCTION MEDIA ACTIVATED:',website/'public/media/videos')
 
 

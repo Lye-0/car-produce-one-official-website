@@ -1,6 +1,7 @@
 import { content as c } from '../content';
 import { MainHero } from '../components/MainHero';
 import { MediaVideo } from '../media/MediaVideo';
+import { ScrubMediaVideo } from '../media/ScrubMediaVideo';
 import { getProductionClip, getProductionPoster } from '../media/production';
 import { JunctionTransition } from './JunctionTransition';
 import { JUNCTION_END, JUNCTION_MEDIA_VERSION } from './junction';
@@ -10,6 +11,7 @@ export function Journey({ state }: { state: JourneyState }) {
   const {
     city,
     film,
+    filmSecond,
     portalFilm,
     heroViewport,
     heroSlot,
@@ -123,20 +125,17 @@ export function Journey({ state }: { state: JourneyState }) {
         }
         onReady={setTurnReady}
       />
-      <MediaVideo
-        aria-hidden="true"
+      <ScrubMediaVideo
         videoRef={film}
+        secondRef={filmSecond}
+        time={scene.time}
         className={
           'film interior ' +
           (ready && scene.time < 81 && !reduced && !failed ? 'visible' : ' ')
         }
-        muted
-        playsInline
-        preload="metadata"
         media={getProductionClip(variant, 'route')}
         enabled={requestedMedia.route && !reduced}
-        onLoadStart={() => setReady(false)}
-        onLoadedData={() => setReady(true)}
+        onReady={setReady}
         onError={() => setFailed(true)}
       />
       <MediaVideo
@@ -213,6 +212,7 @@ export function Journey({ state }: { state: JourneyState }) {
         entered={entered}
         bypass={portalBypass && scene.complete}
         route={film}
+        routeSecond={filmSecond}
         portal={portalFilm}
         monitor={monitor}
         viewport={heroViewport}

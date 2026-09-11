@@ -55,16 +55,37 @@ for (const profile of ['desktop', 'mobile']) {
         v.height !== height
       )
         throw new Error(`Invalid variant: ${profile}/${job}/${codec}`);
-      const file = local(v.src),
-        data = readFileSync(file);
+      const files = v.segments ?? [{ ...v, startFrame: 0 }];
+      let nextFrame = 0;
       if (
-        data.length !== v.bytes ||
-        data.toString('ascii', 4, 8) !== 'ftyp' ||
-        createHash('sha256').update(data).digest('hex') !== v.sha256
+        v.segments &&
+        (v.src || codec !== 'h264' || job !== 'route' || files.length !== 2)
       )
-        throw new Error(`Video differs from validated export: ${v.src}`);
-      expectedVideos.add(file);
-      videoCount++;
+        throw new Error('Unexpected segmented variant');
+      for (const part of files) {
+        if (
+          !Number.isInteger(part.frames) ||
+          part.frames <= 0 ||
+          part.startFrame !== nextFrame
+        )
+          throw new Error('Missing or overlapping segment frames');
+        nextFrame += part.frames;
+        const file = local(part.src),
+          data = readFileSync(file);
+        if (
+          data.length !== part.bytes ||
+          data.length >= 100 * 1024 * 1024 ||
+          data.toString('ascii', 4, 8) !== 'ftyp' ||
+          createHash('sha256').update(data).digest('hex') !== part.sha256
+        )
+          throw new Error(
+            `Video differs from validated export or exceeds 100 MiB: ${part.src}`,
+          );
+        expectedVideos.add(file);
+        videoCount++;
+      }
+      if (nextFrame !== asset.frames)
+        throw new Error(`Incomplete timeline: ${profile}/${job}/${codec}`);
     }
   }
   for (const url of Object.values(production.posters[profile])) poster(url);

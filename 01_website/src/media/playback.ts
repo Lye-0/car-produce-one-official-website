@@ -1,5 +1,8 @@
-export type MediaVariant = {
-  src: string;
+export type MediaSegment = { src: string; startFrame: number; frames: number };
+export type MediaVariant = (
+  | { src: string; segments?: undefined }
+  | { src?: undefined; segments: MediaSegment[] }
+) & {
   type: string;
   codec: 'hevc' | 'h264';
   width: number;
@@ -63,6 +66,12 @@ export async function preferredVariant(
     }
   }
   return fallback;
+}
+
+function singleFile(variant: MediaVariant): string {
+  if (variant.segments)
+    throw new Error('Segmented assets require ScrubMediaVideo.');
+  return variant.src;
 }
 
 // Owns source changes only. Scroll scrubbing continues to own the playhead after loading.
@@ -153,7 +162,7 @@ export function createMediaSourceController(
       if (disposed || ticket !== generation) return;
       pending = false;
       fallback = asset.variants.find((v) => v.codec === 'h264');
-      assign(candidate, candidate.src);
+      assign(candidate, singleFile(candidate));
     },
     handleError() {
       if (disposed || pending || !hasSource) return true;
@@ -164,7 +173,7 @@ export function createMediaSourceController(
       };
       const next = fallback;
       fallback = undefined;
-      assign(next, next.src);
+      assign(next, singleFile(next));
       return true;
     },
     syncPlaying,

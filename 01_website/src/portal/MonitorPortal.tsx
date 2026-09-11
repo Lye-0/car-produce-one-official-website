@@ -16,6 +16,7 @@ type Props = {
   entered: boolean;
   bypass: boolean;
   route: RefObject<HTMLVideoElement | null>;
+  routeSecond?: RefObject<HTMLVideoElement | null>;
   portal: RefObject<HTMLVideoElement | null>;
   monitor: RefObject<HTMLVideoElement | null>;
   viewport: RefObject<HTMLDivElement | null>;
@@ -146,11 +147,14 @@ export function MonitorPortal(props: Props) {
         if (!p.complete) signal(false);
         return;
       }
+      const activeRoute = [p.route.current, p.routeSecond?.current].find(
+        (video) => video && video.dataset.mediaActive !== 'false',
+      );
       const candidates = p.hold
-        ? [p.monitor.current, p.portal.current, p.route.current]
+        ? [p.monitor.current, p.portal.current, activeRoute]
         : p.time >= 81
           ? [p.portal.current]
-          : [p.route.current];
+          : [activeRoute];
       const shot = candidates
         .map((v) => (v ? snapshots.get(v) : undefined))
         .find(Boolean);
@@ -199,15 +203,18 @@ export function MonitorPortal(props: Props) {
     const cleanups: (() => void)[] = [];
     for (const [ref, start, fixed] of [
       [props.route, 0, false],
+      [props.routeSecond, 0, false],
       [props.portal, 2430, false],
       [props.monitor, 2430, true],
     ] as const) {
-      const video = ref.current;
+      const video = ref?.current;
       if (!video) continue;
       let callback = 0;
       const capture = (mediaTime: number) => {
         if (disposed || video.readyState < 2 || !video.videoWidth) return;
-        let frame = fixed ? 2430 : start + Math.round(mediaTime * 30);
+        const offset =
+          start === 0 ? Number(video.dataset.mediaStartFrame ?? 0) : start;
+        let frame = fixed ? 2430 : offset + Math.round(mediaTime * 30);
         if (start === 0 && frame === 2429) frame = 2430; // source-frame contract for route's last image
         if (frame < 2340) return;
         let shot = snapshots.get(video);
@@ -244,10 +251,18 @@ export function MonitorPortal(props: Props) {
         if (!video.seeking)
           capture(Math.floor(video.currentTime * 30 + 1e-4) / 30);
       };
+      const reset = () => {
+        snapshots.delete(video);
+        paint();
+      };
+      video.addEventListener('loadstart', reset);
+      video.addEventListener('routeframe', decoded);
       video.addEventListener('loadeddata', decoded);
       video.addEventListener('seeked', decoded);
       decoded();
       cleanups.push(() => {
+        video.removeEventListener('loadstart', reset);
+        video.removeEventListener('routeframe', decoded);
         video.removeEventListener('loadeddata', decoded);
         video.removeEventListener('seeked', decoded);
       });
@@ -287,6 +302,7 @@ export function MonitorPortal(props: Props) {
     props.enabled,
     props.profile,
     props.route,
+    props.routeSecond,
     props.portal,
     props.monitor,
     props.viewport,

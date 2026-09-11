@@ -20,6 +20,14 @@
 - files: `01_website/src/journey/timeline.ts`, `01_website/src/journey/useJourney.ts`, `01_website/tests/monitor-projection.test.mjs`
 - memory: `agent-knowledge/entries/2026-09-11-portal-frame-center-2b7d91.md`
 
+### 分割routeのモニター投影は全体フレームを使う
+- id: `rm-20260911-route-segment-projection`
+- type: `constraint`
+- maturity: `candidate`
+- tags: `video`, `segments`, `projection`, `global-frame`
+- files: `01_website/src/media/segmented-playback.ts`, `01_website/src/portal/MonitorPortal.tsx`, `01_website/src/media/manifests/journey.json` …
+- memory: `agent-knowledge/entries/2026-09-11-route-segment-projection-e07a6c.md`
+
 ## render-pipeline
 
 ### PNGと動画出力の一致条件を分けて判断する

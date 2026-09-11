@@ -123,6 +123,10 @@ button:disabled {
   isolation: isolate;
   touch-action: none;
 }
+.film.interior[data-media-active='false'] {
+  visibility: hidden;
+}
+
 .film {
   position: absolute;
   inset: 0;

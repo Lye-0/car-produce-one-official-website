@@ -3,7 +3,6 @@ import {
   journeyScrollDistance,
   journeyProgressFromScroll,
 } from './scroll';
-import { getProductionClip } from '../media/production';
 import { INITIAL_MEDIA_REQUESTS, requestNearbyMedia } from '../media/loading';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { content as c } from '../content';
@@ -17,6 +16,7 @@ import { desktopPortalMedia, mobilePortalMedia } from '../media/portal';
 export function useJourney() {
   const city = useRef<HTMLVideoElement>(null),
     film = useRef<HTMLVideoElement>(null),
+    filmSecond = useRef<HTMLVideoElement>(null),
     portalFilm = useRef<HTMLVideoElement>(null),
     main = useRef<HTMLElement>(null),
     spacer = useRef<HTMLDivElement>(null),
@@ -49,14 +49,12 @@ export function useJourney() {
   const [requestedMedia, setRequestedMedia] = useState(INITIAL_MEDIA_REQUESTS);
   const profile = variant ?? 'desktop';
   const liveEnabled = variant !== null && !reduced;
-  const routeFps = getProductionClip(variant, 'route')?.fps ?? 8;
   const liveMedia =
     profile === 'mobile' ? mobilePortalMedia : desktopPortalMedia;
   const portalFps = liveMedia('portal').fps;
-  const scrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(null),
-    portalScrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(
-      null,
-    );
+  const portalScrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(
+    null,
+  );
   const chapter = scene.chapter,
     entered =
       scene.complete &&
@@ -222,7 +220,6 @@ export function useJourney() {
               window.innerHeight) -
             100,
       );
-      scrubber.current?.seek(next.time);
       portalScrubber.current?.seek(Math.max(0, next.time - 81));
     };
     const scroll = () => {
@@ -255,16 +252,13 @@ export function useJourney() {
     };
   }, []);
   useEffect(() => {
-    const v = film.current,
-      p = portalFilm.current;
-    if (!v || !p) return;
+    const p = portalFilm.current;
+    if (!p) return;
     const streetDriver = city.current
       ? createVideoScrubber(city.current, DRIVE_FPS)
       : null;
     cityDriver.current = streetDriver;
-    const driver = createVideoScrubber(v, routeFps),
-      portalDriver = createVideoScrubber(p, portalFps, variant !== null);
-    scrubber.current = driver;
+    const portalDriver = createVideoScrubber(p, portalFps, variant !== null);
     portalScrubber.current = portalDriver;
     const time = sampleJourney(
       journeyProgressFromScroll(
@@ -273,17 +267,14 @@ export function useJourney() {
       ),
       entryPhase.current ?? 0,
     ).time;
-    driver.seek(time);
     portalDriver.seek(Math.max(0, time - 81));
     return () => {
-      driver.dispose();
       streetDriver?.dispose();
       cityDriver.current = null;
       portalDriver.dispose();
-      scrubber.current = null;
       portalScrubber.current = null;
     };
-  }, [routeFps, portalFps, variant]);
+  }, [portalFps, variant]);
   useEffect(() => {
     if (!reduced && !entered) {
       setRequestedMedia((previous) =>
@@ -331,6 +322,7 @@ export function useJourney() {
   return {
     city,
     film,
+    filmSecond,
     portalFilm,
     main,
     spacer,

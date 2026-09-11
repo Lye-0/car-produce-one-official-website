@@ -172,9 +172,6 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/videos/desktop/route/h264.mp4",
-            "bytes": 145733766,
-            "sha256": "ab92e4b92bb6f994ccf110690cbd15f8b92a932c2e0543c3c8b09f36dcd0478c",
             "encode_seconds": 541.512268800012,
             "encode_seconds_scope": "hevc+h264 pair",
             "shared_input_pass": true,
@@ -185,7 +182,28 @@
             "gop": 6,
             "preset": "p7",
             "bitrate": 14393458,
-            "source_digest": "4dcbbe573521ad407cb74978e823ceb59dfcd0aaf4fcf54e4d35bf38ac11c45b"
+            "source_digest": "4dcbbe573521ad407cb74978e823ceb59dfcd0aaf4fcf54e4d35bf38ac11c45b",
+            "source_file": {
+              "sha256": "ab92e4b92bb6f994ccf110690cbd15f8b92a932c2e0543c3c8b09f36dcd0478c",
+              "bytes": 145733766,
+              "lossless_split": true
+            },
+            "segments": [
+              {
+                "src": "/media/videos/desktop/route/h264-part-1.mp4",
+                "startFrame": 0,
+                "frames": 1212,
+                "bytes": 75905585,
+                "sha256": "c49e7684305f10217cc0666412822290023263608845085bbcad3196eda3650b"
+              },
+              {
+                "src": "/media/videos/desktop/route/h264-part-2.mp4",
+                "startFrame": 1212,
+                "frames": 1218,
+                "bytes": 69829159,
+                "sha256": "81460f3f683b4a41cb7c399bca968fa7bef113cb6800ce4bbad56a717fee56d8"
+              }
+            ]
           }
         ]
       },
@@ -484,9 +502,6 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/videos/mobile/route/h264.mp4",
-            "bytes": 148161416,
-            "sha256": "2d4b46587b9cb977592fdcb45478bcc3154dde02893fa9029b2d0ab7c5e469cf",
             "encode_seconds": 556.3414994999912,
             "encode_seconds_scope": "hevc+h264 pair",
             "shared_input_pass": true,
@@ -497,7 +512,28 @@
             "gop": 6,
             "preset": "p7",
             "bitrate": 14633226,
-            "source_digest": "79efa70bb965151e8aa04883df88e5edd651e814620e48c861150dd182f22e08"
+            "source_digest": "79efa70bb965151e8aa04883df88e5edd651e814620e48c861150dd182f22e08",
+            "source_file": {
+              "sha256": "2d4b46587b9cb977592fdcb45478bcc3154dde02893fa9029b2d0ab7c5e469cf",
+              "bytes": 148161416,
+              "lossless_split": true
+            },
+            "segments": [
+              {
+                "src": "/media/videos/mobile/route/h264-part-1.mp4",
+                "startFrame": 0,
+                "frames": 1212,
+                "bytes": 77317520,
+                "sha256": "f9ec8056a220a097315beb916e5c1934afe12342a8cdb66379c490aa1fa2cf48"
+              },
+              {
+                "src": "/media/videos/mobile/route/h264-part-2.mp4",
+                "startFrame": 1212,
+                "frames": 1218,
+                "bytes": 70844790,
+                "sha256": "556adafae3246795bb1725f3cfdd992e774cf8a8e6baee09ecec1bc84cb68a0e"
+              }
+            ]
           }
         ]
       },

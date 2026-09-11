@@ -4,11 +4,9 @@ React + Viteで構成した店舗サイトです。掲載内容の編集、ブ�
 
 ## 起動
 
-Node.js 24とGit LFSを使用します。リポジトリを取得したら、ルートで次を実行します。
+Node.js 24を使用します。動画を含めて通常Gitで管理しているため、リポジトリを取得したらルートで次を実行します。
 
 ```powershell
-git lfs install --local
-git lfs pull
 cd 01_website
 npm ci
 npm run dev
@@ -41,15 +39,17 @@ npm run dev
 
 | 素材 | 配置・管理 |
 |---|---|
-| 配信動画28本 | `public/media/videos/{desktop,mobile}/{場面}/{hevc,h264}.mp4`・Git LFS |
+| 配信動画30本 | `public/media/videos/{desktop,mobile}/{場面}/`・全30本を通常Gitで管理 |
 | ポスター・写真・QR | [public/media/images](public/media/images)・通常のGit |
 | 参照先・フレーム数・SHA-256 | [src/media/manifests](src/media/manifests)・通常のGit |
 | レンダリング元画像 | `02_render/output/`・ローカル保管 |
 | 依存とビルド出力 | `node_modules/`・`dist/`・各PCで再生成 |
 
-動画は7場面×2方向×2形式です。更新時は動画本体、対応するマニフェスト、ポスターを一組としてそろえます。新しい動画パスを追加するときは、[.gitattributes](../.gitattributes)と[.gitignore](../.gitignore)の対象一覧も更新します。コミット前には `git lfs status` で動画がLFS対象になっていることを確認します。
+動画は7場面×2方向×2形式で、routeのH.264だけを各2本に分割しています。更新時は動画本体、対応するマニフェスト、ポスターを一組としてそろえます。新しい動画パスを追加するときは、[.gitattributes](../.gitattributes)と[.gitignore](../.gitignore)の対象一覧も更新します。分割の時間軸、先読み、モニター投影との関係は[店内映像の分割配信](docs/route-media.md)を参照してください。
 
 動画の生成とサイトへの反映は[制作ガイド](../02_render/RENDER_GUIDE.md)を参照してください。
+
+移行前のコミットにはGit LFSの参照が残っています。過去の状態を取得する場合は当時のLFSデータが必要ですが、現在の配信素材の取得・ビルドでは使用しません。
 
 ## 検証とビルド
 
@@ -61,7 +61,7 @@ npm run build
 npm run preview
 ```
 
-`npm run build` は配信素材のハッシュ・形式・追跡データを照合し、型チェック後に `dist` を生成します。`public/media` にマニフェスト未登録の動画がある場合も検出します。ビルド結果は[確認用URL](http://127.0.0.1:4173/)で開けます。
+`npm run build` は配信素材のハッシュ・形式・100MiB未満のファイルサイズ・分割フレーム範囲・追跡データを照合し、型チェック後に `dist` を生成します。`public/media` にマニフェスト未登録の動画がある場合も検出します。ビルド結果は[確認用URL](http://127.0.0.1:4173/)で開けます。
 
 ブラウザーでは、各場面への移動、通常・高速・逆方向のスクロール、途中停止、モニターへの進入と退出、メニューと本文リンクを確認します。スマートフォンはタッチ操作・縦横切り替え・ブラウザーの上下バーによる高さ変更も対象です。
 

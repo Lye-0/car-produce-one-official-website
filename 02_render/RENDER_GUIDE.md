@@ -92,16 +92,18 @@ $env:CPO_PYTHON = (Get-Command python).Source
 
 ## サイトへの反映と検証
 
-メニュー7は全14クリップの両形式を検証し、動画28本とポスター14枚をサイトへコピーします。参照情報は [src/media/manifests](../01_website/src/media/manifests)へ書き込みます。
+メニュー7は全14クリップの両形式を検証してコピーし、routeのH.264を各2本へ分割します。最終的な配信物は動画30本とポスター14枚です。参照情報は [src/media/manifests](../01_website/src/media/manifests)へ書き込みます。
 
 | 内容 | 反映先 |
 |---|---|
-| 動画 | `01_website/public/media/videos/<profile>/<job>/<codec>.mp4` |
+| 動画 | `01_website/public/media/videos/<profile>/<job>/<codec>.mp4`（routeのH.264は `h264-part-1.mp4`・`h264-part-2.mp4`） |
 | ポスター | `01_website/public/media/images/posters/<profile>/<job>.webp` |
 | 進行映像のマニフェスト | `journey.json` |
 | 接続映像のマニフェスト | `portal-desktop.json`・`portal-mobile.json` |
 
-反映後は `01_website` で `npm test` と `npm run build` を実行し、[サイト側の確認手順](../01_website/README.md)に沿って表示と操作を確認します。動画はGit LFS、ポスターとマニフェストは通常のGitで保存します。
+反映後は `01_website` で `npm test` と `npm run build` を実行し、[サイト側の確認手順](../01_website/README.md)に沿って表示と操作を確認します。配信動画30本とポスター・マニフェストは、すべて通常Gitで保存します。
+
+分割処理は [scripts/split_route_media.py](scripts/split_route_media.py) が行います。40.4秒のキーフレームでパケットをコピーし、全フレームが元と一致することを確認してから反映します。元のH.264は `output/` のエンコード出力へ保持します。分割済みの配信を再度処理した場合はハッシュを確認して終了します。サイト側の仕様は[店内映像の分割配信](../01_website/docs/route-media.md)を参照してください。
 
 制作ツールのテストは、依存を導入したPythonでこのフォルダから実行できます。
 
