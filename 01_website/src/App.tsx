@@ -6,11 +6,10 @@ import {
 import { MediaVideo } from './MediaVideo';
 import { getProductionClip, getProductionPoster } from './production-media';
 import { INITIAL_MEDIA_REQUESTS, requestNearbyMedia } from './media-loading';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { content as c } from './content';
 import { WebsiteBody } from './WebsiteBody';
 import { JunctionTransition } from './JunctionTransition';
-import { MonitorApproach } from './MonitorApproach';
 import {
   JUNCTION_END,
   DRIVE_FPS,
@@ -22,11 +21,8 @@ import {
   sampleJourney,
   createVideoScrubber,
 } from './journey-timeline';
-import { firstCoverFrame } from './screen-projection';
 import { DesktopPortal } from './DesktopPortal';
 import { desktopPortalMedia, mobilePortalMedia } from './desktop-portal-media';
-import { PortalNoise, usePortalHandoff } from './PortalHandoff';
-import tracking from './screen-tracking.json';
 export function MainHero({
   desktop = false,
   mobileWings = false,
@@ -89,10 +85,6 @@ export function MainHero({
     </section>
   );
 }
-const profiles = {
-  desktop: { width: 1280, height: 720 },
-  mobile: { width: 720, height: 1280 },
-};
 export default function Home() {
   const city = useRef<HTMLVideoElement>(null),
     film = useRef<HTMLVideoElement>(null),
@@ -124,15 +116,14 @@ export default function Home() {
     [visible, setVisible] = useState(true);
   const [variant, setVariant] = useState<'desktop' | 'mobile' | null>(null),
     [view, setView] = useState({ width: 1280, height: 720 }),
-    [presentedFrame, setPresentedFrame] = useState(2430),
     [idleReady, setIdleReady] = useState<Record<string, boolean>>({});
   const [requestedMedia, setRequestedMedia] = useState(INITIAL_MEDIA_REQUESTS);
   const profile = variant ?? 'desktop';
   const liveEnabled = variant !== null && !reduced;
   const routeFps = getProductionClip(variant, 'route')?.fps ?? 8;
-  const portalFps = getProductionClip(variant, 'portal')?.fps ?? 24;
   const liveMedia =
     profile === 'mobile' ? mobilePortalMedia : desktopPortalMedia;
+  const portalFps = liveMedia('portal').fps;
   const scrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(null),
     portalScrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(
       null,
@@ -159,7 +150,6 @@ export default function Home() {
   }
   function go(next: number) {
     if (next < 4) {
-      handoff.reset('camera');
       setDesktopBypass(false);
       setDesktopEndReady(false);
     }
@@ -182,7 +172,6 @@ export default function Home() {
     });
   }
   function skip(id?: string) {
-    handoff.reset('site');
     setDesktopBypass(true);
     setMenu(false);
     const target = id ? document.getElementById(id) : main.current;
@@ -262,7 +251,6 @@ export default function Home() {
       setReady(false);
       setPortalReady(false);
       setIdleReady({});
-      setPresentedFrame(2430);
     };
     motionChange();
     profileChange();
@@ -358,24 +346,6 @@ export default function Home() {
     ).time;
     driver.seek(time);
     portalDriver.seek(Math.max(0, time - 81));
-    // Geometry follows the frame actually presented, including queued decoder seeks.
-    let callback = 0;
-    const receive: VideoFrameRequestCallback = (_, metadata) => {
-      setPresentedFrame(Math.min(2700, 2430 + metadata.mediaTime * 30));
-      callback = p.requestVideoFrameCallback(receive);
-    };
-    const fallback = () =>
-      setPresentedFrame(
-        Math.min(
-          2700,
-          2430 + (Math.floor(p.currentTime * portalFps) / portalFps) * 30,
-        ),
-      );
-    if (variant === null) {
-      if (typeof p.requestVideoFrameCallback === 'function')
-        callback = p.requestVideoFrameCallback(receive);
-      else p.addEventListener('seeked', fallback);
-    }
     return () => {
       driver.dispose();
       streetDriver?.dispose();
@@ -383,8 +353,6 @@ export default function Home() {
       portalDriver.dispose();
       scrubber.current = null;
       portalScrubber.current = null;
-      if (callback) p.cancelVideoFrameCallback(callback);
-      p.removeEventListener('seeked', fallback);
     };
   }, [routeFps, portalFps, variant]);
   useEffect(() => {
@@ -411,26 +379,6 @@ export default function Home() {
       : scene.hold === 'magazines'
         ? c.cards[1]
         : null;
-  const coverAt = useMemo(
-    () => firstCoverFrame(tracking[profile], profiles[profile], view),
-    [profile, view],
-  );
-  const handoff = usePortalHandoff({
-    requested: scene.time * 30,
-    presented: portalReady ? presentedFrame : 2430,
-    coverAt,
-    reduced: reduced || liveEnabled,
-    profile,
-    onArrive: () =>
-      window.scrollTo({
-        top: Math.max(
-          window.scrollY,
-          spacer.current?.offsetHeight ?? window.scrollY,
-        ),
-        behavior: 'instant',
-      }),
-  });
-
   const desktopUiOpacity = Math.max(0, Math.min(1, (86 - scene.time) / 2));
 
   useEffect(() => {
@@ -614,7 +562,6 @@ export default function Home() {
             poster={
               getProductionPoster(profile, 'city') ?? streetAsset('drive.jpg')
             }
-            src={streetAsset('drive.mp4')}
             media={getProductionClip(variant, 'drive')}
             enabled={!reduced}
             preload="auto"
@@ -648,17 +595,11 @@ export default function Home() {
             muted
             playsInline
             preload="metadata"
-            src={asset('route.mp4')}
             media={getProductionClip(variant, 'route')}
             enabled={requestedMedia.route && !reduced}
             onLoadStart={() => setReady(false)}
             onLoadedData={() => setReady(true)}
             onError={() => setFailed(true)}
-          />
-          <MonitorApproach
-            profile={variant}
-            time={scene.time}
-            requested={requestedMedia.monitor && !reduced && !liveEnabled}
           />
           <MediaVideo
             aria-hidden="true"
@@ -670,12 +611,7 @@ export default function Home() {
             muted
             playsInline
             preload="metadata"
-            src={asset('portal.mp4')}
-            media={
-              liveEnabled
-                ? liveMedia('portal')
-                : getProductionClip(variant, 'portal')
-            }
+            media={liveMedia('portal')}
             enabled={requestedMedia.portal && !reduced}
             onLoadStart={() => setPortalReady(false)}
             onError={() => {
@@ -706,9 +642,8 @@ export default function Home() {
               loop
               playsInline
               preload="auto"
-              src={asset(name + '-idle.mp4')}
               media={
-                liveEnabled && name === 'monitor'
+                name === 'monitor'
                   ? liveMedia('monitor-idle')
                   : getProductionClip(variant, name + '-idle')
               }
@@ -807,16 +742,6 @@ export default function Home() {
               <MainHero />
             </div>
           )}
-          {handoff.siteOpacity > 0 && !reduced && !liveEnabled && (
-            <div
-              className="responsive-screen"
-              style={{ opacity: handoff.siteOpacity }}
-              aria-hidden="true"
-              inert
-            >
-              <MainHero />
-            </div>
-          )}
           <div
             className="journey-bottom"
             style={liveEnabled ? { opacity: desktopUiOpacity } : undefined}
@@ -861,15 +786,6 @@ export default function Home() {
           </span>
         </section>
       }
-      {handoff.active && variant === 'mobile' && !reduced && !liveEnabled && (
-        <PortalNoise
-          key={handoff.active.id}
-          video={portalFilm}
-          direction={handoff.active.to}
-          onSwap={handoff.swap}
-          onComplete={handoff.finish}
-        />
-      )}
       <div
         ref={spacer}
         className="journey-scroll-space"

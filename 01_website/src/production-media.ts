@@ -14,6 +14,7 @@ export function getProductionPoster(
   profile: 'desktop' | 'mobile',
   scene: string,
 ): string | undefined {
+  if (scene === 'monitor') return manifest.posters[profile]['monitor-idle'];
   return getProductionClip(
     profile,
     scene === 'city' ? 'drive' : scene + '-idle',

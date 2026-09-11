@@ -1,52 +1,79 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, statSync, openSync, readSync, closeSync } from 'node:fs';
+import { readFileSync, statSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
-let checked = 0;
-for (const profile of ['desktop', 'mobile']) {
-  for (const name of [
-    'city.mp4',
-    'route.mp4',
-    'portal.mp4',
-    'tools-idle.mp4',
-    'magazines-idle.mp4',
-    'monitor-idle.mp4',
-    'city.jpg',
-    'tools.jpg',
-    'magazines.jpg',
-    'monitor.jpg',
-    'car-foreground.png',
-  ]) {
-    const path = resolve(root, 'public/media/stage4', profile, name),
-      stat = statSync(path);
-    if (!stat.isFile() || stat.size === 0)
-      throw new Error(`Missing media: ${profile}/${name}`);
-    if (name.endsWith('.mp4')) {
-      if (stat.size > 25 * 1024 * 1024)
-        throw new Error(`Media exceeds project file budget: ${name}`);
-      const file = openSync(path, 'r'),
-        header = Buffer.alloc(16);
-      try {
-        readSync(file, header, 0, 16, 0);
-      } finally {
-        closeSync(file);
-      }
-      if (header.toString('ascii', 4, 8) !== 'ftyp')
-        throw new Error(`Invalid MP4: ${name}`);
-    }
-    checked++;
-  }
+const readJson = (path) =>
+  JSON.parse(readFileSync(resolve(root, path), 'utf8'));
+const production = readJson('src/production-media.json');
+const live = {
+  desktop: readJson('src/desktop-portal-media.json'),
+  mobile: readJson('src/mobile-portal-media.json'),
+};
+const expectedVideos = new Set();
+let videoCount = 0,
+  posterCount = 0;
+function local(url) {
+  if (!url?.startsWith('/media/') || url.includes('..'))
+    throw new Error(`Invalid asset URL: ${url}`);
+  return resolve(root, 'public', '.' + url);
 }
-const tracking = JSON.parse(
-  readFileSync(resolve(root, 'src/screen-tracking.json'), 'utf8'),
-);
-for (const profile of ['desktop', 'mobile']) {
-  const frames = tracking[profile];
-  if (frames.length !== 271 || frames[0].f !== 2430 || frames.at(-1).f !== 2700)
-    throw new Error(`Invalid screen tracking: ${profile}`);
+function poster(url) {
+  const data = readFileSync(local(url));
   if (
-    frames.some(
-      (row) =>
+    data.toString('ascii', 0, 4) !== 'RIFF' ||
+    data.toString('ascii', 8, 12) !== 'WEBP'
+  )
+    throw new Error(`Invalid poster: ${url}`);
+  posterCount++;
+}
+for (const profile of ['desktop', 'mobile']) {
+  const [width, height] = profile === 'desktop' ? [1920, 1080] : [1080, 1920];
+  const jobs = Object.entries(production.profiles[profile]);
+  if (
+    jobs.length !== 5 ||
+    ['drive', 'junction', 'route', 'tools-idle', 'magazines-idle'].some(
+      (job) => !production.profiles[profile][job],
+    )
+  )
+    throw new Error(`Invalid production jobs: ${profile}`);
+  for (const [job, asset] of [...jobs, ...Object.entries(live[profile])]) {
+    if (
+      asset.fps !== 30 ||
+      !Number.isInteger(asset.frames) ||
+      asset.frames <= 0 ||
+      asset.variants?.length !== 2
+    )
+      throw new Error(`Invalid asset: ${profile}/${job}`);
+    poster(asset.poster);
+    for (const codec of ['hevc', 'h264']) {
+      const v = asset.variants.find((v) => v.codec === codec);
+      if (
+        !v?.validated ||
+        v.frames !== asset.frames ||
+        v.fps !== 30 ||
+        v.width !== width ||
+        v.height !== height
+      )
+        throw new Error(`Invalid variant: ${profile}/${job}/${codec}`);
+      const file = local(v.src),
+        data = readFileSync(file);
+      if (
+        data.length !== v.bytes ||
+        data.toString('ascii', 4, 8) !== 'ftyp' ||
+        createHash('sha256').update(data).digest('hex') !== v.sha256
+      )
+        throw new Error(`Video differs from validated export: ${v.src}`);
+      expectedVideos.add(file);
+      videoCount++;
+    }
+  }
+  for (const url of Object.values(production.posters[profile])) poster(url);
+  const tracking = readJson(`src/${profile}-screen-tracking.json`);
+  if (
+    tracking.length !== 361 ||
+    tracking.some(
+      (row, i) =>
+        row.f !== 2340 + i ||
         !row.visible ||
         row.quad.length !== 4 ||
         row.quad.some(
@@ -54,170 +81,33 @@ for (const profile of ['desktop', 'mobile']) {
         ),
     )
   )
-    throw new Error(`Invalid monitor coordinates: ${profile}`);
+    throw new Error(`Invalid live screen tracking: ${profile}`);
+  for (const name of [
+    'city.jpg',
+    'tools.jpg',
+    'magazines.jpg',
+    'monitor.jpg',
+    'car-foreground.png',
+  ])
+    if (!statSync(resolve(root, 'public/media/stage4', profile, name)).size)
+      throw new Error(`Empty fallback image: ${profile}/${name}`);
+  if (
+    !statSync(resolve(root, 'public/media/junction', profile, 'drive.jpg')).size
+  )
+    throw new Error(`Empty driving poster: ${profile}`);
 }
+for (const name of ['tools.webp', 'car.jpg'])
+  if (!statSync(resolve(root, 'public/media/monitor-wings', name)).size)
+    throw new Error(`Empty monitor wing: ${name}`);
+function checkDirectory(dir) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const file = resolve(dir, entry.name);
+    if (entry.isDirectory()) checkDirectory(file);
+    else if (/\.(mp4|webm|mov)$/i.test(entry.name) && !expectedVideos.has(file))
+      throw new Error(`Unreferenced delivery video: ${file}`);
+  }
+}
+checkDirectory(resolve(root, 'public/media'));
 console.log(
-  `Verified ${checked} media files and both screen-tracking profiles.`,
+  `Verified ${videoCount} active videos by SHA-256, ${posterCount} production posters, fallback images, and both live screen tracks; no unreferenced delivery videos.`,
 );
-
-const manifest = JSON.parse(
-  readFileSync(
-    resolve(root, '../02_render/reports/junction-media-manifest.json'),
-    'utf8',
-  ),
-);
-for (const profile of ['desktop', 'mobile']) {
-  for (const name of ['drive', 'turn']) {
-    const path = resolve(root, 'public/media/junction', profile, name + '.mp4');
-    const data = readFileSync(path);
-    const record = manifest[profile + '/' + name];
-    if (
-      !record ||
-      data.length !== record.bytes ||
-      data.length > 25 * 1024 * 1024 ||
-      data.toString('ascii', 4, 8) !== 'ftyp'
-    )
-      throw new Error(`Missing or invalid junction video: ${profile}/${name}`);
-    if (createHash('sha256').update(data).digest('hex') !== record.sha256)
-      throw new Error(
-        `Junction video does not match its validation manifest: ${profile}/${name}`,
-      );
-  }
-  const poster = readFileSync(
-    resolve(root, 'public/media/junction', profile, 'drive.jpg'),
-  );
-  if (poster[0] !== 255 || poster[1] !== 216)
-    throw new Error(`Invalid driving poster: ${profile}`);
-}
-console.log('Verified all four junction videos and both driving posters.');
-
-const production = JSON.parse(
-  readFileSync(resolve(root, 'src/production-media.json'), 'utf8'),
-);
-if (production.production) {
-  const jobs = [
-    'drive',
-    'junction',
-    'route',
-    'portal',
-    'tools-idle',
-    'magazines-idle',
-    'monitor-idle',
-    'monitor-approach',
-  ];
-  let videos = 0;
-  for (const profile of ['desktop', 'mobile']) {
-    for (const job of jobs) {
-      const asset = production.profiles?.[profile]?.[job];
-      const prefix = `/media/production/${production.version}/${profile}/${job}/`;
-      if (
-        !asset ||
-        asset.fps !== 30 ||
-        !Number.isInteger(asset.frames) ||
-        asset.frames <= 0 ||
-        asset.variants?.length !== 2 ||
-        !asset.poster?.startsWith(prefix)
-      )
-        throw new Error(`Invalid production asset: ${profile}/${job}`);
-      const poster = readFileSync(resolve(root, 'public', '.' + asset.poster));
-      if (
-        poster.toString('ascii', 0, 4) !== 'RIFF' ||
-        poster.toString('ascii', 8, 12) !== 'WEBP'
-      )
-        throw new Error(`Invalid production poster: ${profile}/${job}`);
-      for (const codec of ['hevc', 'h264']) {
-        const variant = asset.variants.find((v) => v.codec === codec);
-        const [width, height] =
-          profile === 'desktop' ? [1920, 1080] : [1080, 1920];
-        if (
-          !variant ||
-          !variant.validated ||
-          !variant.src.startsWith(prefix) ||
-          variant.src.includes('..') ||
-          variant.frames !== asset.frames ||
-          variant.fps !== asset.fps ||
-          variant.width !== width ||
-          variant.height !== height
-        )
-          throw new Error(
-            `Invalid production variant: ${profile}/${job}/${codec}`,
-          );
-        const data = readFileSync(resolve(root, 'public', '.' + variant.src));
-        if (
-          data.length !== variant.bytes ||
-          data.toString('ascii', 4, 8) !== 'ftyp' ||
-          createHash('sha256').update(data).digest('hex') !== variant.sha256
-        )
-          throw new Error(
-            `Production video differs from validated export: ${profile}/${job}/${codec}`,
-          );
-        videos++;
-      }
-    }
-  }
-  console.log(
-    `Verified ${videos} production videos by SHA-256 and 16 production posters (${production.version}).`,
-  );
-}
-
-for (const [profile, version, width, height] of [
-  ['desktop', 'desktop-live-screen-05', 1920, 1080],
-  ['mobile', 'mobile-live-screen-06', 1080, 1920],
-]) {
-  const desktop = JSON.parse(
-    readFileSync(resolve(root, `src/${profile}-portal-media.json`), 'utf8'),
-  );
-  for (const [job, frames] of [
-    ['portal', 271],
-    ['monitor-idle', 180],
-  ]) {
-    const asset = desktop[job];
-    const prefix = `/media/production/${version}/${job}/`;
-    if (
-      !asset ||
-      asset.fps !== 30 ||
-      asset.frames !== frames ||
-      asset.variants?.length !== 2 ||
-      !asset.poster?.startsWith(prefix) ||
-      asset.poster.includes('..')
-    )
-      throw new Error(`Invalid desktop asset: ${job}`);
-    const poster = readFileSync(resolve(root, 'public', '.' + asset.poster));
-    if (
-      poster.toString('ascii', 0, 4) !== 'RIFF' ||
-      poster.toString('ascii', 8, 12) !== 'WEBP'
-    )
-      throw new Error(`Invalid desktop poster: ${job}`);
-    for (const codec of ['hevc', 'h264']) {
-      const variant = asset.variants.find((v) => v.codec === codec);
-      if (
-        !variant ||
-        !variant.validated ||
-        !variant.src.startsWith(prefix) ||
-        variant.src.includes('..') ||
-        variant.frames !== frames ||
-        variant.fps !== 30 ||
-        variant.width !== width ||
-        variant.height !== height
-      )
-        throw new Error(`Invalid desktop variant: ${job}/${codec}`);
-      const data = readFileSync(resolve(root, 'public', '.' + variant.src));
-      if (
-        data.length !== variant.bytes ||
-        data.toString('ascii', 4, 8) !== 'ftyp' ||
-        createHash('sha256').update(data).digest('hex') !== variant.sha256
-      )
-        throw new Error(
-          `Desktop video differs from validated export: ${job}/${codec}`,
-        );
-    }
-  }
-  console.log(
-    `Verified four ${profile} camera videos by SHA-256 and two posters.`,
-  );
-}
-
-for (const name of ['tools.webp', 'car.jpg']) {
-  const data = readFileSync(resolve(root, 'public/media/monitor-wings', name));
-  if (data.length === 0) throw new Error(`Missing monitor wing: ${name}`);
-}

@@ -41,13 +41,13 @@
 
 長い描画の前に、横・縦それぞれでH.265／H.264を実エンコードし、10bit/8bit・色・フレーム数・GOPをデコード検証します。**GPUが使用できない場合は停止し、自動的にCPU方式へ切り替えません。** 意図してCPU方式を使う場合のみ `backend` を `software` に変更し、新しい `name` にしてください。
 
-現在の動画出力設定名は `delivery-nvenc-01`。変更する場合は新しい名前にして、旧エンコードと混在させません。
+現在の動画出力設定名は `delivery-srgb-nvenc-02`。変更する場合は新しい名前にして、旧エンコードと混在させません。
 
 ## 出力先と枚数
 
 PNG原本: `output/final-glass-fixed-01/{desktop,mobile}/{job}/`
 
-動画・WebP・検証記録: `output/final-glass-fixed-01/exports/delivery-nvenc-01/`
+動画・WebP・検証記録: `output/final-table-approved-20w/exports/delivery-srgb-nvenc-02/`
 
 部分サンプルは `output/quality-final-glass-fixed-01/`、1枚比較は `output/sample-final-glass-fixed-01/` に分離されます。
 
@@ -151,3 +151,6 @@ review_junction.pyはサイトに組み込んだ動画から「3周＋右折」�
 `media_encoding.py` の書き込みフレームとストリームの両方にtransfer=13を指定する。`verify()`は全動画の色メタデータ・フレーム数・精度・キーフレーム間隔を検証する。テストは実エンコード後のsRGB値と元画像を直接比較し、逆ガンマ変換で問題を打ち消す検証をしない。
 
 色変換だけの変更なので、原本と完成PNGは保持し、`render.ps1 -Action encode -Profile both -Job all` で全動画を新しいencoding.nameへ生成する。全クリップの検証後に `-Action install` でサイトへまとめて反映する。旧版は保存される。
+
+
+2026-09-11整理: 旧delivery-nvenc-01は削除済みです。現在のdelivery-srgb-nvenc-02と最終16-bit元画像は保持しています。旧確認用のencode_junction.pyが必要な場合、接続画像は現行production-media.jsonのH.264到着映像から取得します。

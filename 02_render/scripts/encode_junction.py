@@ -16,7 +16,9 @@ for profile in profiles:
   if job=='turn':
    # Both cameras reach the same pose. Anchor the last preview frame to the
    # existing compressed arrival plate, avoiding a quality change on the cut.
-   with av.open(str(R.parent/'01_website/public/media/stage4'/profile/'route.mp4')) as old:
+   manifest=json.loads((R.parent/'01_website/src/production-media.json').read_text())
+   route=next(v for v in manifest['profiles'][profile]['route']['variants'] if v['codec']=='h264')
+   with av.open(str(R.parent/'01_website/public'/route['src'].lstrip('/'))) as old:
     endpoint=next(old.decode(video=0)).to_image().convert('RGB').resize((w,h),Image.Resampling.BILINEAR)
   with av.open(str(temporary),'w',options={'movflags':'+faststart'}) as container:
    stream=container.add_stream('libx264',rate=fps);stream.width=w;stream.height=h;stream.pix_fmt='yuv420p';stream.options={'crf':'18','preset':'medium','g':'1','keyint_min':'1','bf':'0','sc_threshold':'0'}

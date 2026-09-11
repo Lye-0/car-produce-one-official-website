@@ -2,6 +2,8 @@
 
 React + Viteの静的サイトです。ChatGPT Sitesには依存しません。
 
+現在の素材構成は末尾の「旧動画整理後の素材」を参照してください。過去段階の記録にある旧動画は削除済みです。
+
 ## 起動
 
 ルートの `../OPEN_PREVIEW.cmd` を開くか、このフォルダで以下を実行します。
@@ -120,3 +122,12 @@ Windows Edgeで16:9・16:10・21:9・正方形など9つの画面幅／DPR条件
 - 表示領域の高さが変わっても接近位置を保持し、端末の縦横切り替え時にprofileを更新します。背景Canvasのスマホ用解像度を1倍に抑え、画面外の大きな背景によるメモリ消費を抑えます。
 
 検証は60件の単体テスト、追加の縦動画4本のSHA-256照合、型チェックとビルド。Windows Edgeのスマホ相当表示で320/375/390/430pxのタッチ・高速/逆スクロール・停止・本文リンク・縦横回転・高さ変更を確認しました。終端比較は5条件すべて画像差分0、描画フレーム番号の不一致0でした。動きを抑える設定でも本文へ進めます。iPhone/SafariおよびAndroidの実機では未検証です。
+
+
+## 旧動画整理後の素材
+
+配信動画はproduction-media.jsonの5場面×PC/スマホ×2形式の20本と、desktop-portal-media.json／mobile-portal-media.jsonの8本、計28本です。旧モニター合成動画とstage4／junctionの旧確認用動画は削除しました。静止画のフォールバックは保持しています。
+
+旧モニターのポスターはproduction-media.jsonのpostersへ分離しました。動画選択は現行マニフェストのみを使用します。古いMonitorApproach／PortalHandoffはAppから外しました。必要時に旧合成方式を再生成するための最小情報は02_render/assets/monitor-baking-template.jsonに保持し、composite_monitor.pyで読み込みます。
+
+tools/verify-assets.mjsは現行動画28本のSHA-256、ポスター・画像・四隅の追跡情報を検証し、public/mediaへの未参照動画の混入を検出します。最新のエンコード出力と配信用コピーは保持しています。

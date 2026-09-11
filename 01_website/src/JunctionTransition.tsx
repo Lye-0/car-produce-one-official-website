@@ -2,7 +2,7 @@ import { MediaVideo } from './MediaVideo';
 import { getProductionClip } from './production-media';
 import { useEffect, useRef, useState } from 'react';
 import { createVideoScrubber } from './journey-timeline';
-import { TURN_FPS, JUNCTION_MEDIA_VERSION } from './junction-transition';
+import { TURN_FPS } from './junction-transition';
 type Props = {
   profile: 'desktop' | 'mobile' | null;
   time: number;
@@ -44,11 +44,6 @@ export function JunctionTransition({
       aria-hidden="true"
       className="film junction-film"
       style={{ opacity: active && ready ? 1 : 0 }}
-      src={
-        profile
-          ? `/media/junction/${profile}/turn.mp4?v=${JUNCTION_MEDIA_VERSION}`
-          : undefined
-      }
       muted
       playsInline
       preload="metadata"

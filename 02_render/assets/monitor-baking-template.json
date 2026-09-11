@@ -1,0 +1,42 @@
+{
+  "desktop": {
+    "portal": {
+      "frames": 271,
+      "fps": 30,
+      "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/portal/00000.webp",
+      "variants": []
+    },
+    "monitor-idle": {
+      "frames": 180,
+      "fps": 30,
+      "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/monitor-idle/00000.webp",
+      "variants": []
+    },
+    "monitor-approach": {
+      "frames": 91,
+      "fps": 30,
+      "poster": "/media/production/final-table-approved-20w-monitor-power-04/desktop/monitor-approach/00000.webp",
+      "variants": []
+    }
+  },
+  "mobile": {
+    "portal": {
+      "frames": 271,
+      "fps": 30,
+      "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/portal/00000.webp",
+      "variants": []
+    },
+    "monitor-idle": {
+      "frames": 180,
+      "fps": 30,
+      "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/monitor-idle/00000.webp",
+      "variants": []
+    },
+    "monitor-approach": {
+      "frames": 91,
+      "fps": 30,
+      "poster": "/media/production/final-table-approved-20w-monitor-power-04/mobile/monitor-approach/00000.webp",
+      "variants": []
+    }
+  }
+}

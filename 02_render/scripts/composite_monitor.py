@@ -11,6 +11,9 @@ assert version and all(c.isalnum() or c in '-_' for c in version)
 W=R/'02_render/output'/('review-'+version);W.mkdir(parents=True,exist_ok=True)
 old=json.loads((R/'01_website/src/production-media.json').read_text())
 manifest=copy.deepcopy(old);manifest['version']=version
+# Legacy baking is an explicit optional export; the live site no longer carries these videos.
+template=json.loads((R/'02_render/assets/monitor-baking-template.json').read_text())
+for profile,assets in manifest['profiles'].items():assets.update(copy.deepcopy(template[profile]))
 base=R/'01_website/public/media/production'; output=base/version
 if output.exists():raise FileExistsError('Use a new immutable version name: '+version)
 tracking=json.loads((R/'01_website/src/screen-tracking.json').read_text())
