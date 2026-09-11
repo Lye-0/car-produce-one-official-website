@@ -141,7 +141,6 @@ export function WebsiteBody({
             OSAKA
             <br />
             <span>TOYONAKA</span>
-            <span className="location-marker">↗</span>
           </p>
         </div>
         <div className="shop-info">

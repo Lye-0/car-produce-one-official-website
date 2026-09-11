@@ -195,13 +195,6 @@
   letter-spacing: 0.07em;
   margin-top: 10px;
 }
-.location-marker {
-  position: absolute;
-  right: 10%;
-  top: 0;
-  font-size: 1.2em;
-  color: #b3c4c8;
-}
 .main-site .address {
   font-size: clamp(20px, 2vw, 28px);
   line-height: 1.8;
@@ -538,9 +531,6 @@
   .location-type {
     margin: 30px 0;
     font-size: 43px;
-  }
-  .location-marker {
-    right: 4%;
   }
   .main-site .address {
     font-size: 23px;
