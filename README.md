@@ -3,7 +3,7 @@
 
 ## DEPLOYMENT
 
-
+https://lye-0.github.io/car-produce-one-official-website/
 
 ## 現在の構成
 
@@ -19,4 +19,4 @@
 - サイトの文章・連絡先: `01_website/src/content.ts`
 - 映像・サイト接続: `01_website/src/App.tsx`、`DesktopPortal.tsx`、`PortalHandoff.tsx`
 
-サイトと映像の詳細は `01_website/README.md` にあります。
+サイトと映像の詳細は `01_website/README.md` にある。
