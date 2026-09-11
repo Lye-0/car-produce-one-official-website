@@ -1022,3 +1022,75 @@ html {
   z-index: -2;
   transition: none;
 }
+
+.desktop-camera-canvas {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  z-index: 1;
+  pointer-events: none;
+}
+.desktop-exact-journey:not([hidden]) {
+  display: contents;
+}
+.desktop-exact-journey .film {
+  position: fixed;
+  z-index: 0;
+}
+.desktop-exact-journey .film-shade {
+  position: fixed;
+  z-index: 1;
+}
+.desktop-exact-journey .monitor-invite,
+.desktop-exact-journey .journey-bottom,
+.desktop-exact-journey .status {
+  position: fixed;
+  z-index: 3;
+}
+.desktop-hero-viewport {
+  position: relative;
+  overflow: hidden;
+}
+.desktop-hero-viewport.is-projecting {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  visibility: visible;
+  z-index: 2;
+  pointer-events: none;
+}
+.desktop-live-hero {
+  background: #141a1b;
+  overflow: visible;
+  transform-origin: 0 0;
+  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  will-change: transform;
+}
+.desktop-hero-background {
+  position: absolute;
+  left: var(--desktop-bg-left);
+  top: var(--desktop-bg-top);
+  width: var(--desktop-bg-width);
+  height: var(--desktop-bg-height);
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse var(--desktop-radius-x) var(--desktop-radius-y) at
+        var(--desktop-gradient-x) var(--desktop-gradient-y),
+      #1e2d32 0,
+      transparent 55%
+    ),
+    #141a1b;
+}
+
+.desktop-hero-link {
+  display: inline-flex;
+  transform: translateZ(0);
+}
+.desktop-hero-link > .text-link {
+  pointer-events: none;
+}

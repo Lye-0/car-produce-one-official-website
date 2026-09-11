@@ -6,7 +6,7 @@ import {
 import { MediaVideo } from './MediaVideo';
 import { getProductionClip, getProductionPoster } from './production-media';
 import { INITIAL_MEDIA_REQUESTS, requestNearbyMedia } from './media-loading';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { content as c } from './content';
 import { WebsiteBody } from './WebsiteBody';
 import { JunctionTransition } from './JunctionTransition';
@@ -22,20 +22,17 @@ import {
   sampleJourney,
   createVideoScrubber,
 } from './journey-timeline';
-import {
-  firstCoverFrame,
-  sampleQuad,
-  coverQuad,
-  blendQuad,
-  rectQuad,
-  quadMatrix,
-} from './screen-projection';
-import type { CSSProperties } from 'react';
+import { firstCoverFrame } from './screen-projection';
+import { DesktopPortal } from './DesktopPortal';
+import { desktopPortalMedia } from './desktop-portal-media';
 import { PortalNoise, usePortalHandoff } from './PortalHandoff';
 import tracking from './screen-tracking.json';
-function MainHero() {
+export function MainHero({ desktop = false }: { desktop?: boolean }) {
   return (
-    <section className="main-hero">
+    <section className={'main-hero' + (desktop ? ' desktop-live-hero' : '')}>
+      {desktop && (
+        <canvas className="desktop-hero-background" aria-hidden="true" />
+      )}
       <div className="hero-label eyebrow">
         CAR PRODUCE ONE — TOYONAKA, OSAKA
       </div>
@@ -50,8 +47,19 @@ function MainHero() {
           <br />
           あなたらしい選択を。
         </p>
-        <a className="text-link" href="#services">
-          私たちにできること <span>↓</span>
+        <a
+          className={desktop ? 'desktop-hero-link' : 'text-link'}
+          href="#services"
+        >
+          {desktop ? (
+            <span className="text-link">
+              私たちにできること <span>↓</span>
+            </span>
+          ) : (
+            <>
+              私たちにできること <span>↓</span>
+            </>
+          )}
         </a>
       </div>
       <div className="hero-rule" />
@@ -70,10 +78,16 @@ export default function Home() {
     film = useRef<HTMLVideoElement>(null),
     portalFilm = useRef<HTMLVideoElement>(null),
     main = useRef<HTMLElement>(null),
-    spacer = useRef<HTMLDivElement>(null);
+    spacer = useRef<HTMLDivElement>(null),
+    heroViewport = useRef<HTMLDivElement>(null),
+    heroSlot = useRef<HTMLDivElement>(null);
   const tools = useRef<HTMLVideoElement>(null),
     magazines = useRef<HTMLVideoElement>(null),
     monitor = useRef<HTMLVideoElement>(null);
+  const [desktopEndReady, setDesktopEndReady] = useState(false);
+  const [desktopBypass, setDesktopBypass] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
+  const pendingDesktopResize = useRef<number | null>(null);
   const [scene, setScene] = useState(() => sampleJourney(0));
   const [turnReady, setTurnReady] = useState(false);
   const cityDriver = useRef<ReturnType<typeof createVideoScrubber> | null>(
@@ -94,6 +108,7 @@ export default function Home() {
     [idleReady, setIdleReady] = useState<Record<string, boolean>>({});
   const [requestedMedia, setRequestedMedia] = useState(INITIAL_MEDIA_REQUESTS);
   const profile = variant ?? 'desktop';
+  const desktopEnabled = variant === 'desktop' && !reduced;
   const routeFps = getProductionClip(variant, 'route')?.fps ?? 8;
   const portalFps = getProductionClip(variant, 'portal')?.fps ?? 24;
   const scrubber = useRef<ReturnType<typeof createVideoScrubber> | null>(null),
@@ -101,7 +116,9 @@ export default function Home() {
       null,
     );
   const chapter = scene.chapter,
-    entered = scene.complete,
+    entered =
+      scene.complete &&
+      (!desktopEnabled || desktopEndReady || desktopBypass || failed),
     portal = scene.portal > 0,
     moving = !scene.hold && scene.progress > 0;
   const asset = (name: string) =>
@@ -119,7 +136,11 @@ export default function Home() {
       : window.innerHeight * BASE_SCROLL_VIEWPORTS;
   }
   function go(next: number) {
-    if (next < 4) handoff.reset('camera');
+    if (next < 4) {
+      handoff.reset('camera');
+      setDesktopBypass(false);
+      setDesktopEndReady(false);
+    }
     setMenu(false);
     if (window.location.hash)
       window.history.replaceState(
@@ -140,6 +161,7 @@ export default function Home() {
   }
   function skip(id?: string) {
     handoff.reset('site');
+    setDesktopBypass(true);
     setMenu(false);
     const target = id ? document.getElementById(id) : main.current;
     if (target)
@@ -193,12 +215,27 @@ export default function Home() {
   function togglePause() {
     setPaused((v) => !v);
   }
+  useLayoutEffect(() => {
+    const progress = pendingDesktopResize.current;
+    if (variant !== 'desktop' || progress === null) return;
+    pendingDesktopResize.current = null;
+    window.scrollTo({
+      top:
+        baseScrollHeight() *
+        journeyScrollDistance(progress, entryPhase.current ?? 0),
+      behavior: 'instant',
+    });
+  }, [view.width, view.height, variant]);
   useEffect(() => {
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)'),
       mobile = window.matchMedia('(max-width:700px)');
     const motionChange = () => setReduced(motion.matches);
     const profileChange = () => {
       setFailed(false);
+      setDesktopEndReady(false);
+      setDesktopBypass(
+        window.scrollY >= (spacer.current?.offsetHeight ?? Infinity),
+      );
       setVariant(mobile.matches ? 'mobile' : 'desktop');
       setReady(false);
       setPortalReady(false);
@@ -210,6 +247,7 @@ export default function Home() {
     motion.addEventListener('change', motionChange);
     mobile.addEventListener('change', profileChange);
     let frame = 0;
+    let previousHeight = window.innerHeight;
     const sync = () => {
       frame = 0;
       const height = baseScrollHeight();
@@ -223,10 +261,11 @@ export default function Home() {
       ) {
         entryPhase.current = city.current?.currentTime ?? 0;
       }
-      const progress = journeyProgressFromScroll(
-        distance,
-        entryPhase.current ?? 0,
-      );
+      const progress =
+        mobile.matches === false &&
+        window.scrollY >= (spacer.current?.offsetHeight ?? Infinity) - 0.5
+          ? 1
+          : journeyProgressFromScroll(distance, entryPhase.current ?? 0);
       const next = sampleJourney(progress, entryPhase.current ?? 0);
       if (next.progress === 0) {
         cityDriver.current?.release();
@@ -238,6 +277,13 @@ export default function Home() {
       }
       lastProgress.current = next.progress;
       setScene(next);
+      setPastHero(
+        window.scrollY >
+          (spacer.current?.offsetHeight ?? 0) +
+            (heroViewport.current?.firstElementChild?.clientHeight ??
+              window.innerHeight) -
+            100,
+      );
       scrubber.current?.seek(next.time);
       portalScrubber.current?.seek(Math.max(0, next.time - 81));
     };
@@ -245,6 +291,14 @@ export default function Home() {
       if (!frame) frame = requestAnimationFrame(sync);
     };
     const resize = () => {
+      if (
+        !mobile.matches &&
+        previousHeight !== window.innerHeight &&
+        lastProgress.current > 0 &&
+        lastProgress.current < 1
+      )
+        pendingDesktopResize.current = lastProgress.current;
+      previousHeight = window.innerHeight;
       setView({
         width: document.documentElement.clientWidth,
         height: window.innerHeight,
@@ -272,7 +326,7 @@ export default function Home() {
       : null;
     cityDriver.current = streetDriver;
     const driver = createVideoScrubber(v, routeFps),
-      portalDriver = createVideoScrubber(p, portalFps);
+      portalDriver = createVideoScrubber(p, portalFps, variant === 'desktop');
     scrubber.current = driver;
     portalScrubber.current = portalDriver;
     const time = sampleJourney(
@@ -297,9 +351,11 @@ export default function Home() {
           2430 + (Math.floor(p.currentTime * portalFps) / portalFps) * 30,
         ),
       );
-    if (typeof p.requestVideoFrameCallback === 'function')
-      callback = p.requestVideoFrameCallback(receive);
-    else p.addEventListener('seeked', fallback);
+    if (variant !== 'desktop') {
+      if (typeof p.requestVideoFrameCallback === 'function')
+        callback = p.requestVideoFrameCallback(receive);
+      else p.addEventListener('seeked', fallback);
+    }
     return () => {
       driver.dispose();
       streetDriver?.dispose();
@@ -314,10 +370,15 @@ export default function Home() {
   useEffect(() => {
     if (!reduced && !entered) {
       setRequestedMedia((previous) =>
-        requestNearbyMedia(previous, scene.progress),
+        requestNearbyMedia(
+          previous,
+          desktopEnabled && !entered
+            ? Math.min(0.999, scene.progress)
+            : scene.progress,
+        ),
       );
     }
-  }, [scene.progress, entered, reduced]);
+  }, [scene.progress, entered, reduced, desktopEnabled]);
   useEffect(() => {
     const update = () => setVisible(document.visibilityState === 'visible');
     update();
@@ -338,7 +399,7 @@ export default function Home() {
     requested: scene.time * 30,
     presented: portalReady ? presentedFrame : 2430,
     coverAt,
-    reduced,
+    reduced: reduced || desktopEnabled,
     profile,
     onArrive: () =>
       window.scrollTo({
@@ -350,47 +411,17 @@ export default function Home() {
       }),
   });
 
-  // Blend only after the physical bezel has left the viewport. Match the baked
-  // monitor typography at the start and the normal desktop hero at the end.
-  const desktopFade =
-    variant === 'desktop' && handoff.active
-      ? (() => {
-          const t = handoff.siteOpacity;
-          const mix = (a: number, b: number) => a + (b - a) * t;
-          const q = sampleQuad(tracking.desktop, presentedFrame);
-          if (!q) return undefined;
-          const source = {
-            width: mix(1280, view.width),
-            height: mix(720, view.height),
-          };
-          const matrix = quadMatrix(
-            source,
-            blendQuad(coverQuad(q, profiles.desktop, view), rectQuad(view), t),
-          );
-          return {
-            width: source.width,
-            height: source.height,
-            transform: matrix
-              ? 'matrix3d(' + matrix.join(',') + ')'
-              : undefined,
-            '--screen-font':
-              mix(64, Math.min(90, Math.max(40, view.width * 0.058))) + 'px',
-            '--screen-top': mix(120, 180) + 'px',
-            '--screen-side': mix(102.4, view.width * 0.08) + 'px',
-            '--screen-bottom': mix(60, 80) + 'px',
-            '--screen-heading-bottom': mix(32, 48) + 'px',
-            '--screen-letter-spacing': '.12em',
-            '--screen-label': '9px',
-            '--screen-copy': '13px',
-            '--screen-footer-display': 'flex',
-            '--screen-link-margin': '0px',
-            '--screen-giant':
-              mix(371.2, Math.min(450, Math.max(170, view.width * 0.29))) +
-              'px',
-          } as CSSProperties;
-        })()
-      : undefined;
+  const desktopUiOpacity = Math.max(0, Math.min(1, (86 - scene.time) / 2));
 
+  useEffect(() => {
+    if (!scene.complete) {
+      setDesktopBypass(false);
+      return;
+    }
+    if (!desktopEnabled || entered) return;
+    const timer = window.setTimeout(() => setDesktopBypass(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, [desktopEnabled, scene.complete, entered]);
   const poster =
     chapter === 0
       ? 'city'
@@ -411,7 +442,12 @@ export default function Home() {
       >
         サービスへ移動
       </a>
-      <header className={'site-header ' + (entered ? 'header-body' : '')}>
+      <header
+        className={
+          'site-header ' +
+          (entered && (!desktopEnabled || pastHero) ? 'header-body' : '')
+        }
+      >
         <button
           className="wordmark"
           onClick={() =>
@@ -514,7 +550,8 @@ export default function Home() {
           className={
             'journey scroll-journey ' +
             (moving ? 'moving ' : '') +
-            (portal ? 'portal ' : '')
+            (portal ? 'portal ' : '') +
+            (desktopEnabled && scene.time >= 78 ? 'desktop-exact-journey' : '')
           }
           aria-label="店舗を巡る映像"
         >
@@ -601,7 +638,7 @@ export default function Home() {
           <MonitorApproach
             profile={variant}
             time={scene.time}
-            requested={requestedMedia.monitor && !reduced}
+            requested={requestedMedia.monitor && !reduced && !desktopEnabled}
           />
           <MediaVideo
             aria-hidden="true"
@@ -614,10 +651,17 @@ export default function Home() {
             playsInline
             preload="metadata"
             src={asset('portal.mp4')}
-            media={getProductionClip(variant, 'portal')}
+            media={
+              desktopEnabled
+                ? desktopPortalMedia('portal')
+                : getProductionClip(variant, 'portal')
+            }
             enabled={requestedMedia.portal && !reduced}
             onLoadStart={() => setPortalReady(false)}
-            onError={() => setPortalReady(false)}
+            onError={() => {
+              setPortalReady(false);
+              if (desktopEnabled) setFailed(true);
+            }}
             onLoadedData={() => setPortalReady(true)}
           />
           {(
@@ -643,7 +687,11 @@ export default function Home() {
               playsInline
               preload="auto"
               src={asset(name + '-idle.mp4')}
-              media={getProductionClip(variant, name + '-idle')}
+              media={
+                desktopEnabled && name === 'monitor'
+                  ? desktopPortalMedia('monitor-idle')
+                  : getProductionClip(variant, name + '-idle')
+              }
               enabled={requestedMedia[name] && !reduced}
               onLoadStart={() => setIdleReady((v) => ({ ...v, [name]: false }))}
               playing={
@@ -667,6 +715,20 @@ export default function Home() {
             />
           )}
 
+          <DesktopPortal
+            enabled={desktopEnabled}
+            time={scene.time}
+            hold={scene.hold === 'monitor'}
+            complete={scene.complete}
+            entered={entered}
+            bypass={desktopBypass && scene.complete}
+            route={film}
+            portal={portalFilm}
+            monitor={monitor}
+            viewport={heroViewport}
+            slot={heroSlot}
+            onEndpoint={setDesktopEndReady}
+          />
           <div className="film-shade" />
           {scene.progress < 0.03 && (
             <div className="welcome" style={{ opacity: scene.introOpacity }}>
@@ -724,17 +786,21 @@ export default function Home() {
               <MainHero />
             </div>
           )}
-          {handoff.siteOpacity > 0 && !reduced && (
+          {handoff.siteOpacity > 0 && !reduced && !desktopEnabled && (
             <div
-              className={desktopFade ? 'projected-screen' : 'responsive-screen'}
-              style={{ ...desktopFade, opacity: handoff.siteOpacity }}
+              className="responsive-screen"
+              style={{ opacity: handoff.siteOpacity }}
               aria-hidden="true"
               inert
             >
               <MainHero />
             </div>
           )}
-          <div className="journey-bottom">
+          <div
+            className="journey-bottom"
+            style={desktopEnabled ? { opacity: desktopUiOpacity } : undefined}
+            inert={desktopEnabled && desktopUiOpacity === 0}
+          >
             <div className="chapter-nav" aria-label="映像の場面">
               {c.chapters.map((label, i) => (
                 <button
@@ -761,7 +827,11 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <span className="status" aria-live="polite">
+          <span
+            className="status"
+            aria-live="polite"
+            style={desktopEnabled ? { opacity: desktopUiOpacity } : undefined}
+          >
             {failed
               ? '映像を読み込めませんでした。各場面とサービスは引き続きご覧いただけます。'
               : reduced
@@ -784,10 +854,22 @@ export default function Home() {
         className="journey-scroll-space"
         aria-hidden="true"
         data-scroll-scale={scrollScale}
-        style={{ height: `${BASE_SCROLL_VIEWPORTS * 100 * scrollScale}svh` }}
+        style={{
+          height: desktopEnabled
+            ? `${Math.round(view.height * BASE_SCROLL_VIEWPORTS * scrollScale)}px`
+            : `${BASE_SCROLL_VIEWPORTS * 100 * scrollScale}svh`,
+        }}
       />
       <main ref={main} tabIndex={-1} className="main-site" inert={!entered}>
-        <MainHero />
+        {desktopEnabled ? (
+          <div ref={heroSlot} className="desktop-hero-slot">
+            <div ref={heroViewport} className="desktop-hero-viewport">
+              <MainHero desktop />
+            </div>
+          </div>
+        ) : (
+          <MainHero />
+        )}
         <WebsiteBody
           replay={replay}
           top={() => {

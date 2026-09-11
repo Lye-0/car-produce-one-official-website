@@ -70,7 +70,11 @@ export interface SeekableVideo {
   addEventListener(type: string, fn: () => void): void;
   removeEventListener(type: string, fn: () => void): void;
 }
-export function createVideoScrubber(video: SeekableVideo, fps = 8) {
+export function createVideoScrubber(
+  video: SeekableVideo,
+  fps = 8,
+  frameCenter = false,
+) {
   let desired = 0,
     disposed = false,
     released = false;
@@ -79,7 +83,18 @@ export function createVideoScrubber(video: SeekableVideo, fps = 8) {
     const max = Number.isFinite(video.duration)
       ? Math.max(0, video.duration - 1 / fps)
       : 89.875;
-    const next = Math.min(max, Math.max(0, desired));
+    // Frame boundaries can decode the preceding frame when MP4 timestamps round
+    // down. PC projection needs the final presented frame, so seek its center.
+    const next = frameCenter
+      ? (Math.min(
+          Number.isFinite(video.duration)
+            ? Math.round(video.duration * fps) - 1
+            : Math.round(max * fps),
+          Math.max(0, Math.round(desired * fps)),
+        ) +
+          0.5) /
+        fps
+      : Math.min(max, Math.max(0, desired));
     if (video.readyState < 2 || Math.abs(video.currentTime - next) >= 0.5 / fps)
       video.currentTime = next;
   };

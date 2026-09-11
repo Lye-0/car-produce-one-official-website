@@ -12,7 +12,7 @@
 - 3Dシーンの編集: `OPEN_BLENDER.cmd` → `02_render/scene/CPO_MASTER.blend`
 - レンダリング: `RENDER.cmd`。操作は `02_render/RENDER_GUIDE.md` を参照。
 - サイトの文章・連絡先: `01_website/src/content.ts`
-- 映像・サイト接続: `01_website/src/App.tsx`、`PortalHandoff.tsx`
+- 映像・サイト接続: `01_website/src/App.tsx`、`DesktopPortal.tsx`、`PortalHandoff.tsx`
 
 本番映像は横1920×1080・縦1080×1920、30fps。配信版は `01_website/src/production-media.json` で指定します。サイトと映像の詳細は `01_website/README.md` にあります。
 
@@ -29,7 +29,7 @@ Gitではソース・設定・最新Blender MASTER・掲載資料を管理しま
 - `02_render/.python_vendor/`: このPCの動画処理ライブラリ
 - `01_website/node_modules/`、`01_website/dist/`: 再生成できる依存とビルド出力
 
-別のPCで本番動画を使う場合は、`01_website/src/production-media.json` の `version` と一致する配信フォルダをコピーしてから起動・ビルドしてください。再合成には最終元画像も必要です。Python依存は `02_render/scripts/requirements-media.txt` から導入できます。
+別のPCで本番動画を使う場合は、`01_website/src/production-media.json` の `version` と一致する配信フォルダと、PC用 `01_website/public/media/production/desktop-live-screen-05/` をコピーしてから起動・ビルドしてください。再合成には最終元画像も必要です。Python依存は `02_render/scripts/requirements-media.txt` から導入できます。
 
 生成済み素材を `git add -f` で追加しないでください。大きな動画は通常のGit履歴へ入れるとプッシュを妨げます。
 
