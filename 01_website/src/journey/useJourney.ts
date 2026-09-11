@@ -4,6 +4,7 @@ import {
   journeyProgressFromScroll,
 } from './scroll';
 import { INITIAL_MEDIA_REQUESTS, requestNearbyMedia } from '../media/loading';
+import { assetUrl } from '../media/urls';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { content as c } from '../content';
 import { DRIVE_FPS, JUNCTION_MEDIA_VERSION, sampleJunction } from './junction';
@@ -62,10 +63,12 @@ export function useJourney() {
     portal = scene.portal > 0,
     moving = !scene.hold && scene.progress > 0;
   const asset = (name: string) =>
-    variant ? `/media/images/fallback/${variant}/${name}` : undefined;
+    variant ? assetUrl(`/media/images/fallback/${variant}/${name}`) : undefined;
   const streetAsset = (name: string) =>
     variant
-      ? `/media/images/fallback/${variant}/${name}?v=${JUNCTION_MEDIA_VERSION}`
+      ? assetUrl(
+          `/media/images/fallback/${variant}/${name}?v=${JUNCTION_MEDIA_VERSION}`,
+        )
       : undefined;
   const junction = sampleJunction(scene.junction, entryPhase.current ?? 0);
   const scrollScale = journeyScrollDistance(1, entryPhase.current ?? 0);

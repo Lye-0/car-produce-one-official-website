@@ -1,4 +1,5 @@
 import { content as c } from '../content';
+import { assetUrl } from '../media/urls';
 export function MainHero({
   projected = false,
   mobileWings = false,
@@ -15,14 +16,14 @@ export function MainHero({
         <div className="mobile-monitor-wings" aria-hidden="true">
           <div className="monitor-wing monitor-wing-left">
             <img
-              src="/media/images/monitor-wings/tools.webp"
+              src={assetUrl('/media/images/monitor-wings/tools.webp')}
               alt=""
               decoding="async"
             />
           </div>
           <div className="monitor-wing monitor-wing-right">
             <img
-              src="/media/images/monitor-wings/car.jpg"
+              src={assetUrl('/media/images/monitor-wings/car.jpg')}
               alt=""
               decoding="async"
             />

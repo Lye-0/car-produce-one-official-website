@@ -68,3 +68,7 @@ npm run preview
 接続の終端比較には、開発サーバー上の[PC用比較画面](http://127.0.0.1:5173/tests/monitor-portal-fixture.html)と[スマホ用比較画面](http://127.0.0.1:5173/tests/monitor-portal-fixture.html?profile=mobile)を使用できます。開発者コンソールで `window.portalFixture.ready` が `true` になったら、`window.portalFixture.setNative(true)` で通常配置へ切り替えて比較します。
 
 映像接続や再生成の調査では、[プロジェクト固有の知識](../agent-knowledge/INDEX.md)から関連する項目を参照します。
+
+## GitHub Pagesへの公開
+
+mainへのpushによる自動公開と初回のPages設定は[公開ガイド](docs/deployment.md)を参照してください。

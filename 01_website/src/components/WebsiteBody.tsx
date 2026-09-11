@@ -1,5 +1,6 @@
 import { content as c } from '../content';
 import { getProductionPoster } from '../media/production';
+import { assetUrl } from '../media/urls';
 
 const Arrow = ({ diagonal = false }: { diagonal?: boolean }) => (
   <span aria-hidden="true">{diagonal ? '↗' : '→'}</span>
@@ -81,7 +82,7 @@ export function WebsiteBody({
             <img
               src={
                 getProductionPoster('desktop', 'tools') ??
-                '/media/images/fallback/desktop/tools.jpg'
+                assetUrl('/media/images/fallback/desktop/tools.jpg')
               }
               alt="工具が整然と並ぶ作業台を表現した3Dイメージ"
               width="1280"
@@ -95,7 +96,7 @@ export function WebsiteBody({
             <img
               src={
                 getProductionPoster('desktop', 'magazines') ??
-                '/media/images/fallback/desktop/magazines.jpg'
+                assetUrl('/media/images/fallback/desktop/magazines.jpg')
               }
               alt="自動車雑誌が並ぶガラステーブルを表現した3Dイメージ"
               width="1280"
@@ -239,7 +240,7 @@ export function WebsiteBody({
           </summary>
           <div className="qr-content">
             <img
-              src="/media/images/line-qr.png"
+              src={assetUrl('/media/images/line-qr.png')}
               alt="CAR PRODUCE ONE LINE友だち追加QRコード"
               width="180"
               height="180"

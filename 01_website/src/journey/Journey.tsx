@@ -1,6 +1,7 @@
 import { content as c } from '../content';
 import { MainHero } from '../components/MainHero';
 import { MediaVideo } from '../media/MediaVideo';
+import { assetUrl } from '../media/urls';
 import { ScrubMediaVideo } from '../media/ScrubMediaVideo';
 import { getProductionClip, getProductionPoster } from '../media/production';
 import { JunctionTransition } from './JunctionTransition';
@@ -71,16 +72,20 @@ export function Journey({ state }: { state: JourneyState }) {
           srcSet={
             getProductionPoster('mobile', poster) ??
             (poster === 'city'
-              ? `/media/images/fallback/mobile/drive.jpg?v=${JUNCTION_MEDIA_VERSION}`
-              : '/media/images/fallback/mobile/' + poster + '.jpg')
+              ? assetUrl(
+                  `/media/images/fallback/mobile/drive.jpg?v=${JUNCTION_MEDIA_VERSION}`,
+                )
+              : assetUrl('/media/images/fallback/mobile/' + poster + '.jpg'))
           }
         />
         <img
           src={
             getProductionPoster('desktop', poster) ??
             (poster === 'city'
-              ? `/media/images/fallback/desktop/drive.jpg?v=${JUNCTION_MEDIA_VERSION}`
-              : '/media/images/fallback/desktop/' + poster + '.jpg')
+              ? assetUrl(
+                  `/media/images/fallback/desktop/drive.jpg?v=${JUNCTION_MEDIA_VERSION}`,
+                )
+              : assetUrl('/media/images/fallback/desktop/' + poster + '.jpg'))
           }
           alt=""
         />
