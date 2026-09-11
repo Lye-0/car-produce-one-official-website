@@ -6,7 +6,7 @@ import {
   TURN_SECONDS,
   junctionProgress,
   sampleJunction,
-} from '../src/junction-transition.ts';
+} from '../src/journey/junction.ts';
 
 test('every starting phase reaches the common street endpoint before the turn', () => {
   for (const phase of [0, 5, 10, 15, DRIVE_SECONDS - 1 / 30]) {
@@ -49,7 +49,7 @@ test('all phases end at the same arrival pose and tolerate invalid input', () =>
   assert.equal(sampleJunction(NaN, NaN).driveTime, 0);
 });
 
-import { sampleJourney, HOLD_RANGES } from '../src/journey-timeline.ts';
+import { sampleJourney, HOLD_RANGES } from '../src/journey/timeline.ts';
 test('arrival starts after the junction while the three reading positions remain fixed', () => {
   assert.equal(sampleJourney(JUNCTION_END).time, 0);
   assert.ok(sampleJourney(JUNCTION_END + 0.001).time > 0);

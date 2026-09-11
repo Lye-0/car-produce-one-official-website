@@ -4,7 +4,7 @@ import {
   sampleJourney,
   createVideoScrubber,
   HOLD_RANGES,
-} from '../src/journey-timeline.ts';
+} from '../src/journey/timeline.ts';
 class Decoder {
   duration = 90;
   readyState = 4;

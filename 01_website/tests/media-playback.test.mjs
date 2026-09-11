@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   preferredVariant,
   createMediaSourceController,
-} from '../src/media-playback.ts';
+} from '../src/media/playback.ts';
 const hevc = { src: 'h265.mp4', codec: 'hevc', fps: 30 };
 const h264 = { src: 'h264.mp4', codec: 'h264', fps: 30 };
 const asset = { variants: [hevc, h264] };

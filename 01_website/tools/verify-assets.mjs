@@ -4,10 +4,10 @@ import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const readJson = (path) =>
   JSON.parse(readFileSync(resolve(root, path), 'utf8'));
-const production = readJson('src/production-media.json');
+const production = readJson('src/media/manifests/journey.json');
 const live = {
-  desktop: readJson('src/desktop-portal-media.json'),
-  mobile: readJson('src/mobile-portal-media.json'),
+  desktop: readJson('src/media/manifests/portal-desktop.json'),
+  mobile: readJson('src/media/manifests/portal-mobile.json'),
 };
 const expectedVideos = new Set();
 let videoCount = 0,
@@ -68,7 +68,7 @@ for (const profile of ['desktop', 'mobile']) {
     }
   }
   for (const url of Object.values(production.posters[profile])) poster(url);
-  const tracking = readJson(`src/${profile}-screen-tracking.json`);
+  const tracking = readJson(`src/portal/tracking/${profile}.json`);
   if (
     tracking.length !== 361 ||
     tracking.some(
@@ -89,15 +89,20 @@ for (const profile of ['desktop', 'mobile']) {
     'monitor.jpg',
     'car-foreground.png',
   ])
-    if (!statSync(resolve(root, 'public/media/stage4', profile, name)).size)
+    if (
+      !statSync(resolve(root, 'public/media/images/fallback', profile, name))
+        .size
+    )
       throw new Error(`Empty fallback image: ${profile}/${name}`);
   if (
-    !statSync(resolve(root, 'public/media/junction', profile, 'drive.jpg')).size
+    !statSync(
+      resolve(root, 'public/media/images/fallback', profile, 'drive.jpg'),
+    ).size
   )
     throw new Error(`Empty driving poster: ${profile}`);
 }
 for (const name of ['tools.webp', 'car.jpg'])
-  if (!statSync(resolve(root, 'public/media/monitor-wings', name)).size)
+  if (!statSync(resolve(root, 'public/media/images/monitor-wings', name)).size)
     throw new Error(`Empty monitor wing: ${name}`);
 function checkDirectory(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {

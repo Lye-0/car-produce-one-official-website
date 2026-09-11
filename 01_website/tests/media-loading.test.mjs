@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {
   INITIAL_MEDIA_REQUESTS,
   requestNearbyMedia,
-} from '../src/media-loading.ts';
-import { createVideoScrubber } from '../src/journey-timeline.ts';
+} from '../src/media/loading.ts';
+import { createVideoScrubber } from '../src/journey/timeline.ts';
 test('initial and skipped visits do not request the full film library', () => {
   assert.equal(
     requestNearbyMedia(INITIAL_MEDIA_REQUESTS, 0),

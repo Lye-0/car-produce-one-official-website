@@ -4,13 +4,13 @@ import {
   journeyScrollDistance as distance,
   journeyProgressFromScroll as progress,
   turnScrollStart,
-} from '../src/journey-scroll.ts';
-import { sampleJourney, CHAPTER_PROGRESS } from '../src/journey-timeline.ts';
+} from '../src/journey/scroll.ts';
+import { sampleJourney, CHAPTER_PROGRESS } from '../src/journey/timeline.ts';
 import {
   JUNCTION_END,
   junctionProgress,
   sampleJunction,
-} from '../src/junction-transition.ts';
+} from '../src/journey/junction.ts';
 const phases = [0, 5, 10, 15, 19.99];
 const close = (a, b, tolerance = 1e-8) =>
   assert.ok(Math.abs(a - b) < tolerance, `${a} vs ${b}`);

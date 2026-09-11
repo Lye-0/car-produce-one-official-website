@@ -111,17 +111,19 @@ def install():
    for v in asset['variants']:
     path=out/v['src'];assert digest(path)==v['sha256']
     verify(path,COUNTS[job],30,v['width'],v['height'],v['codec'],v['gop'])
- version=manifest['version'];website=ROOT.parent/'01_website';target=website/'public/media/production'/version
- assert not target.exists(),'This version is already installed. Choose a new encoding.name to change it.'
- target.parent.mkdir(parents=True,exist_ok=True)
- # Copy first. Only the final atomic manifest replacement activates the completed set.
- shutil.copytree(out,target)
- for clips in manifest['profiles'].values():
-  for asset in clips.values():
-   asset['poster']=f'/media/production/{version}/'+asset['poster']
-   for v in asset['variants']:v['src']=f'/media/production/{version}/'+v['src']
- write_json(website/'src/production-media.json',manifest)
- print('PRODUCTION MEDIA ACTIVATED:',target)
+ from site_media_layout import site_asset_plan
+ website=ROOT.parent/'01_website';manifests=website/'src/media/manifests'
+ current=json.loads((manifests/'journey.json').read_text())
+ journey,portals,copies=site_asset_plan(manifest,current['posters'])
+ # Copy only runtime videos/posters, never render frames or export-side metadata.
+ for source,url in copies:
+  target=website/'public'/url.lstrip('/');target.parent.mkdir(parents=True,exist_ok=True)
+  temporary=target.with_suffix(target.suffix+'.installing')
+  shutil.copy2(out/source,temporary);temporary.replace(target)
+ for profile,clips in portals.items():write_json(manifests/f'portal-{profile}.json',clips)
+ write_json(manifests/'journey.json',journey)
+ print('PRODUCTION MEDIA ACTIVATED:',website/'public/media/videos')
+
 
 def benchmark():
  cfg=load_config(ROOT);bank=ROOT/'output'/('quality-'+cfg['run_name']);records={}
