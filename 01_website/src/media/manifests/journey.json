@@ -145,9 +145,6 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/videos/desktop/route/hevc.mp4",
-            "bytes": 86003913,
-            "sha256": "b730d9b76d69f60259dc4e470ac36a5614c7fe0deb7eca49aee6c0633f664d50",
             "encode_seconds": 541.512268800012,
             "encode_seconds_scope": "hevc+h264 pair",
             "shared_input_pass": true,
@@ -158,7 +155,49 @@
             "gop": 6,
             "preset": "p7",
             "bitrate": 8494214,
-            "source_digest": "4dcbbe573521ad407cb74978e823ceb59dfcd0aaf4fcf54e4d35bf38ac11c45b"
+            "source_digest": "4dcbbe573521ad407cb74978e823ceb59dfcd0aaf4fcf54e4d35bf38ac11c45b",
+            "source_file": {
+              "sha256": "b730d9b76d69f60259dc4e470ac36a5614c7fe0deb7eca49aee6c0633f664d50",
+              "bytes": 86003913,
+              "lossless_split": true
+            },
+            "segments": [
+              {
+                "src": "/media/videos/desktop/route/hevc-part-1.mp4",
+                "startFrame": 0,
+                "frames": 1212,
+                "bytes": 45329558,
+                "sha256": "ed4014c31aa499ce593eeaf98c84f2d8d9f2e8bde92384a3bde93df60b5331c9"
+              },
+              {
+                "src": "/media/videos/desktop/route/hevc-part-2.mp4",
+                "startFrame": 1212,
+                "frames": 300,
+                "bytes": 10864495,
+                "sha256": "7d36fd531e2932062105f55bce9d36be9a133b4f5b4a1990c8fa5048ce2a624f"
+              },
+              {
+                "src": "/media/videos/desktop/route/hevc-part-3.mp4",
+                "startFrame": 1512,
+                "frames": 300,
+                "bytes": 9686856,
+                "sha256": "d6c11f4668067f0b2750641eb30c449fa951ac514f09a33cbe2d70682d91d5e4"
+              },
+              {
+                "src": "/media/videos/desktop/route/hevc-part-4.mp4",
+                "startFrame": 1812,
+                "frames": 300,
+                "bytes": 7588717,
+                "sha256": "d4d7bdfc84e8b94253dc9cf604549b252001fea5102cbb02c067456291e08d02"
+              },
+              {
+                "src": "/media/videos/desktop/route/hevc-part-5.mp4",
+                "startFrame": 2112,
+                "frames": 318,
+                "bytes": 12538215,
+                "sha256": "c3085ac6d579c381e5dd708329cbe1780aca9c37cbf4d7249889bd990c6f85e3"
+              }
+            ]
           },
           {
             "codec": "h264",
@@ -199,9 +238,30 @@
               {
                 "src": "/media/videos/desktop/route/h264-part-2.mp4",
                 "startFrame": 1212,
-                "frames": 1218,
-                "bytes": 69829159,
-                "sha256": "81460f3f683b4a41cb7c399bca968fa7bef113cb6800ce4bbad56a717fee56d8"
+                "frames": 300,
+                "bytes": 17570242,
+                "sha256": "46c46e3fdcfa0582e8a5cc63de2c1b8fe540faa369f376cacb12717fd70a7036"
+              },
+              {
+                "src": "/media/videos/desktop/route/h264-part-3.mp4",
+                "startFrame": 1512,
+                "frames": 300,
+                "bytes": 16983702,
+                "sha256": "e8e8680560ef07118245627f819a884c8a7c1f5ec2d7f4df84966090aee69cf9"
+              },
+              {
+                "src": "/media/videos/desktop/route/h264-part-4.mp4",
+                "startFrame": 1812,
+                "frames": 300,
+                "bytes": 14698232,
+                "sha256": "905af0c4505d63e62974e81874778585a7f1e33d695cd2f699e75261d7097f8b"
+              },
+              {
+                "src": "/media/videos/desktop/route/h264-part-5.mp4",
+                "startFrame": 2112,
+                "frames": 318,
+                "bytes": 20579573,
+                "sha256": "5ab06fff547310f9066639466035701789f2d92af8b32b90591b81705b334075"
               }
             ]
           }
@@ -475,9 +535,6 @@
             "color_transfer": 13,
             "max_keyframe_gap": 6,
             "validated": true,
-            "src": "/media/videos/mobile/route/hevc.mp4",
-            "bytes": 88214440,
-            "sha256": "8733ba795913aa1d13beb53c2816433df01e1daab05f09bed3059461da0f55c8",
             "encode_seconds": 556.3414994999912,
             "encode_seconds_scope": "hevc+h264 pair",
             "shared_input_pass": true,
@@ -488,7 +545,49 @@
             "gop": 6,
             "preset": "p7",
             "bitrate": 8712537,
-            "source_digest": "79efa70bb965151e8aa04883df88e5edd651e814620e48c861150dd182f22e08"
+            "source_digest": "79efa70bb965151e8aa04883df88e5edd651e814620e48c861150dd182f22e08",
+            "source_file": {
+              "sha256": "8733ba795913aa1d13beb53c2816433df01e1daab05f09bed3059461da0f55c8",
+              "bytes": 88214440,
+              "lossless_split": true
+            },
+            "segments": [
+              {
+                "src": "/media/videos/mobile/route/hevc-part-1.mp4",
+                "startFrame": 0,
+                "frames": 1212,
+                "bytes": 46229573,
+                "sha256": "d02d0445e0faddea8b971ca0db09be285e956dd2b7415d168ce4d60baa560902"
+              },
+              {
+                "src": "/media/videos/mobile/route/hevc-part-2.mp4",
+                "startFrame": 1212,
+                "frames": 300,
+                "bytes": 11337358,
+                "sha256": "dfe34559119e66880e034cea38b0ff8dbd71e4941686393c7ad00209708a59b7"
+              },
+              {
+                "src": "/media/videos/mobile/route/hevc-part-3.mp4",
+                "startFrame": 1512,
+                "frames": 300,
+                "bytes": 9857535,
+                "sha256": "e90c5f2693f28c4a67c48fc7c553846b8537c0d6f8c4d145477d18af0e76f78c"
+              },
+              {
+                "src": "/media/videos/mobile/route/hevc-part-4.mp4",
+                "startFrame": 1812,
+                "frames": 300,
+                "bytes": 8066785,
+                "sha256": "d0ef2722e777f2d13fa54d124c4199329bea5e6d4deabf7672062ee8c05e930b"
+              },
+              {
+                "src": "/media/videos/mobile/route/hevc-part-5.mp4",
+                "startFrame": 2112,
+                "frames": 318,
+                "bytes": 12726985,
+                "sha256": "e339c6571fe8740e9e281e09ced10674a6bf45d5c8f45371d81897d7c0400c38"
+              }
+            ]
           },
           {
             "codec": "h264",
@@ -529,9 +628,30 @@
               {
                 "src": "/media/videos/mobile/route/h264-part-2.mp4",
                 "startFrame": 1212,
-                "frames": 1218,
-                "bytes": 70844790,
-                "sha256": "556adafae3246795bb1725f3cfdd992e774cf8a8e6baee09ecec1bc84cb68a0e"
+                "frames": 300,
+                "bytes": 18729924,
+                "sha256": "4380365ad4f101b0d3dc8baabe528651007774b7aa7b1086bad49b1fec007398"
+              },
+              {
+                "src": "/media/videos/mobile/route/h264-part-3.mp4",
+                "startFrame": 1512,
+                "frames": 300,
+                "bytes": 16857827,
+                "sha256": "90350f16a540a18d43ad433f751be64c23ec890abdf95d3a1062d78ccc0887e7"
+              },
+              {
+                "src": "/media/videos/mobile/route/h264-part-4.mp4",
+                "startFrame": 1812,
+                "frames": 300,
+                "bytes": 14524821,
+                "sha256": "e6a66bb2a50ccad9e2c7cb1a5a621141a5e1ce5f3e75ccd360d46dfc14bd6927"
+              },
+              {
+                "src": "/media/videos/mobile/route/h264-part-5.mp4",
+                "startFrame": 2112,
+                "frames": 318,
+                "bytes": 20734852,
+                "sha256": "2b5c0dd143d8c1d68c86e14752cb0f57e1f70ac75eeca4c703e7ec25d70acb22"
               }
             ]
           }

@@ -4,6 +4,9 @@ import { WebsiteBody } from './components/WebsiteBody';
 import { Journey } from './journey/Journey';
 import { useJourney } from './journey/useJourney';
 import { BASE_SCROLL_VIEWPORTS } from './journey/scroll';
+import { DownloadContext } from './media/DownloadContext';
+import { VideoLoading } from './components/VideoLoading';
+import './styles/video-loading.css';
 export default function App() {
   const journey = useJourney();
   const {
@@ -20,9 +23,12 @@ export default function App() {
     reduced,
   } = journey;
   return (
-    <>
+    <DownloadContext.Provider value={journey.startup.downloads}>
       <SiteHeader state={journey} />
-      <Journey state={journey} />
+      <div inert={journey.startup.blocked && !journey.startup.cityReady}>
+        <Journey state={journey} />
+      </div>
+      <VideoLoading state={journey} />
       <div
         ref={spacer}
         className="journey-scroll-space"
@@ -55,6 +61,6 @@ export default function App() {
           }}
         />
       </main>
-    </>
+    </DownloadContext.Provider>
   );
 }

@@ -1,16 +1,24 @@
 import type { JourneyState } from '../journey/useJourney';
+import { useLayoutEffect, useRef } from 'react';
 export function SiteHeader({ state }: { state: JourneyState }) {
-  const {
-    skip,
-    entered,
-    liveEnabled,
-    pastHero,
-    spacer,
-    reduced,
-    go,
-    menu,
-    setMenu,
-  } = state;
+  const header = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const element = header.current;
+    if (!element) return;
+    const update = () =>
+      document.documentElement.style.setProperty(
+        '--site-header-bottom',
+        `${element.getBoundingClientRect().bottom}px`,
+      );
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    update();
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty('--site-header-bottom');
+    };
+  }, []);
+  const { skip, entered, liveEnabled, pastHero, replay, menu, setMenu } = state;
   return (
     <>
       <a
@@ -24,6 +32,7 @@ export function SiteHeader({ state }: { state: JourneyState }) {
         サービスへ移動
       </a>
       <header
+        ref={header}
         className={
           'site-header ' +
           (entered && (!liveEnabled || pastHero) ? 'header-body' : '')
@@ -31,14 +40,7 @@ export function SiteHeader({ state }: { state: JourneyState }) {
       >
         <button
           className="wordmark"
-          onClick={() =>
-            entered
-              ? window.scrollTo({
-                  top: spacer.current?.offsetHeight ?? 0,
-                  behavior: reduced ? 'instant' : 'smooth',
-                })
-              : go(0)
-          }
+          onClick={replay}
           aria-label="CAR PRODUCE ONE トップ"
         >
           CAR PRODUCE ONE<span>AUTOMOTIVE / SERVICE & CARE</span>

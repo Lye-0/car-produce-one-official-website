@@ -57,10 +57,7 @@ for (const profile of ['desktop', 'mobile']) {
         throw new Error(`Invalid variant: ${profile}/${job}/${codec}`);
       const files = v.segments ?? [{ ...v, startFrame: 0 }];
       let nextFrame = 0;
-      if (
-        v.segments &&
-        (v.src || codec !== 'h264' || job !== 'route' || files.length !== 2)
-      )
+      if (v.segments && (v.src || job !== 'route' || files.length !== 5))
         throw new Error('Unexpected segmented variant');
       for (const part of files) {
         if (

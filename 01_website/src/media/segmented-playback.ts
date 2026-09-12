@@ -39,7 +39,16 @@ export function segmentTarget(
 // replacement is ready; neither source reassignment nor a crossfade joins parts.
 export function createSegmentedPlayback(
   videos: readonly HTMLVideoElement[],
-  options: { onReady: (ready: boolean) => void; onError: () => void },
+  options: {
+    onReady: (ready: boolean) => void;
+    onError: () => void;
+    chooseVariant?: (asset: MediaAsset) => Promise<MediaVariant>;
+    onVariant?: (asset: MediaAsset, variant: MediaVariant) => void;
+    resolveSource?: (
+      src: string,
+      priority?: number,
+    ) => Promise<{ url: string; release: () => void }>;
+  },
 ) {
   let disposed = false;
   let generation = 0;
@@ -51,8 +60,13 @@ export function createSegmentedPlayback(
   let failed = false;
   const decoded = videos.map(() => -1);
   const loaded = videos.map(() => false);
+  const slotParts = videos.map(() => -1);
+  const slotTickets = videos.map(() => 0);
+  let direction = 1;
   const callbacks = videos.map(() => 0);
   const warmSeconds = 12;
+  let sourceGeneration = 0;
+  const releases: Array<(() => void) | undefined> = videos.map(() => undefined);
 
   function announce(ready: boolean) {
     if (announced !== ready) {
@@ -62,33 +76,85 @@ export function createSegmentedPlayback(
   }
 
   function clear() {
+    sourceGeneration++;
+    releases.forEach((release, i) => {
+      release?.();
+      releases[i] = undefined;
+    });
     parts = [];
     videos.forEach((video, index) => {
       loaded[index] = false;
+      slotParts[index] = -1;
+      slotTickets[index]++;
       decoded[index] = -1;
       video.dataset.mediaActive = 'false';
       video.dataset.mediaStartFrame = '0';
       delete video.dataset.mediaFrame;
+      delete video.dataset.mediaWaiting;
       video.pause();
       video.removeAttribute('src');
       video.load();
     });
   }
 
-  function load(index: number) {
-    if (loaded[index]) return;
+  function load(partIndex: number, priority = 0) {
+    const existing = slotParts.indexOf(partIndex);
+    if (existing >= 0) return existing;
+    const active = videos.findIndex((v) => v.dataset.mediaActive === 'true');
+    const index =
+      partIndex < videos.length && slotParts[partIndex] === -1
+        ? partIndex
+        : slotParts.indexOf(-1) >= 0
+          ? slotParts.indexOf(-1)
+          : active === 0
+            ? 1
+            : 0;
     const video = videos[index];
-    const part = parts[index];
+    const part = parts[partIndex];
+    releases[index]?.();
+    releases[index] = undefined;
+    slotParts[index] = partIndex;
+    const slotTicket = ++slotTickets[index];
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+    video.dataset.mediaActive = 'false';
     loaded[index] = true;
     decoded[index] = -1;
     video.dataset.mediaStartFrame = String(part.startFrame);
     video.dataset.mediaCodec = selected!.codec;
     video.preload = 'auto';
-    video.src = part.src;
-    video.load();
+    if (!options.resolveSource) {
+      video.src = part.src;
+      video.load();
+      return index;
+    }
+    const ticket = sourceGeneration;
+    options
+      .resolveSource(part.src, priority)
+      .then((lease) => {
+        if (
+          disposed ||
+          ticket !== sourceGeneration ||
+          slotTicket !== slotTickets[index]
+        ) {
+          lease.release();
+          return;
+        }
+        releases[index] = lease.release;
+        video.src = lease.url;
+        video.load();
+      })
+      .catch(() => {
+        /* Keep the last decoded image. The download UI owns retry. */
+      });
+    return index;
   }
 
   function present(index: number, frame: number) {
+    videos.forEach((item) => {
+      delete item.dataset.mediaWaiting;
+    });
     const video = videos[index];
     const changed =
       video.dataset.mediaActive !== 'true' ||
@@ -117,27 +183,31 @@ export function createSegmentedPlayback(
   function flush() {
     if (disposed || failed || !asset || !selected || !parts.length) return;
     const target = segmentTarget(parts, asset.frames, asset.fps, desired);
-    load(target.index);
-    seekVideo(target.index, target.localFrame, target.frame);
-    // Warm the next/previous boundary while approaching it. Keep visited parts
-    // attached so fast reverse scrolling does not reload the source.
-    for (const index of [target.index - 1, target.index + 1]) {
-      const part = parts[index];
-      if (!part) continue;
-      if (videos[index].dataset.mediaActive === 'true') continue;
-      const frame =
-        index < target.index
-          ? part.startFrame + part.frames - 1
-          : part.startFrame;
-      if (Math.abs(target.frame - frame) > warmSeconds * asset.fps) continue;
-      load(index);
-      seekVideo(index, index < target.index ? part.frames - 1 : 0);
-    }
+    const targetSlot = load(target.index);
+    videos.forEach((video, index) => {
+      video.dataset.mediaWaiting = String(
+        index === targetSlot && decoded[index] !== target.localFrame,
+      );
+    });
+    seekVideo(targetSlot, target.localFrame, target.frame);
+    // Two decoders alternate across any number of parts. Never replace the
+    // displayed slot to warm a neighbor, or warm both neighbors into one slot.
+    if (videos[targetSlot].dataset.mediaActive !== 'true') return;
+    const step = parts[target.index + direction] ? direction : -direction;
+    const neighbor = target.index + step;
+    const part = parts[neighbor];
+    if (!part) return;
+    const frame =
+      step < 0 ? part.startFrame + part.frames - 1 : part.startFrame;
+    if (Math.abs(target.frame - frame) > warmSeconds * asset.fps) return;
+    const neighborSlot = load(neighbor, 10);
+    seekVideo(neighborSlot, step < 0 ? part.frames - 1 : 0);
   }
 
   function configure(variant: MediaVariant) {
     clear();
     selected = variant;
+    options.onVariant?.(asset!, variant);
     parts = mediaSegments(variant, asset!.frames);
     let end = 0;
     for (const part of parts) {
@@ -149,7 +219,7 @@ export function createSegmentedPlayback(
         throw new Error('Segments must be contiguous and nonempty.');
       end += part.frames;
     }
-    if (parts.length > videos.length || end !== asset!.frames)
+    if (videos.length < Math.min(2, parts.length) || end !== asset!.frames)
       throw new Error('Unsupported segmented media layout.');
     flush();
   }
@@ -221,7 +291,9 @@ export function createSegmentedPlayback(
       failed = false;
       if (disposed || !next) return;
       try {
-        const variant = await preferredVariant(next, probe);
+        const variant = await (options.chooseVariant
+          ? options.chooseVariant(next)
+          : preferredVariant(next, probe));
         if (disposed || ticket !== generation) return;
         configure(variant);
       } catch {
@@ -232,6 +304,7 @@ export function createSegmentedPlayback(
       }
     },
     seek(time: number) {
+      if (time !== desired) direction = time > desired ? 1 : -1;
       desired = time;
       flush();
     },

@@ -1,4 +1,4 @@
-"""Losslessly split the two route AVC exports for ordinary Git file limits.
+"""Losslessly split route exports for bounded startup prefetch and Git file limits.
 
 The encoder uses closed GOPs and no B frames. Each segment starts at an IDR,
 keeps the original compressed packets, and has a zero-based local timeline.
@@ -34,7 +34,7 @@ def packet_records(path):
 def decoded_records(path):
     with av.open(str(path)) as container:
         for frame in container.decode(video=0):
-            yield hashlib.sha256(frame.to_ndarray(format='yuv420p')).digest()
+            yield hashlib.sha256(frame.to_ndarray(format=frame.format.name)).digest()
 
 
 def remux(source, target, start, end, fps):
@@ -42,7 +42,7 @@ def remux(source, target, start, end, fps):
         stream = container.streams.video[0]
         assert len(container.streams) == 1, 'Only silent video is supported.'
         assert not stream.codec_context.has_b_frames, 'Reordered frames need a different remux contract.'
-        assert stream.codec_context.name == 'h264'
+        assert stream.codec_context.name in ('h264', 'hevc')
         with av.open(str(target), 'w', options={'movflags': '+faststart'}) as output:
             result = output.add_stream_from_template(stream)
             result.time_base = stream.time_base
@@ -66,23 +66,25 @@ def remux(source, target, start, end, fps):
             assert count == end - start
 
 
-def prepare(source, variant, split_frame=SPLIT_FRAME):
-    """Prepare and verify both files before the manifest or source is changed."""
+def prepare(source, variant, split_frame=None):
+    """Prepare and verify all files before the manifest or source is changed."""
     source = Path(source)
     assert digest(source) == variant['sha256']
     assert source.stat().st_size == variant['bytes']
-    assert 0 < split_frame < variant['frames']
-    ranges = [(0, split_frame), (split_frame, variant['frames'])]
+    cuts = [split_frame] if split_frame is not None else list(range(SPLIT_FRAME, variant['frames'] - 150, 300))
+    assert all(0 < cut < variant['frames'] for cut in cuts)
+    points = [0, *cuts, variant['frames']]
+    ranges = list(zip(points, points[1:]))
     outputs = []
     try:
         for part, (start, end) in enumerate(ranges, 1):
-            final = source.with_name(f'h264-part-{part}.mp4')
+            final = source.with_name(f"{variant['codec']}-part-{part}.mp4")
             temporary = final.with_suffix('.splitting.mp4')
             outputs.append((temporary, final, start, end))
             remux(source, temporary, start, end, variant['fps'])
             assert temporary.stat().st_size < MAX_BYTES, f'Segment exceeds 95 MiB: {temporary}'
             verify(temporary, end-start, variant['fps'], variant['width'],
-                   variant['height'], 'h264', variant['gop'])
+                   variant['height'], variant['codec'], variant['gop'])
 
         # This compares every encoded packet and every decoded YUV frame, rather
         # than relying on similar-looking samples at the cut.
@@ -122,21 +124,22 @@ def install(website):
     prepared = []
     try:
         for profile in ('desktop', 'mobile'):
-            variants = manifest['profiles'][profile]['route']['variants']
-            index = next(i for i, v in enumerate(variants) if v['codec'] == 'h264')
-            variant = variants[index]
-            if 'segments' in variant:
-                for part in variant['segments']:
-                    file = website/'public'/part['src'].lstrip('/')
-                    assert file.stat().st_size == part['bytes'] and digest(file) == part['sha256']
-                print('ALREADY SPLIT', profile, flush=True)
-                continue
-            source = website/'public'/variant['src'].lstrip('/')
-            result, outputs = prepare(source, variant)
-            prepared.append((source, outputs))
-            variants[index] = result
-            print('LOSSLESS VERIFIED', profile,
-                  [(p['startFrame'], p['frames'], p['bytes']) for p in result['segments']], flush=True)
+            for codec in ('hevc', 'h264'):
+                variants = manifest['profiles'][profile]['route']['variants']
+                index = next(i for i, v in enumerate(variants) if v['codec'] == codec)
+                variant = variants[index]
+                if 'segments' in variant:
+                    for part in variant['segments']:
+                        file = website/'public'/part['src'].lstrip('/')
+                        assert file.stat().st_size == part['bytes'] and digest(file) == part['sha256']
+                    print('ALREADY SPLIT', profile, codec, flush=True)
+                    continue
+                source = website/'public'/variant['src'].lstrip('/')
+                result, outputs = prepare(source, variant)
+                prepared.append((source, outputs))
+                variants[index] = result
+                print('LOSSLESS VERIFIED', profile, codec,
+                      [(p['startFrame'], p['frames'], p['bytes']) for p in result['segments']], flush=True)
         for _, outputs in prepared:
             for temporary, final, _, _ in outputs:
                 temporary.replace(final)

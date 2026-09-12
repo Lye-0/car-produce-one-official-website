@@ -7,13 +7,20 @@ import { INITIAL_MEDIA_REQUESTS, requestNearbyMedia } from '../media/loading';
 import { assetUrl } from '../media/urls';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { content as c } from '../content';
-import { DRIVE_FPS, JUNCTION_MEDIA_VERSION, sampleJunction } from './junction';
+import {
+  DRIVE_FPS,
+  JUNCTION_END,
+  JUNCTION_MEDIA_VERSION,
+  sampleJunction,
+} from './junction';
 import {
   CHAPTER_PROGRESS,
   sampleJourney,
   createVideoScrubber,
 } from './timeline';
 import { desktopPortalMedia, mobilePortalMedia } from '../media/portal';
+import { useStartupLoading } from '../media/useStartupLoading';
+import type { GateFile } from '../media/download-gates';
 export function useJourney() {
   const city = useRef<HTMLVideoElement>(null),
     film = useRef<HTMLVideoElement>(null),
@@ -50,6 +57,205 @@ export function useJourney() {
   const [requestedMedia, setRequestedMedia] = useState(INITIAL_MEDIA_REQUESTS);
   const profile = variant ?? 'desktop';
   const liveEnabled = variant !== null && !reduced;
+  const startup = useStartupLoading({
+    profile: variant,
+    reduced,
+    city,
+    decoded: turnReady && ready && Boolean(idleReady.tools),
+    failed,
+  });
+  const [videoWaiting, setVideoWaiting] = useState(false);
+  const [boundaryWaiting, setBoundaryWaiting] = useState(false);
+  const [bufferCity, setBufferCity] = useState(false);
+  const gateBypass = useRef(false);
+  const boundaryIntent = useRef(false);
+  const pendingNavigation = useRef<number | null>(null);
+  const [waitingFiles, setWaitingFiles] = useState<GateFile[]>([]);
+  const waitingFileKey = waitingFiles.map((file) => file.src).join('|');
+  useEffect(() => {
+    startup.downloads.focus(
+      boundaryWaiting ? waitingFiles.map((file) => file.src) : [],
+    );
+  }, [boundaryWaiting, waitingFileKey, startup.downloads]);
+  useEffect(() => {
+    if (waitingFiles.some((file) => file.src.includes('/drive/')))
+      setBufferCity(true);
+    const paths = {
+      junction: '/junction/',
+      route: '/route/',
+      tools: '/tools-idle/',
+      magazines: '/magazines-idle/',
+      monitor: '/monitor-idle/',
+      portal: '/portal/',
+    };
+    setRequestedMedia((previous) => {
+      let next = previous;
+      for (const key of Object.keys(paths) as (keyof typeof paths)[])
+        if (
+          !next[key] &&
+          waitingFiles.some((file) => file.src.includes(paths[key]))
+        )
+          next = { ...next, [key]: true };
+      return next;
+    });
+  }, [waitingFiles]);
+  const downloadsRef = useRef(startup.downloads);
+  downloadsRef.current = startup.downloads;
+  const gateState = useRef({ plan: planNavigation, disabled: reduced });
+  gateState.current = { plan: planNavigation, disabled: reduced };
+  function planNavigation(requested: number, current: number) {
+    if (reduced) return { progress: requested, files: [] };
+    if (current >= 1 && requested < 1) {
+      const video = portalFilm.current;
+      if (
+        !video ||
+        video.readyState < 2 ||
+        video.seeking ||
+        video.currentTime < video.duration - 0.1
+      )
+        return { progress: 1, files: startup.returnFiles };
+    }
+    const plan = startup.navigationPlan(requested, current);
+    if (
+      current >= JUNCTION_END &&
+      requested < JUNCTION_END &&
+      plan.progress < JUNCTION_END + 1e-5
+    ) {
+      const video = city.current;
+      if (
+        !video ||
+        !Array.from({ length: video.buffered.length }, (_, i) => [
+          video.buffered.start(i),
+          video.buffered.end(i),
+        ]).some(([start, end]) => start <= 0.05 && end >= video.duration * 0.75)
+      )
+        return { progress: JUNCTION_END + 1e-5, files: startup.streetFiles };
+    }
+    return plan;
+  }
+  function waitForNavigation(requested: number, files: GateFile[]) {
+    pendingNavigation.current = requested;
+    boundaryIntent.current = true;
+    setBoundaryWaiting(true);
+    setWaitingFiles(files);
+    void Promise.all(
+      files.map((file) => downloadsRef.current.ensure(file.src, file.bytes, 0)),
+    ).catch(() => {});
+  }
+  useEffect(() => {
+    if (!boundaryWaiting) return;
+    const timer = setInterval(() => {
+      const requested = pendingNavigation.current;
+      if (requested === null) return;
+      const plan = gateState.current.plan(requested, lastProgress.current);
+      if (
+        Math.abs(plan.progress - lastProgress.current) >
+          Math.max(1e-5, 2 / baseScrollHeight()) ||
+        plan.progress === requested
+      ) {
+        pendingNavigation.current = null;
+        boundaryIntent.current = false;
+        setBoundaryWaiting(false);
+      } else {
+        setWaitingFiles(plan.files);
+        void Promise.all(
+          plan.files.map((file) =>
+            startup.downloads.ensure(file.src, file.bytes, 0),
+          ),
+        ).catch(() => {});
+      }
+    }, 150);
+    return () => clearInterval(timer);
+  }, [boundaryWaiting, startup.downloads]);
+  const waitingScene = useRef({ scene, turnReady });
+  waitingScene.current = { scene, turnReady };
+  useEffect(() => {
+    if (!startup.blocked) return;
+    const root = document.documentElement;
+    const oldOverflow = root.style.overflow;
+    root.style.overflow = 'hidden';
+    root.dataset.videoLoading = 'true';
+    const stop = (event: Event) => {
+      if (
+        !(
+          event.target instanceof Element && event.target.closest('.menu-panel')
+        )
+      )
+        event.preventDefault();
+    };
+    const key = (event: KeyboardEvent) => {
+      if (
+        event.target instanceof Element &&
+        event.target.closest('.menu-panel')
+      )
+        return;
+      if (
+        [
+          'ArrowDown',
+          'ArrowUp',
+          'PageDown',
+          'PageUp',
+          'Home',
+          'End',
+          ' ',
+        ].includes(event.key) &&
+        !(event.target instanceof HTMLButtonElement)
+      )
+        event.preventDefault();
+    };
+    const position = window.scrollY;
+    const reset = () => {
+      if (!gateBypass.current && window.scrollY !== position)
+        window.scrollTo({ top: position, behavior: 'instant' });
+    };
+    window.addEventListener('wheel', stop, { passive: false });
+    window.addEventListener('touchmove', stop, { passive: false });
+    window.addEventListener('keydown', key);
+    window.addEventListener('scroll', reset);
+    return () => {
+      root.style.overflow = oldOverflow;
+      delete root.dataset.videoLoading;
+      window.removeEventListener('wheel', stop);
+      window.removeEventListener('touchmove', stop);
+      window.removeEventListener('keydown', key);
+      window.removeEventListener('scroll', reset);
+    };
+  }, [startup.blocked]);
+  useEffect(() => {
+    if (startup.blocked || reduced) {
+      setVideoWaiting(false);
+      return;
+    }
+    let since = 0;
+    const timer = setInterval(() => {
+      const current = waitingScene.current;
+      const holdVideo =
+        current.scene.hold === 'tools'
+          ? tools.current
+          : current.scene.hold === 'magazines'
+            ? magazines.current
+            : current.scene.hold === 'monitor'
+              ? monitor.current
+              : null;
+      const waiting =
+        current.scene.progress > 0 && current.scene.progress < JUNCTION_END
+          ? !current.turnReady
+          : current.scene.time >= 81
+            ? Boolean(
+                portalFilm.current &&
+                (portalFilm.current.readyState < 2 ||
+                  portalFilm.current.seeking),
+              )
+            : Boolean(
+                current.scene.progress >= JUNCTION_END &&
+                document.querySelector('video[data-media-waiting="true"]'),
+              ) || Boolean(holdVideo && holdVideo.readyState < 2);
+      if (!waiting) since = 0;
+      else if (!since) since = Date.now();
+      setVideoWaiting(waiting && Date.now() - since > 250);
+    }, 150);
+    return () => clearInterval(timer);
+  }, [startup.blocked, reduced]);
   const liveMedia =
     profile === 'mobile' ? mobilePortalMedia : desktopPortalMedia;
   const portalFps = liveMedia('portal').fps;
@@ -62,6 +268,26 @@ export function useJourney() {
       (!liveEnabled || portalEndReady || portalBypass || failed),
     portal = scene.portal > 0,
     moving = !scene.hold && scene.progress > 0;
+  const nextButtonPlan = planNavigation(
+    CHAPTER_PROGRESS[Math.min(4, chapter + 1)],
+    scene.progress,
+  );
+  const nextButtonKey = nextButtonPlan.files.map((file) => file.src).join('|');
+  useEffect(() => {
+    if (startup.blocked || entered || reduced || !scene.hold) return;
+    void Promise.all(
+      nextButtonPlan.files.map((file) =>
+        startup.downloads.ensure(file.src, file.bytes, 2),
+      ),
+    ).catch(() => {});
+  }, [
+    startup.blocked,
+    entered,
+    reduced,
+    scene.hold,
+    nextButtonKey,
+    startup.downloads,
+  ]);
   const asset = (name: string) =>
     variant ? assetUrl(`/media/images/fallback/${variant}/${name}`) : undefined;
   const streetAsset = (name: string) =>
@@ -79,7 +305,13 @@ export function useJourney() {
       : window.innerHeight * BASE_SCROLL_VIEWPORTS;
   }
   function go(next: number) {
+    if (next === 0) {
+      restartJourney();
+      return;
+    }
+    if (startup.blocked) return;
     if (next < 4) {
+      gateBypass.current = false;
       setPortalBypass(false);
       setPortalEndReady(false);
     }
@@ -90,7 +322,13 @@ export function useJourney() {
         '',
         window.location.pathname + window.location.search,
       );
-    const target = CHAPTER_PROGRESS[Math.max(0, Math.min(4, next))];
+    const requested = CHAPTER_PROGRESS[Math.max(0, Math.min(4, next))];
+    const plan =
+      reduced || gateBypass.current
+        ? { progress: requested, files: [] }
+        : planNavigation(requested, scene.progress);
+    const target = plan.progress;
+    if (target !== requested) waitForNavigation(requested, plan.files);
     if (target > 0 && target < 1 && entryPhase.current === null) {
       entryPhase.current = city.current?.currentTime ?? 0;
     }
@@ -101,7 +339,23 @@ export function useJourney() {
       behavior: 'instant',
     });
   }
+  function canGo(next: number) {
+    if (next === 0) return true;
+    const target = CHAPTER_PROGRESS[Math.max(0, Math.min(4, next))];
+    return (
+      reduced ||
+      (startup.cityReady &&
+        !startup.blocked &&
+        Math.abs(planNavigation(target, scene.progress).progress - target) <
+          1e-8)
+    );
+  }
+  function preparationFor() {
+    return startup.blocked ? startup.progress : startup.boundaryProgress;
+  }
   function skip(id?: string) {
+    gateBypass.current = true;
+    startup.bypass();
     setPortalBypass(true);
     setMenu(false);
     const target = id ? document.getElementById(id) : main.current;
@@ -151,7 +405,40 @@ export function useJourney() {
     };
   }, [menu]);
   function replay() {
-    go(0);
+    restartJourney();
+  }
+  function restartJourney() {
+    // A deliberate restart is not a request to traverse the unread reverse path.
+    pendingNavigation.current = null;
+    boundaryIntent.current = false;
+    setBoundaryWaiting(false);
+    setWaitingFiles([]);
+    setVideoWaiting(false);
+    gateBypass.current = false;
+    entryPhase.current = null;
+    lastProgress.current = 0;
+    pendingViewportResize.current = null;
+    cityDriver.current?.release();
+    setPortalBypass(false);
+    setPortalEndReady(false);
+    setPastHero(false);
+    setMenu(false);
+    setFailed(false);
+    setPaused(false);
+    setRequestedMedia(INITIAL_MEDIA_REQUESTS);
+    startup.downloads.cancelPending();
+    if (window.location.hash)
+      window.history.replaceState(
+        null,
+        '',
+        window.location.pathname + window.location.search,
+      );
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (city.current && city.current.readyState >= 1)
+      city.current.currentTime = 0;
+    setScene(sampleJourney(0));
+    if (startup.error) startup.retry();
+    startup.replay();
   }
   function togglePause() {
     setPaused((v) => !v);
@@ -172,6 +459,7 @@ export function useJourney() {
       mobile = window.matchMedia('(max-width:700px)');
     const motionChange = () => setReduced(motion.matches);
     const profileChange = () => {
+      setBufferCity(false);
       setFailed(false);
       setPortalEndReady(false);
       setPortalBypass(
@@ -201,10 +489,40 @@ export function useJourney() {
       ) {
         entryPhase.current = city.current?.currentTime ?? 0;
       }
-      const progress =
+      const requestedProgress =
         window.scrollY >= (spacer.current?.offsetHeight ?? Infinity) - 0.5
           ? 1
           : journeyProgressFromScroll(distance, entryPhase.current ?? 0);
+      if (
+        lastProgress.current >= 1 &&
+        requestedProgress < 1 &&
+        entryPhase.current === null
+      )
+        entryPhase.current = 0;
+      const gate = gateState.current;
+      const leaveBody = requestedProgress >= 1 && lastProgress.current >= 1;
+      const plan =
+        gate.disabled ||
+        leaveBody ||
+        (gateBypass.current && requestedProgress >= lastProgress.current)
+          ? { progress: requestedProgress, files: [] }
+          : gate.plan(requestedProgress, lastProgress.current);
+      const progress = plan.progress;
+      if (Math.abs(progress - requestedProgress) > 1e-8) {
+        waitForNavigation(requestedProgress, plan.files);
+        window.scrollTo({
+          top:
+            height * journeyScrollDistance(progress, entryPhase.current ?? 0),
+          behavior: 'instant',
+        });
+      } else if (
+        Math.abs(progress - lastProgress.current) > 2 / height ||
+        (leaveBody && window.scrollY > (spacer.current?.offsetHeight ?? 0) + 2)
+      ) {
+        pendingNavigation.current = null;
+        boundaryIntent.current = false;
+        setBoundaryWaiting(false);
+      }
       const next = sampleJourney(progress, entryPhase.current ?? 0);
       if (next.progress === 0) {
         cityDriver.current?.release();
@@ -291,6 +609,15 @@ export function useJourney() {
     }
   }, [scene.progress, entered, reduced, liveEnabled]);
   useEffect(() => {
+    if (startup.prefetch)
+      setRequestedMedia((previous) => ({
+        ...previous,
+        junction: true,
+        route: true,
+        tools: true,
+      }));
+  }, [startup.prefetch]);
+  useEffect(() => {
     const update = () => setVisible(document.visibilityState === 'visible');
     update();
     document.addEventListener('visibilitychange', update);
@@ -306,6 +633,7 @@ export function useJourney() {
 
   useEffect(() => {
     if (!scene.complete) {
+      gateBypass.current = false;
       setPortalBypass(false);
       return;
     }
@@ -323,6 +651,15 @@ export function useJourney() {
           : 'monitor';
 
   return {
+    bufferCity,
+    boundaryProgress: Math.floor(
+      startup.downloads.progress(waitingFiles.map((file) => file.src)) * 100,
+    ),
+    canGo,
+    preparationFor,
+    boundaryWaiting,
+    startup,
+    videoWaiting,
     city,
     film,
     filmSecond,

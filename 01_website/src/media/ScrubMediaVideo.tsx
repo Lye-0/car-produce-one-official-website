@@ -1,4 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type RefObject,
+} from 'react';
+import { DownloadContext } from './DownloadContext';
 import type { MediaAsset } from './playback';
 import { createSegmentedPlayback } from './segmented-playback';
 
@@ -14,6 +21,7 @@ type Props = {
 };
 
 export function ScrubMediaVideo(props: Props) {
+  const downloads = useContext(DownloadContext);
   const latest = useRef(props);
   latest.current = props;
   const controller = useRef<ReturnType<typeof createSegmentedPlayback> | null>(
@@ -25,8 +33,15 @@ export function ScrubMediaVideo(props: Props) {
     if (!first || !second) return;
     latest.current.onReady(false);
     const playback = createSegmentedPlayback([first, second], {
+      chooseVariant: downloads ? (asset) => downloads.choose(asset) : undefined,
+      onVariant: downloads
+        ? (asset, variant) => downloads.remember(asset, variant)
+        : undefined,
       onReady: (ready) => latest.current.onReady(ready),
       onError: () => latest.current.onError(),
+      resolveSource: downloads
+        ? (src, priority) => downloads.acquire(src, priority)
+        : undefined,
     });
     controller.current = playback;
     playback.seek(latest.current.time);
@@ -35,7 +50,7 @@ export function ScrubMediaVideo(props: Props) {
       playback.dispose();
       controller.current = null;
     };
-  }, [props.media, props.enabled, props.videoRef, props.secondRef]);
+  }, [props.media, props.enabled, props.videoRef, props.secondRef, downloads]);
   useLayoutEffect(() => {
     controller.current?.seek(props.time);
   }, [props.time]);

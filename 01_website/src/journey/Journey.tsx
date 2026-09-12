@@ -91,6 +91,8 @@ export function Journey({ state }: { state: JourneyState }) {
         />
       </picture>
       <MediaVideo
+        buffered={state.bufferCity}
+        sourceVersion={state.startup.sourceVersion}
         aria-hidden="true"
         videoRef={city}
         style={{
@@ -113,7 +115,12 @@ export function Journey({ state }: { state: JourneyState }) {
         enabled={!reduced}
         preload="auto"
         playing={
-          visible && scene.progress === 0 && !paused && !reduced && !entered
+          visible &&
+          (state.startup.cityReady || state.startup.cityPriming) &&
+          scene.progress === 0 &&
+          !paused &&
+          !reduced &&
+          !entered
         }
         onPlayBlocked={() => setPaused(true)}
         onError={() => setFailed(true)}
@@ -136,7 +143,13 @@ export function Journey({ state }: { state: JourneyState }) {
         time={scene.time}
         className={
           'film interior ' +
-          (ready && scene.time < 81 && !reduced && !failed ? 'visible' : ' ')
+          (ready &&
+          scene.progress >= JUNCTION_END &&
+          (scene.time < 81 || !portalReady) &&
+          !reduced &&
+          !failed
+            ? 'visible'
+            : ' ')
         }
         media={getProductionClip(variant, 'route')}
         enabled={requestedMedia.route && !reduced}
@@ -234,8 +247,15 @@ export function Journey({ state }: { state: JourneyState }) {
             {c.headline[1]}
           </h1>
           <p className="welcome-caption">車と過ごす日々を、あなたらしく。</p>
-          <button className="text-link" onClick={() => go(1)}>
-            店舗を巡る <span>↗</span>
+          <button
+            className="text-link"
+            disabled={!state.canGo(1)}
+            onClick={() => go(1)}
+          >
+            {state.canGo(1)
+              ? '店舗を巡る'
+              : `準備中 ${state.preparationFor()}％`}{' '}
+            <span>↗</span>
           </button>
         </div>
       )}
@@ -264,8 +284,14 @@ export function Journey({ state }: { state: JourneyState }) {
         >
           <p className="eyebrow">03 / CONTINUE THE STORY</p>
           <h2>この先も、あなたと。</h2>
-          <button className="text-link" onClick={() => go(4)}>
-            サイトへ入る ↗
+          <button
+            className="text-link"
+            disabled={!state.canGo(4)}
+            onClick={() => go(4)}
+          >
+            {state.canGo(4)
+              ? 'サイトへ入る ↗'
+              : `準備中 ${state.preparationFor()}％`}
           </button>
         </div>
       )}
@@ -289,22 +315,36 @@ export function Journey({ state }: { state: JourneyState }) {
             <button
               key={label}
               aria-current={chapter === i ? 'step' : undefined}
+              disabled={!state.canGo(i)}
               onClick={() => go(i)}
             >
               <span>0{i + 1}</span>
               <b>{label}</b>
+              <small className="chapter-preparing">
+                {state.canGo(i) ? '' : '準備中'}
+              </small>
             </button>
           ))}
         </div>
         <div className="journey-actions">
           <button
+            disabled={!state.startup.cityReady}
             onClick={togglePause}
             aria-label={paused ? '背景の動きを再生' : '背景の動きを一時停止'}
           >
             {paused ? '背景を再生 ▷' : '背景を停止 Ⅱ'}
           </button>
-          <button className="next" onClick={() => go(chapter + 1)}>
-            {chapter === 3 ? 'サイトへ' : '次の場面へ'} <span>↓</span>
+          <button
+            className="next"
+            disabled={!state.canGo(chapter + 1)}
+            onClick={() => go(chapter + 1)}
+          >
+            {state.canGo(chapter + 1)
+              ? chapter === 3
+                ? 'サイトへ'
+                : '次の場面へ'
+              : `準備中 ${state.preparationFor()}％`}{' '}
+            <span>↓</span>
           </button>
         </div>
       </div>

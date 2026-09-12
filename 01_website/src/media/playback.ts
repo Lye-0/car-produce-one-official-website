@@ -1,4 +1,9 @@
-export type MediaSegment = { src: string; startFrame: number; frames: number };
+export type MediaSegment = {
+  src: string;
+  startFrame: number;
+  frames: number;
+  bytes?: number;
+};
 export type MediaVariant = (
   | { src: string; segments?: undefined }
   | { src?: undefined; segments: MediaSegment[] }
@@ -9,6 +14,7 @@ export type MediaVariant = (
   height: number;
   bitrate: number;
   fps: number;
+  bytes?: number;
 };
 export type MediaAsset = {
   fps: number;
@@ -80,6 +86,12 @@ export function createMediaSourceController(
   options: {
     playing?: () => boolean | undefined;
     onPlayBlocked?: () => void;
+    resolveSource?: (
+      src: string,
+    ) => Promise<{ url: string; release: () => void }>;
+    onSourceError?: () => void;
+    chooseVariant?: (asset: MediaAsset) => Promise<MediaVariant>;
+    onVariant?: (asset: MediaAsset, variant: MediaVariant) => void;
   } = {},
 ) {
   let generation = 0;
@@ -90,6 +102,9 @@ export function createMediaSourceController(
   let fallback: MediaVariant | undefined;
   let restore: { time: number; playing: boolean } | undefined;
   let resumePlaying: boolean | undefined;
+  let sourceTicket = 0;
+  let currentAsset: MediaAsset | undefined;
+  let release: (() => void) | undefined;
   function syncPlaying() {
     if (disposed || !hasSource || pending) return;
     const playing = options.playing?.() ?? resumePlaying;
@@ -111,12 +126,43 @@ export function createMediaSourceController(
     restore = undefined;
   }
   function assign(variant: MediaVariant | undefined, src: string) {
+    const ticket = ++sourceTicket;
     selected = variant;
+    if (variant && currentAsset) options.onVariant?.(currentAsset, variant);
     hasSource = true;
-    video.src = src;
-    video.load();
+    const install = (url: string) => {
+      video.src = url;
+      video.load();
+    };
+    release?.();
+    release = undefined;
+    if (!options.resolveSource) {
+      install(src);
+      return;
+    }
+    pending = true;
+    video.dataset.downloadSource = src;
+    options
+      .resolveSource(src)
+      .then((lease) => {
+        if (disposed || ticket !== sourceTicket) {
+          lease.release();
+          return;
+        }
+        release = lease.release;
+        pending = false;
+        install(lease.url);
+      })
+      .catch(() => {
+        if (disposed || ticket !== sourceTicket) return;
+        pending = false;
+        options.onSourceError?.();
+      });
   }
   function clearSource() {
+    sourceTicket++;
+    release?.();
+    release = undefined;
     video.pause();
     selected = undefined;
     hasSource = false;
@@ -133,6 +179,7 @@ export function createMediaSourceController(
     ) {
       if (disposed) return;
       const ticket = ++generation;
+      currentAsset = asset;
       pending = false;
       restore = undefined;
       resumePlaying = undefined;
@@ -149,7 +196,9 @@ export function createMediaSourceController(
       clearSource();
       let candidate: MediaVariant;
       try {
-        candidate = await preferredVariant(asset, probe);
+        candidate = await (options.chooseVariant
+          ? options.chooseVariant(asset)
+          : preferredVariant(asset, probe));
       } catch (error) {
         if (disposed || ticket !== generation) return;
         pending = false;
@@ -179,6 +228,9 @@ export function createMediaSourceController(
     syncPlaying,
     dispose() {
       disposed = true;
+      sourceTicket++;
+      release?.();
+      release = undefined;
       generation++;
       video.removeEventListener('loadedmetadata', metadata);
       video.removeEventListener('loadeddata', syncPlaying);

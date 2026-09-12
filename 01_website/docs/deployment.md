@@ -1,6 +1,6 @@
 # GitHub Pagesへの公開
 
-`.github/workflows/pages.yml` は、`main` へのpushでテスト・ビルド・公開を順に実行します。動画30本を含む `01_website/dist` を公開します。Git LFSや外部ストレージの取得処理はありません。
+`.github/workflows/pages.yml` は、`main` へのpushでテスト・ビルド・公開を順に実行します。動画44本を含む `01_website/dist` を公開します。Git LFSや外部ストレージの取得処理はありません。
 
 ## 初回の設定
 

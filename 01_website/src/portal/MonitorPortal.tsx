@@ -153,7 +153,7 @@ export function MonitorPortal(props: Props) {
       const candidates = p.hold
         ? [p.monitor.current, p.portal.current, activeRoute]
         : p.time >= 81
-          ? [p.portal.current]
+          ? [p.portal.current, p.monitor.current, activeRoute]
           : [activeRoute];
       const shot = candidates
         .map((v) => (v ? snapshots.get(v) : undefined))

@@ -219,3 +219,40 @@ test('missing timeline coverage is rejected instead of playing a wrong segment',
   assert.equal(errors.length, 1);
   c.dispose();
 });
+
+test('five parts reuse two decoder slots while preserving global frames in both directions', async () => {
+  const starts = [0, 1212, 1512, 1812, 2112],
+    ends = [1212, 1512, 1812, 2112, 2430];
+  const segmented = {
+    frames: 2430,
+    fps: 30,
+    variants: [
+      {
+        codec: 'h264',
+        segments: starts.map((startFrame, i) => ({
+          src: `p${i}.mp4`,
+          startFrame,
+          frames: ends[i] - startFrame,
+        })),
+      },
+    ],
+  };
+  const { controller: c, videos } = fixture();
+  await c.setMedia(segmented, async () => false);
+  for (const time of [0, 34.2, 43.2, 52, 68, 75, 80.9666667, 68, 52, 34.2, 0]) {
+    c.seek(time);
+    for (let tick = 0; tick < 8; tick++)
+      for (const video of videos) {
+        if (video.src && video.readyState === 0) video.metadata();
+        if (video.seeking) video.complete();
+      }
+    const active = videos.filter((v) => v.dataset.mediaActive === 'true');
+    assert.equal(active.length, 1);
+    assert.equal(
+      +active[0].dataset.mediaFrame,
+      Math.min(2429, Math.round(time * 30)),
+    );
+  }
+  assert(videos.every((video) => video.requests.length > 1));
+  c.dispose();
+});

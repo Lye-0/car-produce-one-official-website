@@ -38,6 +38,24 @@
 - files: `02_render/scripts/render_contract.py`, `02_render/scripts/package_media.py`, `02_render/scripts/test_production_media.py` …
 - memory: `agent-knowledge/entries/2026-09-11-render-provenance-layers-c193e6.md`
 
+## video-loading
+
+### 本文スキップは映像の訪問済み状態ではない
+- id: `rm-20260913-cold-return-gates`
+- type: `constraint`
+- maturity: `candidate`
+- tags: `reverse-scroll`, `skip`, `buffering`
+- files: `01_website/src/journey/useJourney.ts`, `01_website/src/media/downloads.ts`, `01_website/tests/downloads.test.mjs` …
+- memory: `agent-knowledge/entries/2026-09-13-cold-return-gates-948e3d.md`
+
+### 街の部分先読みの制約と75%を許容する方針
+- id: `rm-20260913-retain-street-loop`
+- type: `failure`
+- maturity: `candidate`
+- tags: `buffering`, `autoplay`, `bandwidth`, `blob`
+- files: `01_website/src/media/useStartupLoading.ts`, `01_website/src/media/downloads.ts`, `01_website/src/media/playback.ts` …
+- memory: `agent-knowledge/entries/2026-09-13-retain-street-loop-51a47c.md`
+
 ## Search guidance
 
 Use topic, tags, related paths, filenames, and text search such as `rg` to shortlist entries.
