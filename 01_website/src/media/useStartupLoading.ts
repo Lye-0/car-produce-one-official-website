@@ -155,11 +155,12 @@ export function useStartupLoading(options: {
         ]
       : [];
   useEffect(() => {
-    if ((cityReady || bypass) && !options.reduced)
+    // Probe codec support during the street stage; this does not download media.
+    if (options.profile && !options.reduced)
       void Promise.all(assets.map((asset) => downloads.choose(asset))).catch(
         () => {},
       );
-  }, [cityReady, bypass, options.reduced, downloads, options.profile]);
+  }, [options.reduced, downloads, options.profile]);
   const routeVariant = route && downloads.variant(route);
   const gates: DownloadGate[] = routeVariant
     ? routeDownloadGates(routeVariant, route!.fps)
@@ -247,6 +248,7 @@ export function useStartupLoading(options: {
   );
   return {
     sourceVersion: entranceCycle,
+    preparationSources: sources,
     downloads,
     navigationPlan: (requested: number, current: number) =>
       options.reduced
@@ -293,7 +295,7 @@ export function useStartupLoading(options: {
         ).catch(() => {});
     },
     stage,
-    progress: Math.floor(progress * 100),
+    progress: Math.floor(progress * 1000) / 10,
     prefetch: cityReady && !disabled,
     error: Boolean(downloads.error() || cityError || options.failed),
     retry: () => setAttempt((value) => value + 1),

@@ -71,12 +71,15 @@ export function useJourney() {
   const boundaryIntent = useRef(false);
   const pendingNavigation = useRef<number | null>(null);
   const [waitingFiles, setWaitingFiles] = useState<GateFile[]>([]);
-  const waitingFileKey = waitingFiles.map((file) => file.src).join('|');
+  const focusedSources = boundaryWaiting
+    ? waitingFiles.map((file) => file.src)
+    : startup.blocked && startup.stage === 'interior'
+      ? startup.preparationSources
+      : [];
+  const focusedSourceKey = focusedSources.join('|');
   useEffect(() => {
-    startup.downloads.focus(
-      boundaryWaiting ? waitingFiles.map((file) => file.src) : [],
-    );
-  }, [boundaryWaiting, waitingFileKey, startup.downloads]);
+    startup.downloads.focus(focusedSources);
+  }, [focusedSourceKey, startup.downloads]);
   useEffect(() => {
     if (waitingFiles.some((file) => file.src.includes('/drive/')))
       setBufferCity(true);
