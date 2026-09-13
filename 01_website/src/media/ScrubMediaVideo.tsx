@@ -34,37 +34,49 @@ export function ScrubMediaVideo(props: Props) {
     if (!first || !second) return;
     latest.current.onReady(false);
     if (retainedFrame.current) retainedFrame.current.width = 0;
-    const playback = createSegmentedPlayback([first, second], {
-      beforeSwitch: (previous, next) => {
-        const canvas = retainedFrame.current;
-        const source = previous ?? next;
-        if (!canvas || source.readyState < 2 || !source.videoWidth)
-          return false;
-        // Capture the outgoing decoded image BEFORE either native video layer
-        // changes. Safari may present the replacement layer one paint later.
-        // A staging canvas keeps an existing good snapshot intact on failure.
-        const staging = document.createElement('canvas');
-        staging.width = source.videoWidth;
-        staging.height = source.videoHeight;
-        try {
-          const context = staging.getContext('2d');
-          const target = canvas.getContext('2d');
-          if (!context || !target) return false;
-          context.drawImage(source, 0, 0);
-          if (
-            canvas.width !== staging.width ||
-            canvas.height !== staging.height
-          ) {
-            canvas.width = staging.width;
-            canvas.height = staging.height;
-          }
-          target.globalCompositeOperation = 'copy';
-          target.drawImage(staging, 0, 0);
-          return true;
-        } catch {
-          return false;
+    const staging = document.createElement('canvas');
+    const capture = (source: HTMLVideoElement) => {
+      const canvas = retainedFrame.current;
+      if (!canvas || source.readyState < 2 || !source.videoWidth) return false;
+      try {
+        const context = staging.getContext('2d');
+        const target = canvas.getContext('2d');
+        if (!context || !target) return false;
+        if (
+          staging.width !== source.videoWidth ||
+          staging.height !== source.videoHeight
+        ) {
+          staging.width = source.videoWidth;
+          staging.height = source.videoHeight;
         }
-      },
+        context.globalCompositeOperation = 'copy';
+        context.drawImage(source, 0, 0);
+        if (
+          canvas.width !== staging.width ||
+          canvas.height !== staging.height
+        ) {
+          canvas.width = staging.width;
+          canvas.height = staging.height;
+        }
+        target.globalCompositeOperation = 'copy';
+        target.drawImage(staging, 0, 0);
+        canvas.dataset.mediaFrame = source.dataset.mediaFrame ?? '';
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    // Keep the underlay current inside each part too. A switch-only snapshot
+    // would retain the street frame throughout the first interior part.
+    const retainPresented = (event: Event) => {
+      const video = event.currentTarget as HTMLVideoElement;
+      if (video.dataset.mediaActive === 'true' && !video.seeking)
+        capture(video);
+    };
+    first.addEventListener('routeframe', retainPresented);
+    second.addEventListener('routeframe', retainPresented);
+    const playback = createSegmentedPlayback([first, second], {
+      beforeSwitch: (previous, next) => capture(previous ?? next),
       chooseVariant: downloads ? (asset) => downloads.choose(asset) : undefined,
       onVariant: downloads
         ? (asset, variant) => downloads.remember(asset, variant)
@@ -79,6 +91,8 @@ export function ScrubMediaVideo(props: Props) {
     playback.seek(latest.current.time);
     void playback.setMedia(props.enabled ? props.media : undefined);
     return () => {
+      first.removeEventListener('routeframe', retainPresented);
+      second.removeEventListener('routeframe', retainPresented);
       playback.dispose();
       controller.current = null;
     };
@@ -103,7 +117,6 @@ export function ScrubMediaVideo(props: Props) {
           muted
           playsInline
           preload="none"
-          poster={props.media?.poster}
         />
       ))}
     </>

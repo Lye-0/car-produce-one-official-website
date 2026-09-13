@@ -67,6 +67,32 @@ const finish = (video) => {
   video.complete();
 };
 
+test('retained-image notifications follow frames within a part, not just slot changes', async () => {
+  const {
+    controller: c,
+    videos: [a, b],
+  } = fixture();
+  const frames = [];
+  for (const video of [a, b])
+    video.addEventListener('routeframe', () => {
+      assert.equal(video.dataset.mediaActive, 'true');
+      frames.push(Number(video.dataset.mediaFrame));
+    });
+  await c.setMedia(asset, async () => false);
+  finish(a);
+  c.seek(34.2);
+  finish(a);
+  assert.equal(frames.at(-1), 1026);
+  c.seek(40.4);
+  finish(b);
+  assert.equal(frames.at(-1), 1212);
+  c.seek(34.2);
+  finish(a);
+  finish(a);
+  assert.equal(frames.at(-1), 1026);
+  c.dispose();
+});
+
 test('a retained frame is captured before switching either direction; failed capture keeps the old layer', async () => {
   const a = new Video(),
     b = new Video();
