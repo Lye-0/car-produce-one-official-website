@@ -67,6 +67,40 @@ const finish = (video) => {
   video.complete();
 };
 
+test('a retained frame is captured before switching either direction; failed capture keeps the old layer', async () => {
+  const a = new Video(),
+    b = new Video();
+  let permit = true;
+  const switches = [];
+  const c = createSegmentedPlayback([a, b], {
+    onReady() {},
+    onError() {},
+    beforeSwitch(previous, next) {
+      switches.push({ previous, next });
+      if (previous) assert.equal(previous.dataset.mediaActive, 'true');
+      assert.notEqual(next.dataset.mediaActive, 'true');
+      return permit;
+    },
+  });
+  await c.setMedia(asset, async () => false);
+  finish(a);
+  permit = false;
+  c.seek(40.4);
+  finish(b);
+  assert.equal(a.dataset.mediaActive, 'true');
+  assert.equal(b.dataset.mediaActive, 'false');
+  permit = true;
+  c.seek(40.4);
+  assert.equal(b.dataset.mediaActive, 'true');
+  c.seek(0);
+  finish(a);
+  finish(a); // Complete the last request after an in-flight neighbor warm seek.
+  assert.equal(a.dataset.mediaActive, 'true');
+  assert.equal(switches.at(-1).previous, b);
+  assert.equal(switches.at(-1).next, a);
+  c.dispose();
+});
+
 test('every global route frame maps to exactly one local frame, including both sides of the split', () => {
   for (let frame = 0; frame < 2430; frame++) {
     const target = segmentTarget(parts, 2430, 30, frame / 30);

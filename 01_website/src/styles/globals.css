@@ -141,6 +141,10 @@ button:disabled {
   opacity: 1;
   z-index: -5;
 }
+.film.route-retained-frame {
+  z-index: -4;
+  pointer-events: none;
+}
 .film.visible {
   opacity: 1;
 }

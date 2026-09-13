@@ -42,6 +42,10 @@ export function createSegmentedPlayback(
   options: {
     onReady: (ready: boolean) => void;
     onError: () => void;
+    beforeSwitch?: (
+      previous: HTMLVideoElement | undefined,
+      next: HTMLVideoElement,
+    ) => boolean;
     chooseVariant?: (asset: MediaAsset) => Promise<MediaVariant>;
     onVariant?: (asset: MediaAsset, variant: MediaVariant) => void;
     resolveSource?: (
@@ -152,6 +156,12 @@ export function createSegmentedPlayback(
   }
 
   function present(index: number, frame: number) {
+    const previous = videos.find((item) => item.dataset.mediaActive === 'true');
+    if (
+      previous !== videos[index] &&
+      options.beforeSwitch?.(previous, videos[index]) === false
+    )
+      return;
     videos.forEach((item) => {
       delete item.dataset.mediaWaiting;
     });

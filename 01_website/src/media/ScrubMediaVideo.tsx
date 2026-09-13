@@ -21,6 +21,7 @@ type Props = {
 };
 
 export function ScrubMediaVideo(props: Props) {
+  const retainedFrame = useRef<HTMLCanvasElement>(null);
   const downloads = useContext(DownloadContext);
   const latest = useRef(props);
   latest.current = props;
@@ -32,7 +33,38 @@ export function ScrubMediaVideo(props: Props) {
       second = props.secondRef.current;
     if (!first || !second) return;
     latest.current.onReady(false);
+    if (retainedFrame.current) retainedFrame.current.width = 0;
     const playback = createSegmentedPlayback([first, second], {
+      beforeSwitch: (previous, next) => {
+        const canvas = retainedFrame.current;
+        const source = previous ?? next;
+        if (!canvas || source.readyState < 2 || !source.videoWidth)
+          return false;
+        // Capture the outgoing decoded image BEFORE either native video layer
+        // changes. Safari may present the replacement layer one paint later.
+        // A staging canvas keeps an existing good snapshot intact on failure.
+        const staging = document.createElement('canvas');
+        staging.width = source.videoWidth;
+        staging.height = source.videoHeight;
+        try {
+          const context = staging.getContext('2d');
+          const target = canvas.getContext('2d');
+          if (!context || !target) return false;
+          context.drawImage(source, 0, 0);
+          if (
+            canvas.width !== staging.width ||
+            canvas.height !== staging.height
+          ) {
+            canvas.width = staging.width;
+            canvas.height = staging.height;
+          }
+          target.globalCompositeOperation = 'copy';
+          target.drawImage(staging, 0, 0);
+          return true;
+        } catch {
+          return false;
+        }
+      },
       chooseVariant: downloads ? (asset) => downloads.choose(asset) : undefined,
       onVariant: downloads
         ? (asset, variant) => downloads.remember(asset, variant)
@@ -56,6 +88,11 @@ export function ScrubMediaVideo(props: Props) {
   }, [props.time]);
   return (
     <>
+      <canvas
+        ref={retainedFrame}
+        className={`${props.className.replace(/\binterior\b/g, '')} route-retained-frame`}
+        aria-hidden="true"
+      />
       {[props.videoRef, props.secondRef].map((ref, index) => (
         <video
           key={index}

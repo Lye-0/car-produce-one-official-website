@@ -56,6 +56,14 @@
 - files: `01_website/src/media/useStartupLoading.ts`, `01_website/src/media/downloads.ts`, `01_website/src/media/playback.ts` …
 - memory: `agent-knowledge/entries/2026-09-13-retain-street-loop-51a47c.md`
 
+### 分割切り替え中に章別fallbackが露出する
+- id: `rm-20260913-safari-route-flash`
+- type: `case`
+- maturity: `candidate`
+- tags: `safari`, `video`, `compositing`
+- files: `01_website/src/media/ScrubMediaVideo.tsx`, `01_website/src/media/segmented-playback.ts`, `01_website/src/styles/globals.css` …
+- memory: `agent-knowledge/entries/2026-09-13-safari-route-flash-a29e71.md`
+
 ## Search guidance
 
 Use topic, tags, related paths, filenames, and text search such as `rg` to shortlist entries.
